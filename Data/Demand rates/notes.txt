@@ -1,0 +1,15 @@
+The files include mean demand rates for three demand scenarios from a stop to another for each line. 
+
+1,  1,  2 means scenario 1, mean demand from stop 1 to 2. 
+2,  2,  3 means scenario 2, mean demand from stop 2 to 3. 
+... 
+
+k, i, j is defined only for j > i. The stops are duplicated for the other direction. 
+So, if there are 3 stops on the line where the 3rd is the city center, the stops until the city center are duplicated just after the city center for the other direction. 
+Instead of traveling from 3 to 2, it is considered as 3 to 4, (stop 4 (actually stop 2), and stop 5 (actually stop 1) comes after city center).
+You do not have to keep it like this, but you need to make sure that when you take this input that's what you should consider.  
+
+lambdapeak: Mean demand to travel towards the city center during peak hours
+mupeak: Mean demand to travel towards the terminal during peak hours
+lambdarec: Mean demand to travel towards the city center outside peak hours
+murec: Mean demand to travel towards the terminal outside peak hours 

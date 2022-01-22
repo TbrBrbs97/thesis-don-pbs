@@ -1,0 +1,1 @@
+Distances are calculated as manhattan distance and without pairwise info, they follow on these lines. You can (probably should) use euclidean distances to define pairwise distances. 
