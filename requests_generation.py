@@ -53,7 +53,7 @@ def convert_md_todict(df_meandemand_city, df_meandemand_terminal, scen):
     return demand_dict
     
 
-def generate_requests(mean_demand, peak_hour_duration=60):
+def generate_requests(mean_demand, peak_hour_duration=60, seed=True):
 
     requests = {}
 
@@ -67,6 +67,9 @@ def generate_requests(mean_demand, peak_hour_duration=60):
             t = 0
 
             while t < peak_hour_duration:
+                if seed is True:
+                    np.random.seed(0)
+
                 delta_t = np.random.exponential(1/mean_demand[od], 1)[0]  #the time before the next passenger arrives is sampled from an exponential distr.                              
                 t += delta_t
             

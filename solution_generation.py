@@ -114,6 +114,7 @@ def create_initial_solution(request_dict, start, end,
     # given that WT is perceived more expensive than IVT, we aim to mix passengers with different destinations
 
     if vehicles_schedule is None:
+        request_dict = request_dict.copy()
         vehicles_schedule = {}
         
     if count_requests(request_dict) == 0 or current_veh > nb_of_vehicles:
@@ -153,7 +154,6 @@ def create_initial_solution(request_dict, start, end,
     else:     #see if you can add requests in the backward direction
         od = med, end
 
-        #TODO: maybe this bit is abundant?
         if select_request_group(request_dict, od) is not None:
             index_rg, rg = select_request_group(request_dict, od)
             occupy_available_capacity(request_dict, index_rg, rg, vehicles_schedule, current_veh, max_capacity, od)
@@ -166,3 +166,13 @@ def create_initial_solution(request_dict, start, end,
                                            nb_of_vehicles, max_capacity, vehicles_schedule)
 
 
+def correct_dep_times(solution, od_matrix):
+
+    solution = solution.copy()
+
+    for v in solution.keys():
+        stop_ids = list(solution[v].keys())
+        for s in range(2, len(solution[v])):
+            travel_time = od_matrix[(stop_ids[s-1], stop_ids[s])]
+            solution[v][s][0] = solution[v][s-1][0] + travel_time
+    return solution
