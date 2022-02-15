@@ -3,6 +3,8 @@
 # e.g. {1: {stop 1: [dep_t, ((1,3), p_t, s_t), ...], stop 2: [dep_t, ((1,2), p_t, s_t), ((1,3), p_t, s_t), ...], ...}}
 #    veh_nb   stop   dep_t
 
+import vehicle_generation as vg
+
 
 def count_requests(request_dict, od=None):
     count = 0
@@ -171,8 +173,16 @@ def correct_dep_times(solution, od_matrix):
     solution = solution.copy()
 
     for v in solution.keys():
-        stop_ids = list(solution[v].keys())
-        for s in range(2, len(solution[v])):
-            travel_time = od_matrix[(stop_ids[s-1], stop_ids[s])]
-            solution[v][s][0] = solution[v][s-1][0] + travel_time
+        if vg.is_empty_vehicle(solution, v) is False:
+            stop_ids = list(solution[v].keys())
+            for s in stop_ids[1:]:
+                if len(solution[v][s]) != 0 and len(solution[v][s-1]) != 0:
+                    travel_time = od_matrix[s-1, s]
+                    # only if the new departure time is larger than the original one, it should be corrected
+                    # otherwise, the original departure time implicitly accounts for the travel time
+                    if solution[v][s-1][0] + travel_time > solution[v][s][0]:
+                        solution[v][s][0] = solution[v][s-1][0] + travel_time
+                elif s == len(solution[v]): # exception if it is the last stop
+                    travel_time = od_matrix[s - 1, s]
+                    solution[v][s].append(solution[v][s - 1][0] + travel_time)
     return solution
