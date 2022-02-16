@@ -68,7 +68,7 @@ def calculate_ttt(ivt_dict, wt_dict):
     return ttt_dict
 
 
-# maybe also provide the ability to sum per request group?
+# maybe also provide the ability to sum per request group? for later swappings
 def sum_total_tt(ttt_dict, level='vehicle'):
 
     if level == 'stop':
