@@ -44,15 +44,19 @@ toterminal_requests = filterByKey(toterminal_keys)
 
 terminal, city, terminal_end = netg.get_network_boundaries(network)
 network_dim = terminal, city, terminal_end
-round_trips = {1, 2, 3, 4, 5}
+round_trips = {1, 2, 3, 4}
 
 initial = sg.create_initial_solution(grouped_requests, city, terminal_end, network_dim, current_veh=1,
                                      nb_of_vehicles=35, round_trip_veh=round_trips, max_capacity=20)
 
 #print(initial)
 #print(grouped_requests)
+
 corrected_initial = sg.correct_dep_times(initial, od_matrix, round_trips, network_dim)
 print(corrected_initial)
+
+vehicles_schedules = sg.services_to_vehicles(corrected_initial, round_trips, network_dim)
+print(vehicles_schedules.keys())
 
 #waiting_time_dict = se.calc_waiting_time(corrected_initial)
 #inveh_time_dict = se.calc_in_vehicle_time(corrected_initial)

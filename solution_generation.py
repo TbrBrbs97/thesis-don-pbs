@@ -206,3 +206,47 @@ def correct_dep_times(solution, od_matrix, round_trip_veh, network_dim):
                     travel_time = od_matrix[s-1, s]
                     solution[v][s].append(solution[v][s - 1][0] + travel_time)
     return solution
+
+## Create vehicle indices, instead of services
+
+
+def services_to_vehicles(solution, round_trip_veh, network_dim):
+
+    added_services = set(())
+    new_solution = {}
+
+    for v in range(1, len(solution.keys())):
+        ser = 1
+        i = 1
+
+        if len(solution[v]) != 0 and v not in added_services:
+            new_solution[(v, ser)] = solution[v]
+            # while ser < 3? max 3 vehicles per schedule?
+            # also pay attention to the difference between roundtrip / non-roundtrip vehicles!
+            while i < len(solution.keys())-1 and ser < 3:
+                # the vehicle arrival needs to be updated as another service is added to a schedule!
+
+                if i+1 not in added_services:
+
+                    if get_vehicle_arrival(solution, ser, round_trip_veh, network_dim) \
+                            < get_vehicle_departure(solution, i+1, network_dim)\
+                                and (v in round_trip_veh) == (i+1 in round_trip_veh):
+                        new_solution[(v, ser+1)] = solution[v+1]
+                        # empty the original schedule so we know it has been added already
+                        added_services.add(i+1)
+                        ser += 1
+                i += 1
+
+    return new_solution
+
+
+def get_vehicle_arrival(solution, service, round_trip_veh, network_dim):
+    if service in round_trip_veh:
+        return solution[service][network_dim[2]][0]
+    else:
+        return solution[service][network_dim[1]][0]
+
+
+def get_vehicle_departure(solution, service, network_dim):
+    return solution[service][network_dim[0]][0]
+

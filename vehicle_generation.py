@@ -11,6 +11,7 @@ def is_empty_vehicle(solution, vehicle):
         return True
 
 
+# what do we do with this function?
 def create_vehicle_schedule_templates(lst_of_all_requests, veh_capacity, network):
     total_req_amount = len(lst_of_all_requests)
     # assuming three services per vehicle:
