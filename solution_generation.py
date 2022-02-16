@@ -110,8 +110,9 @@ def update_requests(request_dict, od, index_rg, portion_rg):
     return None
 
 
-def create_initial_solution(request_dict, start, end, 
-                            current_veh, nb_of_vehicles, max_capacity, vehicles_schedule=None):
+def create_initial_solution(request_dict, start, end, network_dim,
+                            current_veh, nb_of_vehicles, round_trip_veh,
+                            max_capacity, vehicles_schedule=None):
     
     # given that WT is perceived more expensive than IVT, we aim to mix passengers with different destinations
 
@@ -125,12 +126,12 @@ def create_initial_solution(request_dict, start, end,
     if current_veh not in vehicles_schedule.keys():
         # TODO: make it so that depending on the vehicle ID, there is a schedule template! > function that checks this
         vehicles_schedule[current_veh] = {}
-        for s in range(1, end+1):
+        for s in range(1, network_dim[2]+1):
             # can be changed later, in order to make loops possible & revisiting stops
             # predefine the possible stopping places for each vehicle 1-->3
             vehicles_schedule[current_veh][s] = []
 
-    #you always take the first request in line > because you always delete request groups / change vehicles
+    #you always take the next first request in line > because you always delete request groups / change vehicles
 
     # this is the section we are currently investigating (two most outerward ends)
 
@@ -144,15 +145,30 @@ def create_initial_solution(request_dict, start, end,
     # there might be room elsewhere, so still check for instances backwards
 
     med = end - 1
-    if start == med: # or occupy_available_capacity(request_dict, rg, vehicles_schedule, current_veh, max_capacity, od) is None:
+    if start == med == network_dim[1]:
+
+        #TODO: close the current schedule: adjust the departure time with OD-matrix + make it return to the depot
+        #vehicles have a number + an available point in time + they either return to the depot directly OR via the other stops
+
+        start, end = network_dim[0], network_dim[1]
+        return create_initial_solution(request_dict, start, end, network_dim, current_veh,
+                                       nb_of_vehicles, round_trip_veh, max_capacity, vehicles_schedule)
+
+    elif start == med:
 
         #TODO: close the current schedule: adjust the departure time with OD-matrix + make it return to the depot
         #vehicles have a number + an available point in time + they either return to the depot directly OR via the other stops
 
         current_veh += 1
-        start, end = 1, 3
-        return create_initial_solution(request_dict, start, end, current_veh,
-                                       nb_of_vehicles, max_capacity, vehicles_schedule)
+
+        if current_veh in round_trip_veh:
+            start, end = network_dim[1], network_dim[2]
+        else:
+            start, end = network_dim[0], network_dim[1]
+
+        return create_initial_solution(request_dict, start, end, network_dim, current_veh,
+                                       nb_of_vehicles, round_trip_veh, max_capacity, vehicles_schedule)
+
     else:     #see if you can add requests in the backward direction
         od = med, end
 
@@ -161,20 +177,24 @@ def create_initial_solution(request_dict, start, end,
             occupy_available_capacity(request_dict, index_rg, rg, vehicles_schedule, current_veh, max_capacity, od)
 
         if count_requests(request_dict, (start, med)) != 0:
-            return create_initial_solution(request_dict, start, med, current_veh,
-                                           nb_of_vehicles, max_capacity, vehicles_schedule)
+            return create_initial_solution(request_dict, start, med, network_dim, current_veh,
+                                           nb_of_vehicles, round_trip_veh, max_capacity, vehicles_schedule)
         else:
-            return create_initial_solution(request_dict, med, end, current_veh,
-                                           nb_of_vehicles, max_capacity, vehicles_schedule)
+            return create_initial_solution(request_dict, med, end, network_dim, current_veh,
+                                           nb_of_vehicles, round_trip_veh, max_capacity, vehicles_schedule)
 
 
-def correct_dep_times(solution, od_matrix):
+def correct_dep_times(solution, od_matrix, round_trip_veh, network_dim):
 
     solution = solution.copy()
 
     for v in solution.keys():
         if vg.is_empty_vehicle(solution, v) is False:
-            stop_ids = list(solution[v].keys())
+            if v in round_trip_veh:
+                stop_ids = list(range(1, network_dim[2]+1))
+            else:
+                stop_ids = list(range(1, network_dim[1]+1))
+
             for s in stop_ids[1:]:
                 if len(solution[v][s]) != 0 and len(solution[v][s-1]) != 0:
                     travel_time = od_matrix[s-1, s]
@@ -182,7 +202,7 @@ def correct_dep_times(solution, od_matrix):
                     # otherwise, the original departure time implicitly accounts for the travel time
                     if solution[v][s-1][0] + travel_time > solution[v][s][0]:
                         solution[v][s][0] = solution[v][s-1][0] + travel_time
-                elif s == len(solution[v]): # exception if it is the last stop
-                    travel_time = od_matrix[s - 1, s]
+                elif s == stop_ids[-1]: # exception if it is the last stop
+                    travel_time = od_matrix[s-1, s]
                     solution[v][s].append(solution[v][s - 1][0] + travel_time)
     return solution

@@ -51,3 +51,12 @@ def generate_tt_od(network, v_mean):
     return od_matrix
 
 
+def get_network_boundaries(network):
+    all_stops = set(network.keys())
+
+    terminal = min(all_stops)
+    terminal_end = max(all_stops)
+    # identify the turning point at the city center
+    city = round(terminal_end/2) + 1
+
+    return terminal, city, terminal_end

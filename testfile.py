@@ -1,5 +1,5 @@
 import requests_generation as rg
-import od_traveltime_generation as od
+import network_generation as netg
 import solution_generation as sg
 import solution_evaluation as se
 import vehicle_generation as vg
@@ -28,11 +28,9 @@ list_all_requests = rg.list_all_requests(total_requests)
 grouped_requests = rg.group_requests_dt(list_all_requests, req_max_cluster_time, OD_pairs)
 count_groups = rg.request_groups_per_od(grouped_requests)
 
-print(vg.create_vehicle_schedule_templates(list_all_requests, max_capacity=20))
-
 # network
-network = od.import_network(network_size, interstop_distance)
-od_matrix = od.generate_tt_od(network, v_mean)
+network = netg.import_network(network_size, interstop_distance)
+od_matrix = netg.generate_tt_od(network, v_mean)
 
 # solution check
 
@@ -43,15 +41,22 @@ filterByKey = lambda keys: {x: grouped_requests[x] for x in keys}
 tocity_requests = filterByKey(tocity_keys)
 toterminal_requests = filterByKey(toterminal_keys)
 
-initial = sg.create_initial_solution(grouped_requests, 3, 5, current_veh=1,
-                                     nb_of_vehicles=35, max_capacity=20)
 
-corrected_initial = sg.correct_dep_times(initial, od_matrix)
+terminal, city, terminal_end = netg.get_network_boundaries(network)
+network_dim = terminal, city, terminal_end
+round_trips = {1, 2, 3, 4, 5}
+
+initial = sg.create_initial_solution(grouped_requests, city, terminal_end, network_dim, current_veh=1,
+                                     nb_of_vehicles=35, round_trip_veh=round_trips, max_capacity=20)
+
+#print(initial)
+#print(grouped_requests)
+corrected_initial = sg.correct_dep_times(initial, od_matrix, round_trips, network_dim)
 print(corrected_initial)
 
-waiting_time_dict = se.calc_waiting_time(corrected_initial)
-inveh_time_dict = se.calc_in_vehicle_time(corrected_initial)
-total_tt_dict = se.calculate_ttt(inveh_time_dict, waiting_time_dict)
+#waiting_time_dict = se.calc_waiting_time(corrected_initial)
+#inveh_time_dict = se.calc_in_vehicle_time(corrected_initial)
+#total_tt_dict = se.calculate_ttt(inveh_time_dict, waiting_time_dict)
 #print(total_tt_dict)
 
 #sum_stops = se.sum_total_tt(total_tt_dict, level='stop')
@@ -60,8 +65,8 @@ total_tt_dict = se.calculate_ttt(inveh_time_dict, waiting_time_dict)
 #sum_vehicle = se.sum_total_tt(total_tt_dict, level='vehicle')
 #print('sum vehicles= ', sum_vehicle)
 
-sum_total = se.sum_total_tt(total_tt_dict, level='total')
-print('sum total= ', sum_total)
+#sum_total = se.sum_total_tt(total_tt_dict, level='total')
+#print('sum total= ', sum_total)
 
 #df = sv.convert_to_dataframe(corrected_initial)
 #print(df)
