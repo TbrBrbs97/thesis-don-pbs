@@ -1,3 +1,6 @@
+import pandas as pd
+import pickle
+
 import requests_generation as rg
 import network_generation as netg
 import solution_generation as sg
@@ -12,6 +15,7 @@ time_of_day = 1 #1 = peak, 0 = off-peak
 peak_duration = 60 #min.
 v_mean = 50 #km/h
 interstop_distance = 'half'
+cap_per_veh = 20
 
 req_max_cluster_time = 10 #min.
 
@@ -47,34 +51,48 @@ network_dim = terminal, city, terminal_end
 round_trips = {1, 2, 3, 4}
 
 initial = sg.create_initial_solution(grouped_requests, city, terminal_end, network_dim, current_veh=1,
-                                     nb_of_vehicles=35, round_trip_veh=round_trips, max_capacity=20)
+                                     nb_of_vehicles=35, round_trip_veh=round_trips, max_capacity=cap_per_veh)
 
 #print(initial)
 #print(grouped_requests)
 
 corrected_initial = sg.correct_dep_times(initial, od_matrix, round_trips, network_dim)
-print(corrected_initial)
 
-vehicles_schedules = sg.services_to_vehicles(corrected_initial, round_trips, network_dim)
-print(vehicles_schedules.keys())
+vehicles_schedules = sg.services_to_vehicles(corrected_initial, network_dim, od_matrix, max_services_per_veh=5)
 
-#waiting_time_dict = se.calc_waiting_time(corrected_initial)
-#inveh_time_dict = se.calc_in_vehicle_time(corrected_initial)
-#total_tt_dict = se.calculate_ttt(inveh_time_dict, waiting_time_dict)
+waiting_time_dict = se.calc_waiting_time(vehicles_schedules)
+inveh_time_dict = se.calc_in_vehicle_time(vehicles_schedules)
+total_tt_dict = se.calculate_ttt(inveh_time_dict, waiting_time_dict)
 #print(total_tt_dict)
 
-#sum_stops = se.sum_total_tt(total_tt_dict, level='stop')
+wt_stops = se.sum_total_tt(waiting_time_dict, level='stop')
+ivt_stops = se.sum_total_tt(inveh_time_dict, level='stop')
+sum_stops = se.sum_total_tt(total_tt_dict, level='stop')
 #print('sum stops= ', sum_stops)
 
-#sum_vehicle = se.sum_total_tt(total_tt_dict, level='vehicle')
+sum_vehicle = se.sum_total_tt(total_tt_dict, level='vehicle')
 #print('sum vehicles= ', sum_vehicle)
 
-#sum_total = se.sum_total_tt(total_tt_dict, level='total')
+sum_total = se.sum_total_tt(total_tt_dict, level='total')
 #print('sum total= ', sum_total)
 
-#df = sv.convert_to_dataframe(corrected_initial)
-#print(df)
-
-#occ = se.calc_occupancy_rate(corrected_initial, 20)
+occ = se.calc_occupancy_rate(vehicles_schedules, cap_per_veh)
 #print(occ)
 
+## Convert to DF and export to excel:
+
+df_solution = sv.convert_to_dataframe(vehicles_schedules)
+df_wt = sv.convert_to_dataframe(wt_stops)
+df_ivt = sv.convert_to_dataframe(ivt_stops)
+df_occ = sv.convert_to_dataframe(occ)
+
+col_names = ['dep_time', 'abboard_pax1', 'abboard_pax2', 'abboard_pax3', 'sum_wt', 'sum_ivt', 'veh_occ']
+df_all = pd.concat([df_solution,df_wt, df_ivt, df_occ], axis=1)
+df_all.columns = col_names
+
+df_all.to_excel("Exports/entire_solution.xlsx")
+
+# Export to pickle
+
+with open('Exports/initial_solution.pickle', 'wb') as handle:
+    pickle.dump(vehicles_schedules, handle, protocol=pickle.HIGHEST_PROTOCOL)

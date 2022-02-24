@@ -27,7 +27,7 @@ def calc_dep_time(vehicles_dict, curr_veh, od, portion_rg):
         return vehicles_dict[curr_veh][od[0]][0]
 
 
-def occupy_available_capacity(request_dict, index_rg, rg, vehicles_dict, curr_veh, max_capacity, od):
+def occupy_available_capacity(request_dict, index_rg, rg, vehicles_dict, curr_veh, max_capacity, od, network_dim):
     # given the available capacity on a vehicle, add (at most, can be less!) that portion of passengers
     # from the request group and add the rest to the next request group from the same OD!
 
@@ -36,7 +36,7 @@ def occupy_available_capacity(request_dict, index_rg, rg, vehicles_dict, curr_ve
 
     curr_available_cap = available_capacity(vehicles_dict, curr_veh, max_capacity, od)
 
-    if od == (1, 3):
+    if od == (network_dim[0], network_dim[2]):
         allowable_add = 10
     else:
         allowable_add = 100
@@ -49,7 +49,7 @@ def occupy_available_capacity(request_dict, index_rg, rg, vehicles_dict, curr_ve
 
         if len(portion_to_add) > 0:
             add_pax_to_veh(vehicles_dict, curr_veh, od, portion_to_add)
-            update_requests(request_dict, od, index_rg, portion_to_add)
+            update_request_dict(request_dict, od, index_rg, portion_to_add)
 
     else:
         return None
@@ -103,7 +103,7 @@ def add_pax_to_veh(vehicles_dict, curr_veh, od, portion_rg):
     return None
 
 
-def update_requests(request_dict, od, index_rg, portion_rg):
+def update_request_dict(request_dict, od, index_rg, portion_rg):
     for p in portion_rg:
         request_dict[od][index_rg].remove(p)
 
@@ -124,7 +124,6 @@ def create_initial_solution(request_dict, start, end, network_dim,
         return vehicles_schedule
     
     if current_veh not in vehicles_schedule.keys():
-        # TODO: make it so that depending on the vehicle ID, there is a schedule template! > function that checks this
         vehicles_schedule[current_veh] = {}
         for s in range(1, network_dim[2]+1):
             # can be changed later, in order to make loops possible & revisiting stops
@@ -139,7 +138,7 @@ def create_initial_solution(request_dict, start, end, network_dim,
 
     if select_request_group(request_dict, od) is not None:
         index_rg, rg = select_request_group(request_dict, od)
-        occupy_available_capacity(request_dict, index_rg, rg, vehicles_schedule, current_veh, max_capacity, od)
+        occupy_available_capacity(request_dict, index_rg, rg, vehicles_schedule, current_veh, max_capacity, od, network_dim)
 
     # 5/2: updated this - the search should continue for every vehicle, regardless if the vehicle is deemed full at some point
     # there might be room elsewhere, so still check for instances backwards
@@ -174,7 +173,7 @@ def create_initial_solution(request_dict, start, end, network_dim,
 
         if select_request_group(request_dict, od) is not None:
             index_rg, rg = select_request_group(request_dict, od)
-            occupy_available_capacity(request_dict, index_rg, rg, vehicles_schedule, current_veh, max_capacity, od)
+            occupy_available_capacity(request_dict, index_rg, rg, vehicles_schedule, current_veh, max_capacity, od, network_dim)
 
         if count_requests(request_dict, (start, med)) != 0:
             return create_initial_solution(request_dict, start, med, network_dim, current_veh,
@@ -201,52 +200,82 @@ def correct_dep_times(solution, od_matrix, round_trip_veh, network_dim):
                     # only if the new departure time is larger than the original one, it should be corrected
                     # otherwise, the original departure time implicitly accounts for the travel time
                     if solution[v][s-1][0] + travel_time > solution[v][s][0]:
-                        solution[v][s][0] = solution[v][s-1][0] + travel_time
+                        solution[v][s][0] = round(solution[v][s-1][0] + travel_time, 2)
                 elif s == stop_ids[-1]: # exception if it is the last stop
                     travel_time = od_matrix[s-1, s]
-                    solution[v][s].append(solution[v][s - 1][0] + travel_time)
+                    solution[v][s].append(round(solution[v][s - 1][0] + travel_time, 2))
     return solution
 
 ## Create vehicle indices, instead of services
 
 
-def services_to_vehicles(solution, round_trip_veh, network_dim):
+def services_to_vehicles(solution, network_dim, od_matrix, max_services_per_veh=3):
+
+    # sort the schedule according to ascending departure times
+    solution = dict(sorted(solution.items(), key=lambda item: item[1][1][0]))
 
     added_services = set(())
     new_solution = {}
 
-    for v in range(1, len(solution.keys())):
+    z = 0
+
+    for v in range(0, len(solution.keys())):
         ser = 1
         i = 1
 
-        if len(solution[v]) != 0 and v not in added_services:
-            new_solution[(v, ser)] = solution[v]
-            # while ser < 3? max 3 vehicles per schedule?
+        key_v = index_to_key(solution, v)
+
+        if len(solution[key_v]) != 0 and key_v not in added_services:
+            # initiate the vehicle number: only goes up if a new service is able to start
+            z += 1
+            new_solution[(z, ser)] = solution[key_v]
             # also pay attention to the difference between roundtrip / non-roundtrip vehicles!
-            while i < len(solution.keys())-1 and ser < 3:
+            while i < len(solution.keys())-1 and ser <= max_services_per_veh:
                 # the vehicle arrival needs to be updated as another service is added to a schedule!
 
-                if i+1 not in added_services:
+                # get the key for the next candidate in chain in the original solution
+                next_possible_key = index_to_key(solution, i+1)
 
-                    if get_vehicle_arrival(solution, ser, round_trip_veh, network_dim) \
-                            < get_vehicle_departure(solution, i+1, network_dim)\
-                                and (v in round_trip_veh) == (i+1 in round_trip_veh):
-                        new_solution[(v, ser+1)] = solution[v+1]
+                if next_possible_key not in added_services:
+                    if get_vehicle_availability(new_solution, (z, ser), network_dim, od_matrix) \
+                            < get_vehicle_departure(solution, next_possible_key, network_dim):
+                                #and (ser in round_trip_veh) == (i+1 in round_trip_veh):
+                        new_solution[(v+1, ser+1)] = solution[next_possible_key]
                         # empty the original schedule so we know it has been added already
-                        added_services.add(i+1)
+                        added_services.add(next_possible_key)
                         ser += 1
                 i += 1
+        added_services.add(key_v)
 
     return new_solution
 
 
-def get_vehicle_arrival(solution, service, round_trip_veh, network_dim):
-    if service in round_trip_veh:
+def index_to_key(dictionairy, index):
+    # function that takes an int as an input and returns the corresponding
+    keys_list = list(dictionairy.keys())
+    return keys_list[index]
+
+
+def get_last_stop(solution, service):
+    stop = 1
+
+    while stop <= len(solution[service]):
+        s = solution[service][stop]
+        if len(solution[service][stop]) == 1:
+            return stop
+        stop += 1
+
+
+def get_vehicle_availability(solution, service, network_dim, od_matrix):
+
+    # if the last stops equals the terminal, then it has made a round trip
+    if get_last_stop(solution, service) == network_dim[2]:
         return solution[service][network_dim[2]][0]
     else:
-        return solution[service][network_dim[1]][0]
+        # here you have to add the time driving back from the city center to the terminal!
+        return solution[service][network_dim[1]][0] + od_matrix[(network_dim[1], network_dim[0])]
 
 
-def get_vehicle_departure(solution, service, network_dim):
-    return solution[service][network_dim[0]][0]
+def get_vehicle_departure(solution, key, network_dim):
+    return solution[key][network_dim[0]][0]
 

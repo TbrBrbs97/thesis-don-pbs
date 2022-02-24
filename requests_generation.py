@@ -71,12 +71,12 @@ def generate_requests(mean_demand, peak_hour_duration=60, seed=True):
                     np.random.seed(0)
 
                 delta_t = np.random.exponential(1/mean_demand[od], 1)[0]  #the time before the next passenger arrives is sampled from an exponential distr.                              
-                t += delta_t
+                t += round(delta_t, 2)
             
                 if t > peak_hour_duration:
                     break
                 else:
-                    requests[od].append(t) #if no request yet is at that time
+                    requests[od].append(round(t, 2)) #if no request yet is at that time
 
     return requests
 
@@ -140,4 +140,11 @@ def request_groups_per_od(grouped_requests):
             result[od].append(len(r))
 
     return result
+
+
+def get_od_from_request_group(request_group):
+    o = request_group[0][0][0]
+    d = request_group[0][0][1]
+
+    return o, d
 
