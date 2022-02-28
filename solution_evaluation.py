@@ -16,17 +16,7 @@ def calc_waiting_time(solution):
     return wt_dict
 
 
-def get_served_stops(solution, vehicle):
-    # this is only for vehicle v!
-    # check for every stop what the origin and destination of stops are
-    served_stops = set(())
-    for s in solution[vehicle]:
-        for rg in range(1, len(solution[vehicle][s])):
-            for req in solution[vehicle][s][rg]:
-                served_stops.add(req[0][0])  # add the origin and destination
-                served_stops.add(req[0][1])
 
-    return served_stops
 
 
 def get_req_ivt(request, vehicle, solution):
@@ -86,4 +76,8 @@ def calc_occupancy_rate(solution, capacity):
     return {v: {s: len([j for i in solution[v][s][1:] for j in i])/capacity for s in solution[v]} for v in solution}
 
 
+### TEST FUNCTIONS:
+
+# fucntion that asserts that no vehicle goes over its capacity at no stop
+# function that asserts that departure time goes up!
 

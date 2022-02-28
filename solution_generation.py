@@ -31,7 +31,6 @@ def occupy_available_capacity(request_dict, index_rg, rg, vehicles_dict, curr_ve
     # given the available capacity on a vehicle, add (at most, can be less!) that portion of passengers
     # from the request group and add the rest to the next request group from the same OD!
 
-    # TODO: add parameter - 'allowed to add' and by default make it very large, for (1,3) e.g. make is specific
     # this function should encompass: available_capacity, add_pax_to_veh, update requests!
 
     curr_available_cap = available_capacity(vehicles_dict, curr_veh, max_capacity, od)
@@ -211,9 +210,6 @@ def correct_dep_times(solution, od_matrix, round_trip_veh, network_dim):
 
 def services_to_vehicles(solution, network_dim, od_matrix, max_services_per_veh=3):
 
-    # sort the schedule according to ascending departure times
-    solution = dict(sorted(solution.items(), key=lambda item: item[1][1][0]))
-
     added_services = set(())
     new_solution = {}
 
@@ -237,10 +233,10 @@ def services_to_vehicles(solution, network_dim, od_matrix, max_services_per_veh=
                 next_possible_key = index_to_key(solution, i+1)
 
                 if next_possible_key not in added_services:
-                    if get_vehicle_availability(new_solution, (z, ser), network_dim, od_matrix) \
-                            < get_vehicle_departure(solution, next_possible_key, network_dim):
+                    if vg.get_vehicle_availability(new_solution, (z, ser), network_dim, od_matrix) \
+                            < vg.get_vehicle_first_departure(solution, next_possible_key, network_dim):
                                 #and (ser in round_trip_veh) == (i+1 in round_trip_veh):
-                        new_solution[(v+1, ser+1)] = solution[next_possible_key]
+                        new_solution[(z, ser+1)] = solution[next_possible_key]
                         # empty the original schedule so we know it has been added already
                         added_services.add(next_possible_key)
                         ser += 1
@@ -256,26 +252,5 @@ def index_to_key(dictionairy, index):
     return keys_list[index]
 
 
-def get_last_stop(solution, service):
-    stop = 1
 
-    while stop <= len(solution[service]):
-        s = solution[service][stop]
-        if len(solution[service][stop]) == 1:
-            return stop
-        stop += 1
-
-
-def get_vehicle_availability(solution, service, network_dim, od_matrix):
-
-    # if the last stops equals the terminal, then it has made a round trip
-    if get_last_stop(solution, service) == network_dim[2]:
-        return solution[service][network_dim[2]][0]
-    else:
-        # here you have to add the time driving back from the city center to the terminal!
-        return solution[service][network_dim[1]][0] + od_matrix[(network_dim[1], network_dim[0])]
-
-
-def get_vehicle_departure(solution, key, network_dim):
-    return solution[key][network_dim[0]][0]
 
