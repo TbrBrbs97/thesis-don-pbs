@@ -32,11 +32,19 @@ def get_stop_dep_time(solution, service, stop):
         return None
 
 
+def get_first_stop(solution, service):
+    stop = 1
+
+    while stop <= len(solution[service]):
+        if len(solution[service][stop]) != 0:
+            return stop
+        stop += 1
+
+
 def get_last_stop(solution, service):
     stop = 1
 
     while stop <= len(solution[service]):
-        s = solution[service][stop]
         if len(solution[service][stop]) == 1:
             return stop
         stop += 1
@@ -60,8 +68,8 @@ def get_vehicle_first_departure(solution, key, network_dim):
 
 
 def get_services_per_vehicle(solution, vehicle):
-    # returns the number of services per vehicle
-    return len([k for k in solution.keys() if k[0] == vehicle])
+    # returns a list of of services per vehicle
+    return [k for k in solution.keys() if k[0] == vehicle]
 
 
 #UNUSED FOR NOW

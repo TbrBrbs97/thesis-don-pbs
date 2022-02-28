@@ -1,6 +1,7 @@
 import requests_generation as rg
 import solution_generation as sg
 import vehicle_generation as vg
+import numpy as np
 import solution_evaluation as se
 
 # perhaps create a 'dumpster' in which removed requests are put? Then create a Not-None return for removal functions
@@ -8,15 +9,19 @@ import solution_evaluation as se
 
 def remove_request_group(solution, service, request_group, od_matrix, network_dim):
     first_cut, end_cut = rg.get_od_from_request_group(request_group)
+    old_departure_time = vg.get_stop_dep_time(solution, service, first_cut)
 
     # only retain values which do not correspond to the request_group removed
     for s in range(first_cut, end_cut):
         retained_requests = [[value] for group in
                              solution[service][s][1:] for value in group if value not in request_group]
         solution[service][s] = [solution[service][s][0], retained_requests]
+        # if not a single request is retained for the stop, render the list empty
+        if type(solution[service][s][0]) is np.float64 and len(solution[service][s][1]) == 0:
+            solution[service][s] = []
 
-    if rg.get_max_pick_time(request_group) == vg.get_stop_dep_time(solution, service, first_cut):
-        # TODO: check if this is still needed
+    if rg.get_max_pick_time(request_group) == old_departure_time:
+        # TODO: check if statement below still holds
         # correct the departure times at other stops (check if removing a request doesn't make departure time 'too early')
         # correct the departure times of other services of the same service
         update_dep_times(solution, service, (first_cut, end_cut), od_matrix, network_dim)
@@ -41,47 +46,65 @@ def insert_request_group(solution, service, request_group):
 
 
 def update_dep_times(solution, service, od, od_matrix, network_dim):
-    candidate_dep_time = max([rg.get_max_pick_time(group) for group in solution[service][od[0]][1:]])
+    # TODO: break it into two functions: backward constraint
+    #  & forward adaptations > depending on whether you deal with insertion or deletion, you can call one or the other
+
+    if len(solution[service][od[0]]) == 0:
+        curr_stop = vg.get_first_stop(solution, service)
+    else:
+        curr_stop = od[0]
+
+    candidate_dep_time = max([rg.get_max_pick_time(group) for group in solution[service][curr_stop][1:]])
+
+    # you have to look at the previous non-empty (and thus visited stop!)
 
     # adapt dep time at the current stop, considering the lower bound set by departure time at the previous stop.
     # Make the distinction: if the removal is in the first stop,
-    if od[0] != network_dim[0]:
-        candidate_dep_time = max(vg.get_stop_dep_time(solution, service, od[0]-1)) + od_matrix((od[0]-1, od[0])
+    if curr_stop != network_dim[0] and curr_stop != vg.get_first_stop(solution, service):
+        candidate_dep_time = max(vg.get_stop_dep_time(solution, service, curr_stop-1)) + od_matrix((curr_stop-1, curr_stop)
                                                                                                , candidate_dep_time)
+
     # if the stop where the removed passengers originate is the first stop, look at the previous service (if there is any)!
-    elif service[1] != 1 and od[0] == network_dim[0]:
+    elif service[1] != 1 and curr_stop != vg.get_first_stop(solution, service):
         previous_service_arr = vg.get_vehicle_availability(solution, (service[0], service[1]-1), network_dim, od_matrix)
         candidate_dep_time = max(candidate_dep_time, previous_service_arr)
-    # if it is the first service and
     else:
         candidate_dep_time = candidate_dep_time
 
-    dep_time_diff = candidate_dep_time - vg.get_stop_dep_time(solution, service, od[0])
+    # After calculating the difference and the backward check, apply the new candidate departure time
+    # TODO: here we take the absolute difference, but check whether it could also work for insertion later with '+'!
+    dep_time_diff = candidate_dep_time - vg.get_stop_dep_time(solution, service, curr_stop)
+    solution[service][curr_stop][0] = candidate_dep_time
 
     # adapt forward departure times (i.e. at the next stops)
-    next_stops = range(od[0], vg.get_last_stop(solution, service)+1)
+    next_stops = range(curr_stop+1, vg.get_last_stop(solution, service)+1)
 
     for stop in next_stops:
-        max_imposed_dep_time = max([rg.get_max_pick_time(group) for group in solution[service][stop][1:]])
-        # The future departure times are diminished, ONLY in the case that they are not constrained by
-        # the departure times
-        solution[service][stop][0] = max(solution[service][stop][0]-dep_time_diff, max_imposed_dep_time)
+        if stop == vg.get_last_stop(solution, service):
+            max_imposed_dep_time = vg.get_stop_dep_time(solution, service, stop)
+            solution[service][stop][0] = max_imposed_dep_time + dep_time_diff
+        else:
+            max_imposed_dep_time = max([rg.get_max_pick_time(group) for group in solution[service][stop][1:]])
+            # The future departure times are diminished, ONLY in the case that they are not constrained by
+            # the departure times
+            solution[service][stop][0] = max(solution[service][stop][0] + dep_time_diff, max_imposed_dep_time)
 
     # update the departure times of the next services of the same vehicle!
-    last_service = vg.get_services_per_vehicle(solution, service)
-    current_service = service[1]
-
-    solution[service][od[0]][0] = candidate_dep_time
+    for ser in vg.get_services_per_vehicle(solution, service)[service[1]:]:
+        for stop in solution[ser]:
+            max_imposed_dep_time = max([rg.get_max_pick_time(group) for group in solution[service][stop][1:]])
+            # The future departure times are diminished, ONLY in the case that they are not constrained by
+            # the departure times
+            solution[service][stop][0] = max(solution[service][stop][0] + dep_time_diff, max_imposed_dep_time)
 
     return None
-
-
 
 
 def is_feasible_insertion(solution, service, request_group):
     return None
 
     # Check feasibility of insertion! > i.e. some threshold on the max difference in pickup time?
+    # Check occupancy!
 
 
 def swap_req_between_veh(solution, service_1, service_2, request_group_1, request_group_2):

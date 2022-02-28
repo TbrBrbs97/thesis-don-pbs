@@ -18,7 +18,7 @@ v_mean = 50 # km/h
 
 network = netg.import_network(network_size, interstop_distance)
 od_matrix = netg.generate_tt_od(network, v_mean)
-
+network_dim = netg.get_network_boundaries(network)
 
 # IMPORT INITIAL SOLUTION
 
@@ -27,12 +27,11 @@ with open('Exports/initial_solution.pickle', 'rb') as handle:
 
 # TESTS
 
-#test_solution = copy.deepcopy(initial_solution)
+test_solution = copy.deepcopy(initial_solution)
 
-#request_to_be_removed = initial_solution[(1, 1)][1][1]
-#br.remove_request_group(test_solution, (1, 1), request_to_be_removed, od_matrix)
+request_to_be_removed = initial_solution[(1, 1)][1][1]
+br.remove_request_group(test_solution, (1, 1), request_to_be_removed, od_matrix, network_dim)
 
-#print(request_to_be_removed)
-#print(br.get_max_pick_time(request_to_be_removed))
-#print(initial_solution[(1, 1)])
-#print(test_solution[(1, 1)])
+print(request_to_be_removed)
+print(initial_solution[(1,1)])
+print(test_solution[(1,1)])
