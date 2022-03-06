@@ -16,9 +16,6 @@ def calc_waiting_time(solution):
     return wt_dict
 
 
-
-
-
 def get_req_ivt(request, vehicle, solution):
     pickup = request[0][0]
     dropoff = request[0][1]
@@ -70,6 +67,13 @@ def sum_total_tt(ttt_dict, level='vehicle'):
 
     return result
 
+
+def get_objective_function_val(solution):
+    wt = calc_waiting_time(solution)
+    ivt = calc_waiting_time(solution)
+    total_travel_time = calculate_ttt(ivt, wt)
+
+    return sum_total_tt(total_travel_time, 'total')
 
 def calc_occupancy_rate(solution, capacity):
     # [1:] slice: because the departure time should not be counted!

@@ -80,9 +80,6 @@ def available_capacity(vehicles_dict, curr_veh, max_capacity, od):
 
     return max_capacity - len(occupied_spots)
 
-    # this means passengers (1,3) will have to be mentioned to be present in stop 2 as well!
-    # e.g. {1: {stop 1: [dep_t, ((1,3), p_t, s_t), ...], stop 2: [dep_t, ((1,2), p_t, s_t), ((1,3), p_t, s_t), ...], ...}}
-
 
 def add_pax_to_veh(vehicles_dict, curr_veh, od, portion_rg):
 
@@ -245,11 +242,22 @@ def services_to_vehicles(solution, network_dim, od_matrix, max_services_per_veh=
 
     return new_solution
 
+# ADD TO GENERAL FUNCTIONS SCRIPT?
+
 
 def index_to_key(dictionairy, index):
-    # function that takes an int as an input and returns the corresponding
+    # function that takes an index as an input and returns the corresponding key
     keys_list = list(dictionairy.keys())
     return keys_list[index]
+
+
+def key_to_index(dictionairy, key):
+    # function that takes a key as an input and returns the corresponding index
+    keys_list = list(dictionairy.keys())
+    k = 0
+    while keys_list[k] != key:
+        k += 1
+    return k
 
 
 

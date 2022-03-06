@@ -1,11 +1,6 @@
-# given the number of requests and the size of the network, initiate a set of vehicles
-# one out of so many vehicles returns at 3, others go from 3 > 5;
-import requests_generation as rg
-import network_generation as ng
-
 
 def is_empty_vehicle(solution, vehicle):
-    if any([len(solution[vehicle][s]) for s in solution[vehicle]]) != 0:
+    if all([len(solution[vehicle][s]) > 1 for s in solution[vehicle] if s < get_last_stop(solution, vehicle)]):
         return False
     else:
         return True
