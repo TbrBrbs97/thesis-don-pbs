@@ -6,6 +6,13 @@ def is_empty_vehicle(solution, vehicle):
         return True
 
 
+def is_empty_stop(solution, vehicle, stop):
+    if len(solution[vehicle][stop]) == 0:
+        return True
+    else:
+        return False
+
+
 def get_served_stops(solution, vehicle):
     # this is only for vehicle v!
     # check for every stop what the origin and destination of stops are
@@ -20,11 +27,22 @@ def get_served_stops(solution, vehicle):
 
 
 def get_stop_dep_time(solution, service, stop):
-    if stop in solution[service].keys():
-        if len(solution[service][stop]) != 0:
-            return solution[service][stop][0]
+    if stop in solution[service].keys() and not is_empty_stop(solution, service, stop):
+        return solution[service][stop][0]
     else:
-        return None
+        return 0
+
+
+def get_previous_stop_dep_time(solution, service, stop, network_dim):
+
+    if stop > network_dim[0]:
+        previous_stop = stop-1
+        while is_empty_stop(solution, service, previous_stop) and previous_stop > network_dim[0]:
+            previous_stop -= 1
+    else:
+        previous_stop = stop
+
+    return previous_stop, get_stop_dep_time(solution, service, previous_stop)
 
 
 def get_first_stop(solution, service):
@@ -66,9 +84,3 @@ def get_services_per_vehicle(solution, vehicle):
     # returns a list of of services per vehicle
     return [k for k in solution.keys() if k[0] == vehicle]
 
-
-#UNUSED FOR NOW
-def get_vehicle_key_from_value(solution, value):
-    for key in solution:
-        if all(solution[key]) == value:
-            return key

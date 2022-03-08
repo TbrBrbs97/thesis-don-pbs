@@ -3,7 +3,11 @@
 # e.g. {1: {stop 1: [dep_t, ((1,3), p_t, s_t), ...], stop 2: [dep_t, ((1,2), p_t, s_t), ((1,3), p_t, s_t), ...], ...}}
 #    veh_nb   stop   dep_t
 
+import copy
+
 import vehicle_generation as vg
+import requests_generation as rg
+
 
 
 def count_requests(request_dict, od=None):
@@ -18,16 +22,7 @@ def count_requests(request_dict, od=None):
     return count
 
 
-def calc_dep_time(vehicles_dict, curr_veh, od, portion_rg):
-    # this is the desired pickup time of the last passenger in a group of requests
-
-    if portion_rg[-1][1] > vehicles_dict[curr_veh][od[0]][0]:
-        return portion_rg[-1][1]
-    else:
-        return vehicles_dict[curr_veh][od[0]][0]
-
-
-def occupy_available_capacity(request_dict, index_rg, rg, vehicles_dict, curr_veh, max_capacity, od, network_dim):
+def occupy_available_capacity(request_dict, index_rg, rg, vehicles_dict, curr_veh, max_capacity, od, od_matrix, network_dim):
     # given the available capacity on a vehicle, add (at most, can be less!) that portion of passengers
     # from the request group and add the rest to the next request group from the same OD!
 
@@ -47,7 +42,7 @@ def occupy_available_capacity(request_dict, index_rg, rg, vehicles_dict, curr_ve
         leftover_pax = rg[min(len(rg), curr_available_cap, allowable_add):]
 
         if len(portion_to_add) > 0:
-            add_pax_to_veh(vehicles_dict, curr_veh, od, portion_to_add)
+            add_pax_to_veh(vehicles_dict, curr_veh, od, portion_to_add, od_matrix, network_dim)
             update_request_dict(request_dict, od, index_rg, portion_to_add)
 
     else:
@@ -81,22 +76,41 @@ def available_capacity(vehicles_dict, curr_veh, max_capacity, od):
     return max_capacity - len(occupied_spots)
 
 
-def add_pax_to_veh(vehicles_dict, curr_veh, od, portion_rg):
+def add_pax_to_veh(vehicles_dict, curr_veh, od, portion_rg, od_matrix, network_dim):
 
     # remember it might be possible to revisit a stop again (later implementation)
     # For now: first check if stop is already in the schedule; if it is, then add passengers to it
 
-    for s in range(od[0], od[1]):
+    for s in range(1, len(vehicles_dict[curr_veh])+1):
 
-        # if no departure time is there yet, just add a dummy dep. time
-        if len(vehicles_dict[curr_veh][s]) == 0:
-            vehicles_dict[curr_veh][s].append(0)
+        # add the portion of request group if s is within the range of OD & adjust the departure time
 
-        # adjust the departure time and add the portion of request group
-        vehicles_dict[curr_veh][s][0] = calc_dep_time(vehicles_dict, curr_veh, od, portion_rg)
-        vehicles_dict[curr_veh][s].append(portion_rg)
+        if s in range(od[0], od[1]):
+            # if no departure time is there yet, just add a dummy dep. time
+            if vg.is_empty_stop(vehicles_dict, curr_veh, s):
+                vehicles_dict[curr_veh][s].append(0)
+
+            vehicles_dict[curr_veh][s].append(portion_rg)
+
+        # adjust the dep time of all other stops in the case they are visited!
+        if not vg.is_empty_stop(vehicles_dict, curr_veh, s):
+            vehicles_dict[curr_veh][s][0] = calc_dep_time(vehicles_dict, curr_veh, s, od_matrix, network_dim)
 
     return None
+
+
+def calc_dep_time(solution, service, stop, od_matrix, network_dim):
+    # this is the desired pickup time of the last passenger in a group of requests
+
+    imposed_dep_time_by_req_pt = max([rg.get_max_pick_time(group) for group in solution[service][stop][1:]])
+
+    previous_stop, dep_time = vg.get_previous_stop_dep_time(solution, service, stop, network_dim)
+    if (previous_stop, dep_time) != (1, 0):
+        imposed_dep_time_by_prev_stop = dep_time + od_matrix[(previous_stop, stop)]
+    else:
+        imposed_dep_time_by_prev_stop = 0
+
+    return round(max(imposed_dep_time_by_prev_stop, imposed_dep_time_by_req_pt), 2)
 
 
 def update_request_dict(request_dict, od, index_rg, portion_rg):
@@ -108,12 +122,12 @@ def update_request_dict(request_dict, od, index_rg, portion_rg):
 
 def create_initial_solution(request_dict, start, end, network_dim,
                             current_veh, nb_of_vehicles, round_trip_veh,
-                            max_capacity, vehicles_schedule=None):
+                            max_capacity, od_matrix, vehicles_schedule=None):
     
     # given that WT is perceived more expensive than IVT, we aim to mix passengers with different destinations
 
     if vehicles_schedule is None:
-        request_dict = request_dict.copy()
+        request_dict = copy.deepcopy(request_dict)
         vehicles_schedule = {}
         
     if count_requests(request_dict) == 0 or current_veh > nb_of_vehicles:
@@ -134,7 +148,7 @@ def create_initial_solution(request_dict, start, end, network_dim,
 
     if select_request_group(request_dict, od) is not None:
         index_rg, rg = select_request_group(request_dict, od)
-        occupy_available_capacity(request_dict, index_rg, rg, vehicles_schedule, current_veh, max_capacity, od, network_dim)
+        occupy_available_capacity(request_dict, index_rg, rg, vehicles_schedule, current_veh, max_capacity, od, od_matrix, network_dim)
 
     # 5/2: updated this - the search should continue for every vehicle, regardless if the vehicle is deemed full at some point
     # there might be room elsewhere, so still check for instances backwards
@@ -147,7 +161,7 @@ def create_initial_solution(request_dict, start, end, network_dim,
 
         start, end = network_dim[0], network_dim[1]
         return create_initial_solution(request_dict, start, end, network_dim, current_veh,
-                                       nb_of_vehicles, round_trip_veh, max_capacity, vehicles_schedule)
+                                       nb_of_vehicles, round_trip_veh, max_capacity, od_matrix, vehicles_schedule)
 
     elif start == med:
 
@@ -162,44 +176,39 @@ def create_initial_solution(request_dict, start, end, network_dim,
             start, end = network_dim[0], network_dim[1]
 
         return create_initial_solution(request_dict, start, end, network_dim, current_veh,
-                                       nb_of_vehicles, round_trip_veh, max_capacity, vehicles_schedule)
+                                       nb_of_vehicles, round_trip_veh, max_capacity, od_matrix, vehicles_schedule)
 
     else:     #see if you can add requests in the backward direction
         od = med, end
 
-        if select_request_group(request_dict, od) is not None:
+        if not select_request_group(request_dict, od):
             index_rg, rg = select_request_group(request_dict, od)
-            occupy_available_capacity(request_dict, index_rg, rg, vehicles_schedule, current_veh, max_capacity, od, network_dim)
+            occupy_available_capacity(request_dict, index_rg, rg, vehicles_schedule, current_veh,
+                                      max_capacity, od, od_matrix, network_dim)
 
         if count_requests(request_dict, (start, med)) != 0:
             return create_initial_solution(request_dict, start, med, network_dim, current_veh,
-                                           nb_of_vehicles, round_trip_veh, max_capacity, vehicles_schedule)
+                                           nb_of_vehicles, round_trip_veh, max_capacity, od_matrix, vehicles_schedule)
         else:
             return create_initial_solution(request_dict, med, end, network_dim, current_veh,
-                                           nb_of_vehicles, round_trip_veh, max_capacity, vehicles_schedule)
+                                           nb_of_vehicles, round_trip_veh, max_capacity, od_matrix, vehicles_schedule)
 
 
-def correct_dep_times(solution, od_matrix, round_trip_veh, network_dim):
+def correct_arrival_times(solution, od_matrix, round_trip_veh, network_dim):
 
-    solution = solution.copy()
+    solution = copy.deepcopy(solution)
 
     for v in solution.keys():
-        if vg.is_empty_vehicle(solution, v) is False:
+        if all([len(solution[v]) for v in solution.keys()]) != 0:
             if v in round_trip_veh:
                 stop_ids = list(range(1, network_dim[2]+1))
             else:
                 stop_ids = list(range(1, network_dim[1]+1))
 
-            for s in stop_ids[1:]:
-                if len(solution[v][s]) != 0 and len(solution[v][s-1]) != 0:
-                    travel_time = od_matrix[s-1, s]
-                    # only if the new departure time is larger than the original one, it should be corrected
-                    # otherwise, the original departure time implicitly accounts for the travel time
-                    if solution[v][s-1][0] + travel_time > solution[v][s][0]:
-                        solution[v][s][0] = round(solution[v][s-1][0] + travel_time, 2)
-                elif s == stop_ids[-1]: # exception if it is the last stop
-                    travel_time = od_matrix[s-1, s]
-                    solution[v][s].append(round(solution[v][s - 1][0] + travel_time, 2))
+            previous_stop, dep_time = vg.get_previous_stop_dep_time(solution, v, stop_ids[-1], network_dim)
+            travel_time = od_matrix[previous_stop, stop_ids[-1]]
+            solution[v][stop_ids[-1]].append(round(dep_time + travel_time, 2))
+
     return solution
 
 ## Create vehicle indices, instead of services
