@@ -2,10 +2,12 @@
 
 import pickle
 import copy
+import time
 import pandas
 
 import break_and_repair_op as br
 import network_generation as netg
+import requests_generation as rg
 import solution_generation as sg
 import solution_evaluation as se
 import vehicle_generation as vg
@@ -30,23 +32,24 @@ with open('Exports/initial_solution.pickle', 'rb') as handle:
 
 test_solution = copy.deepcopy(initial_solution)
 
+# print('initial solution: ', initial_solution[(2, 1)])
+# print('original travel cost: ', se.get_objective_function_val(initial_solution))
 
-print('initial solution: ', initial_solution[(1, 1)])
-print('original travel cost: ', se.get_objective_function_val(initial_solution))
+# # REMOVE
+# request_to_be_removed = initial_solution[(1, 1)][1][1]
+# od = rg.get_od_from_request_group(request_to_be_removed)
+# print(od[0])
 
-# REMOVE
-request_to_be_removed = initial_solution[(1, 1)][1][1]
-print('requests to be removed: ', request_to_be_removed)
-br.remove_request_group(test_solution, (1, 1), request_to_be_removed, od_matrix, network_dim)
-
-# REINSERT
-br.insert_request_group(test_solution, (2, 1), request_to_be_removed, od_matrix, network_dim)
-print('new solution: ', initial_solution[(2, 1)])
+#
+# print('requests to be removed: ', request_to_be_removed)
+#
+#
+# br.remove_request_group(test_solution, (1, 1), request_to_be_removed, od_matrix, network_dim)
+#
+# # REINSERT
+# br.insert_request_group(test_solution, (2, 1), request_to_be_removed, od_matrix, network_dim)
+# print('new solution: ', test_solution[(2, 1)])
 # print('new travel cost: ', se.get_objective_function_val(test_solution))
 
-#print('adapted solution: ')
-#print(test_solution[(10, 1)])
-
-# Errors:
-# Add_pax_to_veh doesn't account for correct departure times
-# Sorting doesn't seem to work
+best_to_remove = br.select_most_costly_request(test_solution, od_matrix, network_dim)
+print(best_to_remove)
