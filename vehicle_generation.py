@@ -55,6 +55,7 @@ def get_first_stop(solution, service):
 
 
 def get_last_stop(solution, service):
+    # this function can only be called after the initial schedule is made!
     stop = 1
 
     while stop <= len(solution[service]):

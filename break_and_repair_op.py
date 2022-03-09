@@ -41,21 +41,21 @@ def insert_request_group(solution, service, request_group, od_matrix, network_di
 
     # original arrival, before addition:
     original_arrival = vg.get_vehicle_availability(solution, service, network_dim, od_matrix)
-    previous_stop = sorted((list(vg.get_served_stops(solution, service))))[-2]
-    original_pre_arrival = vg.get_stop_dep_time(solution, service, previous_stop)
+    # previous_stop = sorted((list(vg.get_served_stops(solution, service))))[-2]
+    # original_pre_arrival = vg.get_stop_dep_time(solution, service, previous_stop)
 
     # add pax & update departure times at the current stop & at next stops
-    sg.add_pax_to_veh(solution, service, (first_ins, end_ins), request_group)
+    sg.add_pax_to_veh(solution, service, (first_ins, end_ins), request_group, od_matrix, network_dim)
 
     for s in range(first_ins, end_ins):
         # re-sort the requests according to pickup time
         solution[service][s][1:].sort(key=lambda x: rg.get_max_pick_time(x))
 
     # correct the vehicle arrival time
-    last_stop = vg.get_last_stop(solution, service)
-    previous_stop = sorted((list(vg.get_served_stops(solution, service))))[-2]
-    solution[service][last_stop][0] = original_arrival + \
-                                      vg.get_stop_dep_time(solution, service, previous_stop) - original_pre_arrival
+    # last_stop = vg.get_last_stop(solution, service)
+    # previous_stop = sorted((list(vg.get_served_stops(solution, service))))[-2]
+    # solution[service][last_stop][0] = original_arrival + \
+    #                                   vg.get_stop_dep_time(solution, service, previous_stop) - original_pre_arrival
 
     # correct the departure times of other services of the same vehicle
     dep_time_diff = vg.get_vehicle_availability(solution, service, network_dim, od_matrix) - original_arrival
