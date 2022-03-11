@@ -7,7 +7,17 @@ import requests_generation as rg
 # If we do it in the outer functions, we can control which portion is 'sent' in as request group better
 # so, then within this next function, we assume that the insertion is feasible!
 
+
 def static_opt(solution):
     return None
+
+
+def shuffle_solution(solution, intensity=50):
+    '''
+    Function which shakes a solution schedule. The intensity parameter
+    indicates how many requests are lifted.
+    '''
+    return None
+
 
 

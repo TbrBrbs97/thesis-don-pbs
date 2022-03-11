@@ -85,3 +85,4 @@ def get_services_per_vehicle(solution, vehicle):
     # returns a list of of services per vehicle
     return [k for k in solution.keys() if k[0] == vehicle]
 
+

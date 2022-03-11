@@ -139,7 +139,7 @@ def update_service_sequence(solution, service, instance='removal'):
     return None
 
 
-def select_most_costly_request(solution, od_matrix, network_dim):
+def select_most_costly_request(solution, od_matrix, network_dim, selected_amount=1):
     # function that returns the request with the highest opportunity cost and its position.
 
     attempts_so_far = []
@@ -168,22 +168,50 @@ def select_most_costly_request(solution, od_matrix, network_dim):
     return best_request_so_far
 
 
+def get_random_requests(solution, nb_of_requests, excluded_requests=None):
+    '''
+    Function that returns the position 'number_of_requests' amount of requests, which are not
+    in excluded requests.
+    '''
 
 
-def find_closest_pickup_time_insert(solution, service, request_group):
-    # return the position (solution, service) for an insertion which is closest to
-    return None
+def find_best_insertion(solution, request_group, excluded_insertion=None):
+    '''
+    Return the best position (service) to insert a request.
+    Function looks for starting stop with departure time which is closest to
+    The idea is that inserting requests in that place will be the least disruptive,
+    to all next requests as well.
+
+    The parameter excluded insertion allows you to forbid a certain position for insertion
+    (e.g. the previous position the request was in). But by default, it is not given.
+    >> excluded insertion needs to be a tuple of format:  (service, stop)
+
+    Note: this functions assumes there is room for insertion!! >> you have to check whether that
+    is true in an outer function!
+
+    '''
+
+    reference_pickup_time = rg.get_max_pick_time(request_group[1])
+    pickup_node = rg.get_od_from_request_group(request_group[1])[0]
+
+    closest_match_so_far = None
+
+    for service in solution:
+        for stop in solution[service]:
+            # stop can be empty as well, but it has to be the pickup_node
+            if stop != vg.get_last_stop(solution, service) and stop == pickup_node:
+                if excluded_insertion is None or (service, stop) != excluded_insertion:
+                    dep_time = vg.get_stop_dep_time(solution, service, stop)
+                    delta_dep_time = round(abs(dep_time - reference_pickup_time), 2)
+                    if not closest_match_so_far or delta_dep_time < closest_match_so_far[1]:
+                            #or vg.is_empty_stop(solution, service, stop):
+                        closest_match_so_far = (service, stop), delta_dep_time
+
+    return closest_match_so_far
 
     # Check feasibility of insertion! > i.e. some threshold on the max difference in pickup time?
     # Check occupancy!
 
-
-def swap_req_between_veh(solution, service_1, service_2, request_group_1, request_group_2):
-    return None
-
-
-# check if request is reinserted correctly: i.e. it appears in the schedule for as long as the drop-off location
-# has not been reached.
 
 
 

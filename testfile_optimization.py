@@ -53,3 +53,10 @@ test_solution = copy.deepcopy(initial_solution)
 
 best_to_remove = br.select_most_costly_request(test_solution, od_matrix, network_dim)
 print(best_to_remove)
+
+# [:2] because we don't need the position of the request group within the group
+excluded_pos = sg.get_request_group_position(test_solution, best_to_remove)[:2]
+best_to_reinsert = br.find_best_insertion(test_solution, best_to_remove, excluded_pos)
+print(best_to_reinsert)
+print(vg.is_empty_stop(test_solution, (4,1), 1))
+#print(test_solution)
