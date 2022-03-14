@@ -51,12 +51,18 @@ test_solution = copy.deepcopy(initial_solution)
 # print('new solution: ', test_solution[(2, 1)])
 # print('new travel cost: ', se.get_objective_function_val(test_solution))
 
-best_to_remove = br.select_most_costly_request(test_solution, od_matrix, network_dim)
-print(best_to_remove)
+best_requests_to_remove = br.list_most_costly_requests(test_solution, od_matrix, network_dim, 10)
+#print(best_requests_to_remove)
+
+# insertable_pos = []
+
+# for req in best_requests_to_remove:
+#     excluded_pos = sg.get_request_group_position(test_solution, req)[:2]
+#     insertable_pos.append(br.find_best_insertion(test_solution, req, excluded_pos))
+#
+# print(insertable_pos)
 
 # [:2] because we don't need the position of the request group within the group
-excluded_pos = sg.get_request_group_position(test_solution, best_to_remove)[:2]
-best_to_reinsert = br.find_best_insertion(test_solution, best_to_remove, excluded_pos)
-print(best_to_reinsert)
-print(vg.is_empty_stop(test_solution, (4,1), 1))
+#print(best_to_reinsert)
 #print(test_solution)
+

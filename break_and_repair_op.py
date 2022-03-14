@@ -9,7 +9,9 @@ import copy
 # perhaps create a 'dumpster' in which removed requests are put? Then create a Not-None return for removal functions
 
 
-def remove_request_group(solution, service, request_group, od_matrix, network_dim):
+def remove_request_group(solution, request_group, od_matrix, network_dim):
+    service = sg.get_request_group_position(solution, request_group)
+
     first_cut, end_cut = rg.get_od_from_request_group(request_group)
     old_departure_time = vg.get_stop_dep_time(solution, service, first_cut)
 
@@ -39,8 +41,6 @@ def insert_request_group(solution, service, request_group, od_matrix, network_di
 
     # original arrival, before addition:
     original_arrival = vg.get_vehicle_availability(solution, service, network_dim, od_matrix)
-    # previous_stop = sorted((list(vg.get_served_stops(solution, service))))[-2]
-    # original_pre_arrival = vg.get_stop_dep_time(solution, service, previous_stop)
 
     # add pax & update departure times at the current stop & at next stops
     sg.add_pax_to_veh(solution, service, (first_ins, end_ins), request_group, od_matrix, network_dim)
@@ -49,12 +49,6 @@ def insert_request_group(solution, service, request_group, od_matrix, network_di
     for s in range(first_ins, end_ins):
         # re-sort the requests according to pickup time
         solution[service][s][1:].sort(key=lambda x: rg.get_max_pick_time(x))
-
-    # correct the vehicle arrival time
-    # last_stop = vg.get_last_stop(solution, service)
-    # previous_stop = sorted((list(vg.get_served_stops(solution, service))))[-2]
-    # solution[service][last_stop][0] = original_arrival + \
-    #                                   vg.get_stop_dep_time(solution, service, previous_stop) - original_pre_arrival
 
     # correct the departure times of other services of the same vehicle
     dep_time_diff = vg.get_vehicle_availability(solution, service, network_dim, od_matrix) - original_arrival
@@ -139,10 +133,12 @@ def update_service_sequence(solution, service, instance='removal'):
     return None
 
 
-def select_most_costly_request(solution, od_matrix, network_dim, selected_amount=1):
+def single_most_costly_request(solution, od_matrix, network_dim, attempts_so_far=None):
     # function that returns the request with the highest opportunity cost and its position.
 
-    attempts_so_far = []
+    if attempts_so_far is None:
+        attempts_so_far = []
+
     best_request_so_far = None
 
     for service in solution:
@@ -158,14 +154,32 @@ def select_most_costly_request(solution, od_matrix, network_dim, selected_amount
 
                         delta_obj_func_val = original_obj_func_val - new_obj_func_val
 
-                        if best_request_so_far is None:
-                            best_request_so_far = service, group, delta_obj_func_val
-                            attempts_so_far.append(group)
-                        elif delta_obj_func_val > best_request_so_far[2]:
+                        if best_request_so_far is None or delta_obj_func_val > best_request_so_far[2]:
                             best_request_so_far = service, group, delta_obj_func_val
                             attempts_so_far.append(group)
 
     return best_request_so_far
+
+
+def list_most_costly_requests(solution, od_matrix, network_dim, selected_amount=1, excluded_requests=None, results=None):
+
+    if results is None:
+        results = []
+
+    if excluded_requests is None:
+        excluded_requests = []
+
+    if selected_amount == 1:
+        selected_request = single_most_costly_request(solution, od_matrix, network_dim, excluded_requests)
+        results.append(selected_request)
+        return results
+
+    else:
+        selected_request = single_most_costly_request(solution, od_matrix, network_dim, excluded_requests)
+        results.append(selected_request)
+        excluded_requests.append(selected_request)
+        selected_amount -= 1
+        return list_most_costly_requests(solution, od_matrix, network_dim, selected_amount, excluded_requests, results)
 
 
 def get_random_requests(solution, nb_of_requests, excluded_requests=None):
@@ -173,6 +187,7 @@ def get_random_requests(solution, nb_of_requests, excluded_requests=None):
     Function that returns the position 'number_of_requests' amount of requests, which are not
     in excluded requests.
     '''
+    return None
 
 
 def find_best_insertion(solution, request_group, excluded_insertion=None):
