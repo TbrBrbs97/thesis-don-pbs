@@ -255,6 +255,16 @@ def services_to_vehicles(solution, network_dim, od_matrix, max_services_per_veh=
 
     return new_solution
 
+
+def get_request_group_position(solution, request_group):
+    for service in solution.keys():
+        for stop in solution[service]:
+            if stop != vg.get_last_stop(solution, service) and not vg.is_empty_stop(solution, service, stop):
+                for group in solution[service][stop][1:]:
+                    if any([x == y for x in group for y in request_group]):
+                        position = service, stop, solution[service][stop][1:].index(group)+1
+                        return position
+
 # ADD TO GENERAL FUNCTIONS SCRIPT?
 
 
@@ -273,14 +283,7 @@ def key_to_index(dictionairy, key):
     return k
 
 
-def get_request_group_position(solution, request_group):
-    for service in solution.keys():
-        for stop in solution[service]:
-            if stop != vg.get_last_stop(solution, service) and not vg.is_empty_stop(solution, service, stop):
-                for group in solution[service][stop][1:]:
-                    if any([x == y for x in group for y in request_group[1]]):
-                        position = service, stop, solution[service][stop][1:].index(group)+1
-                        return position
+
 
 
 

@@ -11,7 +11,7 @@ import copy
 # so, then within this next function, we assume that the insertion is feasible!
 
 
-def static_opt(solution, od_matrix, network_dim, nb_of_iterations=1):
+def static_opt(solution, nb_of_iterations=1):
     """
     Performs the static optimization for a number of iterations.
 
@@ -20,22 +20,22 @@ def static_opt(solution, od_matrix, network_dim, nb_of_iterations=1):
     solution = copy.deepcopy(solution)
 
     amount_removed = 1
-    most_costly_requests = br.list_most_costly_requests(solution, od_matrix, network_dim, amount_removed)
+    most_costly_requests = br.list_most_costly_requests(solution, amount_removed)
+    # TODO: keep a tabu list of already made moves?
 
     old_positions = []
 
     for request_group in most_costly_requests:
-        old_positions.append(sg.get_request_group_position(solution, request_group)[:2])
-        br.remove_request_group(solution, request_group, od_matrix, network_dim)
+        old_positions.append(sg.get_request_group_position(solution, request_group[1])[:2])
+        br.remove_request_group(solution, request_group[1])
 
     for index in range(len(most_costly_requests)):
         request_group = most_costly_requests[index][1]
         old_pos = old_positions[index]
 
-        best_new_pos = br.find_best_insertion(solution, request_group, old_pos)
-        #TODO: here, the capacity constraint should be checked!
-        # - Also, what about splitting up requests? If only a portion can be added, what do we do with the rest?
-        br.insert_request_group(solution, best_new_pos, request_group, od_matrix, network_dim)
+        best_new_pos = br.find_first_available_best_insertion(solution, request_group, [old_pos])
+        # be aware! insertion happens now in the order of most costly request!
+        br.insert_request_group(solution, best_new_pos[0][0], request_group)
 
     return solution
 

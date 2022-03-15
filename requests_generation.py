@@ -151,6 +151,7 @@ def get_od_from_request_group(request_group):
 
 def get_max_pick_time(request_group):
     # returns the latest pickup time from a group of requests
+
     if len(request_group) != 0:
         return max([value[1] for value in request_group])
     elif type(request_group[0]) == np.float64:

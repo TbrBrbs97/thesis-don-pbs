@@ -6,11 +6,13 @@ import solution_evaluation as se
 import numpy as np
 import copy
 
+from parameters import network_dim, od_matrix, cap_per_veh
+
 # perhaps create a 'dumpster' in which removed requests are put? Then create a Not-None return for removal functions
 
 
-def remove_request_group(solution, request_group, od_matrix, network_dim):
-    service = sg.get_request_group_position(solution, request_group)
+def remove_request_group(solution, request_group):
+    service = sg.get_request_group_position(solution, request_group)[0]
 
     first_cut, end_cut = rg.get_od_from_request_group(request_group)
     old_departure_time = vg.get_stop_dep_time(solution, service, first_cut)
@@ -29,14 +31,14 @@ def remove_request_group(solution, request_group, od_matrix, network_dim):
         # TODO: check if statement below still holds
         # correct the departure times at other stops (check if removing a request doesn't make departure time 'too early')
         # correct the departure times of other services of the same service
-        update_dep_times(solution, service, (first_cut, end_cut), od_matrix, network_dim)
+        update_dep_times(solution, service, (first_cut, end_cut))
     elif vg.is_empty_vehicle(solution, service):
         update_service_sequence(solution, service, 'removal')
 
     return None
 
 
-def insert_request_group(solution, service, request_group, od_matrix, network_dim):
+def insert_request_group(solution, service, request_group):
     first_ins, end_ins = rg.get_od_from_request_group(request_group)
 
     # original arrival, before addition:
@@ -57,7 +59,7 @@ def insert_request_group(solution, service, request_group, od_matrix, network_di
     return None
 
 
-def update_dep_times(solution, service, od, od_matrix, network_dim):
+def update_dep_times(solution, service, od):
 
     if len(solution[service][od[0]]) == 0:
         curr_stop = vg.get_first_stop(solution, service)
@@ -133,13 +135,13 @@ def update_service_sequence(solution, service, instance='removal'):
     return None
 
 
-def single_most_costly_request(solution, od_matrix, network_dim, attempts_so_far=None):
+def single_most_costly_request(solution, attempts_so_far=None):
     # function that returns the request with the highest opportunity cost and its position.
 
     if attempts_so_far is None:
         attempts_so_far = []
 
-    best_request_so_far = None
+    most_expensive_so_far = None
 
     for service in solution:
         for stop in solution[service]:
@@ -149,19 +151,19 @@ def single_most_costly_request(solution, od_matrix, network_dim, attempts_so_far
                         temp_solution = copy.deepcopy(solution)
 
                         original_obj_func_val = se.get_objective_function_val(solution)
-                        remove_request_group(temp_solution, service, group, od_matrix, network_dim)
+                        remove_request_group(temp_solution, group)
                         new_obj_func_val = se.get_objective_function_val(temp_solution)
 
-                        delta_obj_func_val = original_obj_func_val - new_obj_func_val
+                        delta_obj_func_val = round((original_obj_func_val - new_obj_func_val) / len(group), 2)
 
-                        if best_request_so_far is None or delta_obj_func_val > best_request_so_far[2]:
-                            best_request_so_far = service, group, delta_obj_func_val
+                        if most_expensive_so_far is None or delta_obj_func_val > most_expensive_so_far[2]:
+                            most_expensive_so_far = service, group, delta_obj_func_val
                             attempts_so_far.append(group)
 
-    return best_request_so_far
+    return most_expensive_so_far
 
 
-def list_most_costly_requests(solution, od_matrix, network_dim, selected_amount=1, excluded_requests=None, results=None):
+def list_most_costly_requests(solution, selected_amount=1, excluded_requests=None, results=None):
 
     if results is None:
         results = []
@@ -170,27 +172,19 @@ def list_most_costly_requests(solution, od_matrix, network_dim, selected_amount=
         excluded_requests = []
 
     if selected_amount == 1:
-        selected_request = single_most_costly_request(solution, od_matrix, network_dim, excluded_requests)
+        selected_request = single_most_costly_request(solution, excluded_requests)
         results.append(selected_request)
         return results
 
     else:
-        selected_request = single_most_costly_request(solution, od_matrix, network_dim, excluded_requests)
+        selected_request = single_most_costly_request(solution, excluded_requests)
         results.append(selected_request)
         excluded_requests.append(selected_request)
         selected_amount -= 1
-        return list_most_costly_requests(solution, od_matrix, network_dim, selected_amount, excluded_requests, results)
+        return list_most_costly_requests(solution, selected_amount, excluded_requests, results)
 
 
-def get_random_requests(solution, nb_of_requests, excluded_requests=None):
-    '''
-    Function that returns the position 'number_of_requests' amount of requests, which are not
-    in excluded requests.
-    '''
-    return None
-
-
-def find_best_insertion(solution, request_group, excluded_insertion=None):
+def find_best_insertion(solution, request_group, excluded_insertion=None, start=0):
     '''
     Return the best position (service) to insert a request.
     Function looks for starting stop with departure time which is closest to
@@ -206,10 +200,13 @@ def find_best_insertion(solution, request_group, excluded_insertion=None):
 
     '''
 
-    reference_pickup_time = rg.get_max_pick_time(request_group[1])
-    pickup_node = rg.get_od_from_request_group(request_group[1])[0]
+    reference_pickup_time = rg.get_max_pick_time(request_group)
+    pickup_node = rg.get_od_from_request_group(request_group)[0]
 
     closest_match_so_far = None
+
+    to_be_checked_services = list(solution.keys())[start:]
+    solution = {k: solution[k] for k in to_be_checked_services}
 
     for service in solution:
         for stop in solution[service]:
@@ -228,6 +225,34 @@ def find_best_insertion(solution, request_group, excluded_insertion=None):
     # Check occupancy!
 
 
+def find_first_available_best_insertion(solution, request_group, excluded_insertions, start=0):
+    '''
+    Function that, given a request group, finds the best insertion in a vehicle where there
+    is still available capacity!
+
+    '''
+    od = rg.get_od_from_request_group(request_group)
+    # Running the function below hardly makes sense if it is already removed from the schedule
+    #curr_pos = sg.get_request_group_position(solution, request_group)[0]
+
+    best_insertion_so_far = find_best_insertion(solution, request_group, excluded_insertions, start)
+    candidate_service = best_insertion_so_far[0][0]
+
+    if sg.available_capacity(solution, candidate_service, cap_per_veh, od) >= len(request_group):
+        return best_insertion_so_far
+    else:
+        # the previously checked service is not eligable, due to the capacity constraint
+        excluded_insertions.append(candidate_service)
+        start += 1
+        return find_first_available_best_insertion(solution, request_group, excluded_insertions, start)
+
+
+def get_random_requests(solution, nb_of_requests, excluded_requests=None):
+    '''
+    Function that returns the position 'number_of_requests' amount of requests, which are not
+    in excluded requests.
+    '''
+    return None
 
 
 
