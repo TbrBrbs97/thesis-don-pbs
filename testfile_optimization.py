@@ -34,5 +34,5 @@ with open('Exports/initial_solution.pickle', 'rb') as handle:
 test_solution = copy.deepcopy(initial_solution)
 
 print(se.get_objective_function_val(initial_solution))
-new_solution = so.static_opt(test_solution, nb_of_iterations=10)
+new_solution = so.static_opt(test_solution, treated_requests_per_it=10)
 print(se.get_objective_function_val(new_solution))

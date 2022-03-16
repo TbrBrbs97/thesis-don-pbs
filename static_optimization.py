@@ -11,7 +11,7 @@ import copy
 # so, then within this next function, we assume that the insertion is feasible!
 
 
-def static_opt(solution, nb_of_iterations=1):
+def static_opt(solution, treated_requests_per_it=1, nb_of_iterations=1):
     """
     Performs the static optimization for a number of iterations.
 
@@ -19,8 +19,7 @@ def static_opt(solution, nb_of_iterations=1):
 
     solution = copy.deepcopy(solution)
 
-    amount_removed = 1
-    most_costly_requests = br.list_most_costly_requests(solution, amount_removed)
+    most_costly_requests = br.list_most_costly_requests(solution, treated_requests_per_it)
     # TODO: keep a tabu list of already made moves?
 
     old_positions = []

@@ -44,7 +44,7 @@ def generate_tt_od(network, v_mean):
         for j in network.keys():
             x_b, y_b = network[j]['x-coord'], network[j]['y-coord']
             distance = calculate_euclidean_dist(x_a, y_a, x_b, y_b)
-            travel_time = (distance / v_mean)*60
+            travel_time = (distance / v_mean)*60 # to get the travel time in minutes
             
             od_matrix[(i, j)] = travel_time
             
