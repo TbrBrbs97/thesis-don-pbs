@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="da9fdea6-face-44e3-9aed-8a24aecdd7dc" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Exports/entire_solution.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Exports/entire_solution.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/network_generation.py" beforeDir="false" afterPath="$PROJECT_DIR$/network_generation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_optimization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testfile_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/testfile_optimization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testfile_initial_solution.py" beforeDir="false" afterPath="$PROJECT_DIR$/testfile_initial_solution.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,19 +16,7 @@
         <entry file="file://$PROJECT_DIR$/solution_evaluation.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="408">
-              <caret line="24" column="14" lean-forward="true" selection-start-line="24" selection-start-column="14" selection-end-line="24" selection-end-column="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/static_optimization.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="26" column="46" lean-forward="true" selection-start-line="26" selection-start-column="46" selection-end-line="26" selection-end-column="46" />
-              <folding>
-                <element signature="e#0#32#0" expanded="true" />
-              </folding>
+              <caret line="24" column="14" selection-start-line="24" selection-start-column="14" selection-end-line="24" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -40,17 +24,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/solution_generation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="367">
+            <state relative-caret-position="4454">
               <caret line="265" selection-start-line="265" selection-end-line="265" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/testfile_initial_solution.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="456">
-              <caret line="97" lean-forward="true" selection-start-line="97" selection-end-line="97" />
+            <state relative-caret-position="93">
+              <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -97,7 +81,6 @@
         <option value="$PROJECT_DIR$/solution_visualisation.py" />
         <option value="$PROJECT_DIR$/testfile.py" />
         <option value="$PROJECT_DIR$/solution_evaluation.py" />
-        <option value="$PROJECT_DIR$/testfile_initial_solution.py" />
         <option value="$PROJECT_DIR$/vehicle_generation.py" />
         <option value="$PROJECT_DIR$/solution_generation.py" />
         <option value="$PROJECT_DIR$/parameters.py" />
@@ -106,6 +89,7 @@
         <option value="$PROJECT_DIR$/network_generation.py" />
         <option value="$PROJECT_DIR$/static_optimization.py" />
         <option value="$PROJECT_DIR$/testfile_optimization.py" />
+        <option value="$PROJECT_DIR$/testfile_initial_solution.py" />
       </list>
     </option>
   </component>
@@ -123,7 +107,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -144,12 +127,13 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/testfile_optimization.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/testfile_initial_solution.py" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RunDashboard">
@@ -165,7 +149,7 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration name="testfile_optimization" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+    <configuration name="testfile_initial_solution" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="thesis-don-pbs" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -177,7 +161,7 @@
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testfile_optimization.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testfile_initial_solution.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -213,7 +197,7 @@
     <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1845238" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1845238" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -442,12 +426,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/testfile_initial_solution.py">
+    <entry file="file://$PROJECT_DIR$/solution_generation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="97" lean-forward="true" selection-start-line="97" selection-end-line="97" />
+        <state relative-caret-position="4454">
+          <caret line="265" selection-start-line="265" selection-end-line="265" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static_optimization.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="32" column="38" lean-forward="true" selection-start-line="32" selection-start-column="38" selection-end-line="32" selection-end-column="38" />
           <folding>
-            <element signature="e#0#19#0" expanded="true" />
+            <element signature="e#0#32#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -455,23 +446,16 @@
     <entry file="file://$PROJECT_DIR$/solution_evaluation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="408">
-          <caret line="24" column="14" lean-forward="true" selection-start-line="24" selection-start-column="14" selection-end-line="24" selection-end-column="14" />
+          <caret line="24" column="14" selection-start-line="24" selection-start-column="14" selection-end-line="24" selection-end-column="14" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/solution_generation.py">
+    <entry file="file://$PROJECT_DIR$/testfile_initial_solution.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="367">
-          <caret line="265" selection-start-line="265" selection-end-line="265" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static_optimization.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="26" column="46" lean-forward="true" selection-start-line="26" selection-start-column="46" selection-end-line="26" selection-end-column="46" />
+        <state relative-caret-position="93">
+          <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
           <folding>
-            <element signature="e#0#32#0" expanded="true" />
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
