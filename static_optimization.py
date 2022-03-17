@@ -24,9 +24,10 @@ def static_opt(solution, treated_requests_per_it=1, nb_of_iterations=1):
 
     old_positions = []
 
-    for request_group in most_costly_requests:
-        old_positions.append(sg.get_request_group_position(solution, request_group[1])[:2])
-        br.remove_request_group(solution, request_group[1])
+    for tup_request_group in most_costly_requests:
+        old_positions.append((tup_request_group[0], rg.get_od_from_request_group(tup_request_group[1])[0]))
+        print(tup_request_group[1])
+        br.remove_request_group(solution, tup_request_group[1])
 
     for index in range(len(most_costly_requests)):
         request_group = most_costly_requests[index][1]
