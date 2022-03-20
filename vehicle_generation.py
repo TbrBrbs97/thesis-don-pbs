@@ -1,9 +1,9 @@
 
 def is_empty_vehicle(solution, vehicle):
-    if all([len(solution[vehicle][s]) > 1 for s in solution[vehicle] if s < get_last_stop(solution, vehicle)]):
-        return False
-    else:
+    if all([is_empty_stop(solution, vehicle, stop) for stop in solution[vehicle] if stop < get_last_stop(solution, vehicle)]):
         return True
+    else:
+        return False
 
 
 def is_empty_stop(solution, vehicle, stop):

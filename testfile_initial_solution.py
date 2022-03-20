@@ -60,7 +60,7 @@ initial = sg.create_initial_solution(grouped_requests, city, terminal_end, netwo
 
 vehicles_schedules = sg.services_to_vehicles(initial, network_dim, od_matrix, max_services_per_veh=5)
 #print(grouped_requests)
-print(vehicles_schedules)
+print(vehicles_schedules[(3,1)])
 
 waiting_time_dict = se.calc_waiting_time(vehicles_schedules)
 #print(waiting_time_dict[(2, 2)])

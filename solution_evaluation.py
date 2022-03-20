@@ -73,7 +73,8 @@ def get_objective_function_val(solution):
     ivt = calc_waiting_time(solution)
     total_travel_time = calculate_ttt(ivt, wt)
 
-    return sum_total_tt(total_travel_time, 'total')
+    return round(sum_total_tt(total_travel_time, 'total'), 2)
+
 
 def calc_occupancy_rate(solution, capacity):
     # [1:] slice: because the departure time should not be counted!

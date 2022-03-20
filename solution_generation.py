@@ -4,7 +4,7 @@
 #    veh_nb   stop   dep_t
 
 import copy
-
+import numpy as np
 import vehicle_generation as vg
 import requests_generation as rg
 
@@ -96,7 +96,7 @@ def add_pax_to_veh(vehicles_dict, curr_veh, od, portion_rg, od_matrix, network_d
         if s in range(od[0], od[1]):
             # if no departure time is there yet, just add a dummy dep. time
             if vg.is_empty_stop(vehicles_dict, curr_veh, s):
-                vehicles_dict[curr_veh][s].append(0)
+                vehicles_dict[curr_veh][s].append(np.float64(0))
 
             vehicles_dict[curr_veh][s].append(portion_rg)
 
@@ -119,7 +119,7 @@ def calc_dep_time(solution, service, stop, od_matrix, network_dim):
     if (previous_stop, dep_time) != (1, 0):
         imposed_dep_time_by_prev_stop = dep_time + od_matrix[(previous_stop, stop)]
     else:
-        imposed_dep_time_by_prev_stop = 0
+        imposed_dep_time_by_prev_stop = np.float64(0)
 
     return round(max(imposed_dep_time_by_prev_stop, imposed_dep_time_by_req_pt), 2)
 
@@ -266,7 +266,6 @@ def get_request_group_position(solution, request_group):
                         return position
 
 # ADD TO GENERAL FUNCTIONS SCRIPT?
-
 
 def index_to_key(dictionairy, index):
     # function that takes an index as an input and returns the corresponding key

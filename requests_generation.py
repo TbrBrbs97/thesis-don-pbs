@@ -42,13 +42,13 @@ def convert_md_todict(df_meandemand_city, df_meandemand_terminal, scen):
     n = len(df_meandemand_city.iloc[0])
     demand_dict = {}
     
-    for i in range(1,n+1):
-        for j in range(1,n+1):
-            demand_dict[(i,j)] = df_meandemand_city.loc[(scen,i),j]
+    for i in range(1, n+1):
+        for j in range(1, n+1):
+            demand_dict[(i, j)] = df_meandemand_city.loc[(scen, i), j]
             
-    for i in range(n,2*n):
-        for j in range(n,2*n):
-            demand_dict[(i,j)] = df_meandemand_terminal.loc[(scen,i),j]
+    for i in range(n, 2*n):
+        for j in range(n, 2*n):
+            demand_dict[(i, j)] = df_meandemand_terminal.loc[(scen, i), j]
     
     return demand_dict
     
@@ -62,7 +62,7 @@ def generate_requests(mean_demand, peak_hour_duration=60, seed=True):
     
             requests_od = []
             requests[od] = requests_od
-            requests[od].append(0)
+            requests[od].append(np.float64(0))
 
             t = 0
 

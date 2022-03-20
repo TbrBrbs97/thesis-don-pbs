@@ -33,6 +33,10 @@ with open('Exports/initial_solution.pickle', 'rb') as handle:
 
 test_solution = copy.deepcopy(initial_solution)
 
+# r1 = [((3, 5), 47.76, 0), ((3, 5), 55.72, 0)]
+# br.remove_request_group(test_solution, r1)
+
+
 print(se.get_objective_function_val(initial_solution))
-new_solution = so.static_opt(test_solution, treated_requests_per_it=10)
+new_solution = so.static_opt(test_solution, treated_requests_per_it=3)
 print(se.get_objective_function_val(new_solution))

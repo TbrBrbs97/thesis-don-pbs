@@ -11,8 +11,9 @@ from parameters import network_dim, od_matrix, cap_per_veh
 # perhaps create a 'dumpster' in which removed requests are put? Then create a Not-None return for removal functions
 
 
-def remove_request_group(solution, request_group):
-    service = sg.get_request_group_position(solution, request_group)[0]
+def remove_request_group(solution, request_group, service=None):
+    if service is None:
+        service = sg.get_request_group_position(solution, request_group)[0]
 
     first_cut, end_cut = rg.get_od_from_request_group(request_group)
     old_departure_time = vg.get_stop_dep_time(solution, service, first_cut)
@@ -23,7 +24,8 @@ def remove_request_group(solution, request_group):
                              solution[service][s][1:] for value in group if value not in request_group]
         solution[service][s] = [solution[service][s][0], retained_requests]
         # if not a single request is retained for the stop, render the list empty
-        if type(solution[service][s][0]) is np.float64 and len(solution[service][s][1]) == 0:
+        if (type(solution[service][s][0]) is np.float64 or solution[service][s][0] == 0.0) \
+                and len(solution[service][s][1]) == 0:
             solution[service][s] = []
 
     # check if the max pick up time is binding for the departure time at the stop
