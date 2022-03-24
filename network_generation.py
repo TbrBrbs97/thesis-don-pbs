@@ -19,7 +19,7 @@ def import_network(size, interstop_distance):
     excel = pd.read_excel(path_name, engine='openpyxl', sheet_name=0, header=0, index_col=0, dtype=float)
     df = excel.to_dict('index')
 
-    return add_duplicate_stops(df)
+    return df
 
 
 def add_duplicate_stops(network):

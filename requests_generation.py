@@ -35,7 +35,7 @@ def get_scenario_mean_demand(direction, size, scen, peak=1): #add size as a para
         n = len(df.iloc[0])
         a = n
     
-        return df.loc[(scen,a):(scen,2*n-1),1:2*n-1]    
+        return df.loc[(scen, a):(scen, 2*n-1), 1:2*n-1]
     
 
 def convert_md_todict(df_meandemand_city, df_meandemand_terminal, scen):
@@ -44,12 +44,11 @@ def convert_md_todict(df_meandemand_city, df_meandemand_terminal, scen):
     
     for i in range(1, n+1):
         for j in range(1, n+1):
-            demand_dict[(i, j)] = df_meandemand_city.loc[(scen, i), j]
-            
-    for i in range(n, 2*n):
-        for j in range(n, 2*n):
-            demand_dict[(i, j)] = df_meandemand_terminal.loc[(scen, i), j]
-    
+            if i < j:
+                demand_dict[(i, j)] = df_meandemand_city.loc[(scen, i), j]
+            else:
+                demand_dict[(i, j)] = df_meandemand_terminal.loc[(scen, i + 2*(n-i)**i), j + 2*(n-j)**j]
+
     return demand_dict
     
 

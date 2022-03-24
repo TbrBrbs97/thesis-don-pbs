@@ -52,8 +52,8 @@ def init_fill_every_vehicle(request_dict, nb_of_available_veh):
         pt = get_max_pick_time(request_group)
 
         vehicles_schedule[v] = dict()
-        vehicles_schedule[v][o*1000] = [pt, [request_group]]
-        vehicles_schedule[v][d*1000] = [pt + cost_matrix[(o, d)]]
+        vehicles_schedule[v][str(o)+',0'] = [pt, request_group]
+        vehicles_schedule[v][str(d)+',0'] = [pt + cost_matrix[(o, d)]]
 
         request_dict[(o, d)].remove(request_group)
 
@@ -72,11 +72,13 @@ def pop_request(request_dictionairy):
     return random.choice(request_dictionairy[random_od_pair])
 
 
-def insert_in_best_position(vehicle_schedule, request_group):
+def find_best_insertion(vehicle_schedule, request_group, start_vehicle=1):
     '''
-    Function that inserts a request in the best possible position in the schedule,
+    Function that returns the best possible position in the schedule for insertion,
     taking into account capacity constraints & the marginal cost of insertion
     (detour).
+
+    TODO: make this a recursive function: call until start_vehicle = nb_of_vehicles
     '''
 
     best_insertion_so_far = None
@@ -94,21 +96,18 @@ def insert_in_best_position(vehicle_schedule, request_group):
             # if it is None or if it is a better position than the previous one.
 
         # TODO:
-
-        # vehicles
-        # 1: ()
-        # 2: ()
-        # 3: ()
-        # 4: ()
-
-        # First, you look for best vehicle - difference dep.time & pick-up OR closest stop
-        # Second, you find the exact position within the chosen vehicle
+        #  - First, you look for best vehicle - difference dep.time & pick-up OR closest stop
+        #  - Second, you find the exact position within the chosen vehicle
 
         # elif there is no capacity left in between existing arcs + secondary condition; departure time is before 60 min.
             # try to add in chain to the existing arcs
 
     # if no feasible insertion was found in the current schedule (i.e. best_insertion_so_far remains None),
     # add a new service/vehicle to the schedule and insert the request group there.
+
+
+def insert_request_group(vehicles_schedule, request_group, position):
+    return None
 
 
 def get_existing_arcs(vehicles_schedule, service):
