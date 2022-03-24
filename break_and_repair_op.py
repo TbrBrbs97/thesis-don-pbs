@@ -24,8 +24,8 @@ def remove_request_group(solution, request_group, service=None):
                              solution[service][s][1:] for value in group if value not in request_group]
         solution[service][s] = [solution[service][s][0], retained_requests]
         # if not a single request is retained for the stop, render the list empty
-        if (type(solution[service][s][0]) is np.float64 or solution[service][s][0] == 0.0) \
-                and len(solution[service][s][1]) == 0:
+        # or solution[service][s][0] == 0.0)
+        if type(solution[service][s][0]) is np.float64 and len(solution[service][s][1]) == 0:
             solution[service][s] = []
 
     # check if the max pick up time is binding for the departure time at the stop
@@ -75,8 +75,7 @@ def update_dep_times(solution, service, od):
     # adapt dep time at the current stop, considering the lower bound set by departure time at the previous stop.
     # Make the distinction: if the removal is in the first stop,
     if curr_stop != network_dim[0] and curr_stop != vg.get_first_stop(solution, service):
-        candidate_dep_time = max(vg.get_stop_dep_time(solution, service, curr_stop-1)) + od_matrix((curr_stop-1, curr_stop)
-                                                                                               , candidate_dep_time)
+        candidate_dep_time = max(vg.get_stop_dep_time(solution, service, curr_stop-1)) + od_matrix((curr_stop-1, curr_stop), candidate_dep_time)
 
     # if the stop where the removed passengers originate is the first stop, look at the previous service (if there is any)!
     elif service[1] != 1 and curr_stop != vg.get_first_stop(solution, service):

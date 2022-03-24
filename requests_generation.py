@@ -131,7 +131,22 @@ def group_requests_dt(requests, dep_t_th, od_pairs):
     return grouped_requests
 
 
-def request_groups_per_od(grouped_requests):
+def count_requests_per_od(grouped_requests):
+    result = {}
+
+    for od in grouped_requests.keys():
+        result[od] = []
+        for r in grouped_requests[od]:
+            result[od].append(len(r))
+        result[od] = sum(result[od])
+
+    return result
+
+
+def size_request_groups_per_od(grouped_requests):
+    '''
+    Function that returns the size of request groups per od
+    '''
     result = {}
 
     for od in grouped_requests.keys():
@@ -140,6 +155,18 @@ def request_groups_per_od(grouped_requests):
             result[od].append(len(r))
 
     return result
+
+
+def count_requests(request_dict, od=None):
+    count = 0
+
+    if od is None:
+        for k in request_dict.keys():
+            count += len([j for i in request_dict[k] for j in i])
+    else:
+        count += len([j for i in request_dict[od] for j in i])
+
+    return count
 
 
 def get_od_from_request_group(request_group):

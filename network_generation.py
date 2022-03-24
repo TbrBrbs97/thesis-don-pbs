@@ -35,9 +35,9 @@ def calculate_euclidean_dist(x1, y1, x2, y2):
     return result
 
 
-def generate_tt_od(network, v_mean):
+def generate_cost_matrix(network, v_mean):
     
-    od_matrix = {}
+    cost_matrix = {}
 
     for i in network.keys():
         x_a, y_a = network[i]['x-coord'], network[i]['y-coord']
@@ -46,9 +46,9 @@ def generate_tt_od(network, v_mean):
             distance = calculate_euclidean_dist(x_a, y_a, x_b, y_b)
             travel_time = (distance / v_mean)*60 # to get the travel time in minutes
             
-            od_matrix[(i, j)] = travel_time
+            cost_matrix[(i, j)] = travel_time
             
-    return od_matrix
+    return cost_matrix
 
 
 def get_network_boundaries(network):

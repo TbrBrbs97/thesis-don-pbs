@@ -1,3 +1,7 @@
+import requests_generation as rg
+
+from parameters import cap_per_veh, req_max_cluster_time, cost_matrix, network_dim
+
 
 def is_empty_vehicle(solution, vehicle):
     if all([is_empty_stop(solution, vehicle, stop) for stop in solution[vehicle] if stop < get_last_stop(solution, vehicle)]):
