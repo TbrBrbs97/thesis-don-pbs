@@ -8,7 +8,7 @@ import solution_evaluation as se
 import vehicle_generation as vg
 import solution_visualisation as sv
 
-from alt_solution_gen import generate_initial_solution, init_fill_every_vehicle, pop_request, get_existing_arcs
+from alt_solution_gen import generate_initial_solution, init_fill_every_vehicle, pop_request, get_existing_arcs, arc_in_vehicle
 
 from parameters import network, lambdapeak, mupeak, demand_scenario, peak_duration, \
     req_max_cluster_time, cap_per_veh, max_services_per_vehicle, cost_matrix, grouped_requests, nb_of_required_ser
@@ -17,7 +17,7 @@ initial_solution = init_fill_every_vehicle(grouped_requests, nb_of_required_ser)
 for i in initial_solution:
      print('veh: ', i, ', stops: ', initial_solution[i])
 
-print(get_existing_arcs(initial_solution, 2))
+print(arc_in_vehicle(initial_solution, 1, (2, 3)))
 
 # random_request = pop_request(grouped_requests)
 # print(random_request)
