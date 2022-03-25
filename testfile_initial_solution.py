@@ -8,37 +8,19 @@ import solution_evaluation as se
 import vehicle_generation as vg
 import solution_visualisation as sv
 
-from alt_solution_gen import generate_initial_solution, init_fill_every_vehicle, pop_request
+from alt_solution_gen import generate_initial_solution, init_fill_every_vehicle, pop_request, get_existing_arcs
 
 from parameters import network, lambdapeak, mupeak, demand_scenario, peak_duration, \
-    req_max_cluster_time, cap_per_veh, max_services_per_vehicle, cost_matrix
-
-# REQUESTS
-
-dict_requests = rg.convert_md_todict(lambdapeak, mupeak, demand_scenario)
-total_requests = rg.generate_requests(dict_requests, peak_duration, seed=True)
-
-list_all_requests = rg.list_all_requests(total_requests)
-print('total request amount: ', len(list_all_requests))
-
-grouped_requests = rg.group_requests_dt(list_all_requests, req_max_cluster_time, total_requests.keys())
-count_groups = rg.count_requests_per_od(grouped_requests)
-size_groups = rg.size_request_groups_per_od(grouped_requests)
-print(count_groups)
-# print(size_groups)
-
-nb_of_required_ser = round(len(list_all_requests)/(cap_per_veh*max_services_per_vehicle))
-#print('number of veh. required: ', nb_of_required_ser)
+    req_max_cluster_time, cap_per_veh, max_services_per_vehicle, cost_matrix, grouped_requests, nb_of_required_ser
 
 initial_solution = init_fill_every_vehicle(grouped_requests, nb_of_required_ser)
 for i in initial_solution:
-     print(i, initial_solution[i])
+     print('veh: ', i, ', stops: ', initial_solution[i])
 
+print(get_existing_arcs(initial_solution, 2))
 
-# print(grouped_requests)
-# print(rg.count_requests_per_od(grouped_requests))
-random_request = pop_request(grouped_requests)
-print(random_request)
+# random_request = pop_request(grouped_requests)
+# print(random_request)
 
 
 # vehicles_schedules = sg.services_to_vehicles(initial, par.max_services_per_vehicle)

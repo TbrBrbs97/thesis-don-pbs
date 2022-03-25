@@ -18,3 +18,14 @@ max_services_per_vehicle = 3
 
 lambdapeak = rg.get_scenario_mean_demand('city', network_size, scen=demand_scenario, peak=1)
 mupeak = rg.get_scenario_mean_demand('terminal', network_size, scen=demand_scenario, peak=1)
+
+mean_demand = rg.convert_md_todict(lambdapeak, mupeak, demand_scenario)
+requests_per_od = rg.generate_requests(mean_demand, peak_duration, seed=True)
+
+list_all_requests = rg.list_all_requests(requests_per_od)
+
+grouped_requests = rg.group_requests_dt(list_all_requests, req_max_cluster_time, requests_per_od.keys())
+count_groups = rg.count_requests_per_od(grouped_requests)
+size_groups = rg.size_request_groups_per_od(grouped_requests)
+
+nb_of_required_ser = round(len(list_all_requests)/(cap_per_veh*max_services_per_vehicle))
