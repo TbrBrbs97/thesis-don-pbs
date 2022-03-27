@@ -10,6 +10,8 @@ peak_duration = 60 #min.
 cap_per_veh = 20
 req_max_cluster_time = 2 #min.
 
+chaining_penalty = 20 #min.
+
 network = netg.import_network(network_size, interstop_distance)
 cost_matrix = netg.generate_cost_matrix(network, v_mean)
 network_dim = netg.get_network_boundaries(network)

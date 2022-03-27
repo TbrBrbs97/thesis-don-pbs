@@ -39,6 +39,7 @@ def init_fill_every_vehicle(request_dict, nb_of_available_veh, seed=True):
     ( respectively then /10 or *10 for the next occurence)
     '''
     vehicles_schedule = dict()
+    request_assignment = dict()
 
     for v in range(1, nb_of_available_veh+1):
         if seed is True:
@@ -52,9 +53,10 @@ def init_fill_every_vehicle(request_dict, nb_of_available_veh, seed=True):
         vehicles_schedule[v][str(o)+',0'] = [pt, request_group]
         vehicles_schedule[v][str(d)+',0'] = [pt + cost_matrix[(o, d)]]
 
-        request_dict[(o, d)].remove(request_group)
+        # request_dict[(o, d)].remove(request_group)
+        # request_assignment[str(request_group)] = [str(o)+',0', pt, str(d)+',0', pt + cost_matrix[(o, d)]]
 
-    return vehicles_schedule
+    return vehicles_schedule #, request_assignment
 
 
 def pop_request(request_dictionairy):
@@ -72,11 +74,8 @@ def pop_request(request_dictionairy):
 def find_best_position_for_request_group(vehicles_schedule, request_group, current_vehicle=1, best_pos_so_far=None):
     '''
     Function that returns the best possible position in the schedule for insertion,
-    taking into account capacity constraints & the marginal cost of insertion
-    (detour).
-
-    TODO: make this a recursive function: call until start_vehicle = nb_of_vehicles
-    TODO: evaluate waiting time & travel time incremement per case
+    taking into account capacity constraints. In a recursive way, it tries to compare for every vehicle the respecitvely
+    best costs for insertion. For whichever vehicle this representative cost is lowest, it is inserted there.
 
     # TODO:
     # - First, you look for best vehicle - difference dep.time & pick-up OR closest stop
@@ -84,96 +83,61 @@ def find_best_position_for_request_group(vehicles_schedule, request_group, curre
 
     '''
 
-    if best_pos_so_far is None:
-        best_pos_so_far = 1
-
     o, d = get_od_from_request_group(request_group)
     request_group_max_pt = get_max_pick_time(request_group)
 
     if current_vehicle > nb_of_required_ser:
         return vehicles_schedule
 
-    if arc_in_vehicle(vehicles_schedule, current_vehicle, (o, d)) == (o, d):
-            # room_for_insertion_at_node(vehicle_schedule, current_vehicle, (o, d)) > 0:
-        matching_score = find_best_position_within_vehicle(vehicles_schedule, request_group, (o,d), current_vehicle)
-        if max(best_pos_so_far[1], matching_score) == matching_score:
-            best_pos_so_far = current_vehicle, matching_score
-        # matching score is on the basis of the dep_time difference with the origin in this case
+    insertion_constraints = get_insertion_possibilities(vehicles_schedule, current_vehicle, (o, d))
 
-    if arc_in_vehicle(vehicles_schedule, current_vehicle, (o, d)) == o:
-        matching_score = find_best_position_within_vehicle(vehicles_schedule, request_group, o, current_vehicle)
-        if max(best_pos_so_far[1], matching_score) == matching_score:
-            best_pos_so_far = current_vehicle, matching_score
-
-    if arc_in_vehicle(vehicles_schedule, current_vehicle, (o, d)) == d:
-        matching_score = find_best_position_within_vehicle(vehicles_schedule, request_group, d, current_vehicle)
-        if max(best_pos_so_far[1], matching_score) == matching_score:
-            best_pos_so_far = current_vehicle, matching_score
-
+    if insertion_constraints:
+        for ins_con in insertion_constraints:
+            matching_score = find_best_position_within_vehicle(vehicles_schedule, request_group, ins_con, current_vehicle)
+            if max(best_pos_so_far[1], matching_score) == matching_score or best_pos_so_far is None:
+                best_pos_so_far = current_vehicle, matching_score
     else: # in all other cases, you position the request group either in front of existing chain / behind it
+        matching_score = find_best_position_within_vehicle(vehicles_schedule, request_group, None, current_vehicle)
+        if max(best_pos_so_far[1], matching_score) == matching_score or best_pos_so_far is None:
+            best_pos_so_far = current_vehicle, matching_score
 
-
-    # if o in schedule + capacity left in between o and the next stop:
-        # here
-        # add the request group at o and make the vehicle detour via d, before going to the next
-        # if solution is better:
-            # best_insertion_so_far = vehicle, position, score (=dep_time_difference)
-    # if d in schedule + capacity left in between the previous stop and d:
-        # add the request between the previous stop and d and make detour via o
     # else: > if neither o or d are in the schedule
         # if the dep time at o < the dep at the starting stop + driving time, add it before
         # in the case o > dep_t at the last stop + driving time, chain the arc in the end
 
-        current_vehicle += 1
-        return find_best_position_for_request_group(vehicles_schedule, request_group, current_vehicle, best_pos_so_far)
+    current_vehicle += 1
+    return find_best_position_for_request_group(vehicles_schedule, request_group, current_vehicle, best_pos_so_far)
 
 
-def find_best_position_within_vehicle(vehicles_schedule, request_group, portion_matching_od, vehicle):
+def find_best_position_within_vehicle(vehicles_schedule, request_group, insertion_constraint, vehicle):
     '''
     Returns how a vehicles scores for accommodating a request group: this is based
     on the difference between the departure time at a stop and the max pickup time of a request group.
 
-    >> check for capacity on this level!
+    On this level, the best possible postion is returned given the 'insertion_constraint', which is given as an input.
+    This constraint can either be:
+    - Origin, destination: then, the request_group has to be inserted AFTER a node which fits the origin
+    - The origin: then, the request_group has to be inserted AFTER a node which fits the origin
+    - The destination: then, the request_group has to be inserted RIGHT BEFORE a node which fits the destination
 
-    Why not check for all possibilities? > i.e. not make it dependent whether or not o,d is (partly) matching in the schedule
+    As there might be multiple occurences where the insertion constraint hold true (e.g. ['2,0', '2,1', ...]),
+    the function returns the best position among those locations.
     '''
 
-    matching_score = 0
     o, d = get_od_from_request_group(request_group)
     request_group_max_pt = get_max_pick_time(request_group)
 
-    if portion_matching_od == (o, d):
-        # the function below will return the origin in the case of the arc o,d to be present
-        occ_of_node = get_all_occurrences_of_node(vehicles_schedule, vehicle, portion_matching_od)
-        best_matching_pos = calc_best_matching_position(vehicles_schedule, vehicle, request_group_max_pt, (o, d), occ_of_node, portion_matching_od)
-    elif portion_matching_od == o:
-        occ_of_node = get_all_occurrences_of_node(vehicles_schedule, vehicle, portion_matching_od)
-        best_matching_pos = calc_best_matching_position(vehicles_schedule, vehicle, request_group_max_pt, o, occ_of_node, portion_matching_od)
-    elif portion_matching_od == d:
-        return None
-    else: # check for the 'nearest stop' to either O or D
+    if insertion_constraint:
+        occ_of_node = get_all_occurrences_of_node(vehicles_schedule, vehicle, insertion_constraint)
+        best_matching_pos = calc_best_matching_position(vehicles_schedule, vehicle, request_group_max_pt, (o, d),
+                                                            occ_of_node, insertion_constraint)
+
+        return best_matching_pos
+    else: # check for an insertion in this vehicle before or after the already existing schedule
         return None
 
 
-def get_prev_node(vehicles_schedule, vehicle, node):
-    nodes_in_vehicle = get_existing_nodes(vehicles_schedule, vehicle)
-    index_of_node = nodes_in_vehicle.index(node)
-    if index_of_node > 0:
-        return nodes_in_vehicle[index_of_node - 1]
-    else:
-        return None
-
-
-def get_next_node(vehicles_schedule, vehicle, node):
-    nodes_in_vehicle = get_existing_nodes(vehicles_schedule, vehicle)
-    index_of_node = nodes_in_vehicle.index(node)
-    if index_of_node < len(nodes_in_vehicle):
-        return nodes_in_vehicle[index_of_node + 1]
-    else:
-        return None
-
-
-def calc_best_matching_position(vehicles_schedule, vehicle, max_pt_rg, od_rg, occurrences, portion_matching_od):
+def calc_best_matching_position(vehicles_schedule, vehicle, max_pt_rg, od_rg, occurrences, insertion_constraint):
     '''
     Given that there are multiple occurences of a node (e.g. ['2,0', '2,1', ...])
     '''
@@ -181,7 +145,7 @@ def calc_best_matching_position(vehicles_schedule, vehicle, max_pt_rg, od_rg, oc
     best_matching_position = None
 
     # if both the origin & dest. can be found as an arc, or if only the origin can be found as an arc
-    if portion_matching_od == od_rg or portion_matching_od == od_rg[0]:
+    if insertion_constraint == od_rg or insertion_constraint[0] == od_rg[0]:
         for node in occurrences:
             dep_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
             delta_dep_time = abs(dep_time - max_pt_rg)
@@ -190,7 +154,7 @@ def calc_best_matching_position(vehicles_schedule, vehicle, max_pt_rg, od_rg, oc
                     and room_for_insertion_at_node(vehicles_schedule, vehicle, node) > 0:
                 best_matching_position = node, delta_dep_time
     # if only the destionation can be found as an arc
-    elif portion_matching_od == od_rg[1]:
+    elif insertion_constraint[0] == od_rg[1]:
         for node in occurrences:
             prev_node = get_prev_node(vehicles_schedule, vehicle, node)
             if prev_node:
@@ -207,26 +171,51 @@ def calc_best_matching_position(vehicles_schedule, vehicle, max_pt_rg, od_rg, oc
                 if best_matching_position is None or delta_dep_time < best_matching_position[1] \
                         and room_for_insertion_at_node(vehicles_schedule, vehicle, node) > 0:
                     best_matching_position = prev_node, delta_dep_time
+    else: # meaning that neither origin or destination of the rg appear in the schedule of the vehicle
+        return None
+
 
     return best_matching_position
 
 
-def arc_in_vehicle(vehicles_schedule, current_vehicle, od_tup):
+def get_prev_node(vehicles_schedule, vehicle, node):
+    nodes_in_vehicle = get_existing_nodes(vehicles_schedule, vehicle)
+    index_of_node = nodes_in_vehicle.index(node)
+    if index_of_node > 0:
+        return nodes_in_vehicle[index_of_node - 1]
+    else:
+        return None
+
+
+def get_next_node(vehicles_schedule, vehicle, node):
+    nodes_in_vehicle = get_existing_nodes(vehicles_schedule, vehicle)
+    index_of_node = nodes_in_vehicle.index(node)
+    if index_of_node < len(nodes_in_vehicle)-1:
+        return nodes_in_vehicle[index_of_node + 1]
+    else:
+        return None
+
+
+def get_insertion_possibilities(vehicles_schedule, current_vehicle, od_tup):
     '''
-    Returns the portion of the arc of 'od_tup' that is in the vehicle (i.e. the portion_matching_od),
-    as well as the number of times this portions appears in the vehicle
+    Returns all possible insertions (not checked with capacity yet) for a request group with
+    'od_tup'.
     '''
+
     o, d = od_tup
 
-    if any([int(node[0]) == o for node in vehicles_schedule[current_vehicle]]) and \
-            any([int(node[0]) == d for node in vehicles_schedule[current_vehicle]]):
-        return o, d
-    elif any([int(node[0]) == o for node in vehicles_schedule[current_vehicle]]):
-        return o
-    elif any([int(node[0]) == d for node in vehicles_schedule[current_vehicle]]):
-        return d
-    else:
-        return False
+    positions_at_origin = [('insert d after', node) for node in vehicles_schedule[current_vehicle] if int(node[0]) == o
+                           and get_next_occ_of_node(vehicles_schedule, current_vehicle, node, d) is None]
+    positions_before_first_stop = [('insert o before', node) for node in vehicles_schedule[current_vehicle]
+                                   if int(node[0]) == d and get_prev_node(vehicles_schedule, current_vehicle, node) is None]
+    positions_on_existing_arc = [('on arc with o: ', node) for node in vehicles_schedule[current_vehicle]
+                                   if int(node[0]) == d and get_next_occ_of_node(vehicles_schedule, current_vehicle, node, d) is not None]
+    positions_before_dest = [('insert o after', node) for node in vehicles_schedule[current_vehicle] if
+                             get_next_node(vehicles_schedule, current_vehicle, node) is not None and
+                             int(get_next_node(vehicles_schedule, current_vehicle, node)[0]) == d and node not in
+                             [tup[1] for tup in positions_on_existing_arc]]
+
+    return positions_at_origin + positions_before_dest + positions_before_first_stop + positions_on_existing_arc
 
 
 def get_existing_arcs(vehicles_schedule, vehicle):
@@ -239,23 +228,33 @@ def get_existing_arcs(vehicles_schedule, vehicle):
     return [(nodes[i], nodes[i+1]) for i in range(len(nodes)-1)]
 
 
-def get_existing_nodes(vehicles_schedule, vehicle):
+def get_existing_nodes(vehicles_schedule, vehicle, node_type=None):
     '''
     Function that returns the list of existing nodes/stops in a vehicle schedule.
+    The parameter node_type allows to specify whether or not
     '''
-    return list(vehicles_schedule[vehicle])
+    if not node_type:
+        return [node for node in vehicles_schedule[vehicle]]
+    else:
+        return [node for node in vehicles_schedule[vehicle] if int(node[0]) == node_type]
 
 
-def get_all_occurrences_of_node(vehicles_schedule, service, portion_of_od_in_sched):
+def get_all_occurrences_of_node(vehicles_schedule, vehicle, insertion_constraint):
     '''
     Function that returns a list of all occurences of a certain stop
     in the schedule of a vehicle. We only need to know if either the origin or the destination is within the vehicle.
     '''
 
-    if portion_of_od_in_sched is tuple:
-        return [n for n in vehicles_schedule[service] if int(n[0]) == portion_of_od_in_sched[0]]
-    else:
-        return [n for n in vehicles_schedule[service] if int(n[0]) == portion_of_od_in_sched]
+    return [n for n in vehicles_schedule[vehicle] if int(n[0]) == insertion_constraint[0]]
+
+
+def get_next_occ_of_node(vehicles_schedule, vehicle, start_node, target_node):
+    all_nodes = get_existing_nodes(vehicles_schedule, vehicle)
+    idx_start_node = all_nodes.index(start_node)
+
+    for idx in range(idx_start_node, len(all_nodes)):
+        if vehicles_schedule[vehicle][all_nodes[idx]][0] == target_node:
+            return all_nodes[idx]
 
 
 def room_for_insertion_at_node(vehicles_schedule, vehicle, node):
@@ -267,10 +266,17 @@ def room_for_insertion_at_node(vehicles_schedule, vehicle, node):
 
     '''
 
-    pax_boarding_at_current_stop = sum([len(request_group) for request_group in vehicles_schedule[vehicle][node][1:]])
+    pax_boarding_at_current_stop = 0
+    pax_from_prev_stops = 0
+
+    if boarding_pass_at_node(vehicles_schedule, vehicle, node):
+        pax_boarding_at_current_stop = sum([len(request_group) for request_group in vehicles_schedule[vehicle][node][1:]])
     pax_from_prev_stops = count_transit_pax_over_node(vehicles_schedule, vehicle, node)
 
     return cap_per_veh - (pax_boarding_at_current_stop + pax_from_prev_stops)
+
+
+
 
 
 def count_transit_pax_over_node(vehicles_schedule, vehicle, node):
@@ -285,13 +291,18 @@ def count_transit_pax_over_node(vehicles_schedule, vehicle, node):
     transit_pax = 0
 
     for node in all_previous_nodes:
-        # TODO
-        # this will not work! in the case there are multiple instances of the destination >> you have to know where people get off
-        # >> maybe build a dictionairy with keys = request, value = [vehicle, pick-up node, dep_time, drop_off node, arr_time]
-        # this will probably also be easier to refer to later! >> and calculate IVT & WT for later
-        transit_pax += sum([len(request_group) for request_group in vehicles_schedule[vehicle][node][1:] if get_max_pick_time(request_group)])
+        if boarding_pass_at_node(vehicles_schedule, vehicle, node):
+            for group in vehicles_schedule[vehicle][node][1:]:
+                group_origin, group_destination = get_od_from_request_group(group)
+                idx_occ, destination_node = get_next_occ_of_node(vehicles_schedule, vehicle, all_nodes[0], group_destination)
+                if destination_node not in all_previous_nodes:
+                    transit_pax += len(group)
 
     return transit_pax
+
+
+def boarding_pass_at_node(vehicles_schedule, vehicle, node):
+    return True if len(vehicles_schedule[vehicle][node]) == 1 else False
 
 
 def get_departure_time_at_node(vehicles_schedule, vehicle, node):
