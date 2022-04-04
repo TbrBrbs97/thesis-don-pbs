@@ -1,7 +1,7 @@
 import solution_evaluation as se
 import solution_generation as sg
-import vehicle_generation as vg
-import requests_generation as rg
+import vehicle as vg
+import requests as rg
 import break_and_repair_op as br
 
 import copy

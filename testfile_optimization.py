@@ -7,10 +7,10 @@ import pandas
 
 import break_and_repair_op as br
 import network_generation as netg
-import requests_generation as rg
+import requests as rg
 import solution_generation as sg
 import solution_evaluation as se
-import vehicle_generation as vg
+import vehicle as vg
 import solution_visualisation as sv
 import static_optimization as so
 

@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import random
 
 
 def get_scenario_mean_demand(direction, size, scen, peak=1): #add size as a parameter later
@@ -184,3 +185,24 @@ def get_max_pick_time(request_group):
         return request_group[0]
     else:
         return 0
+
+
+def pop_request(request_dictionairy):
+    '''
+    Function that returns a random request group from the request dictionairy.
+    '''
+
+    random_od_pair = random.choice(list(request_dictionairy))
+    while count_requests(request_dictionairy, random_od_pair) == 0:
+        random_od_pair = random.choice(list(request_dictionairy))
+
+    return random.choice(request_dictionairy[random_od_pair])
+
+
+def remove_from_request_dictionairy(request_dictionairy, request_group):
+    '''
+    Function that removes a request from the request dictionairy
+    '''
+
+    o, d = get_od_from_request_group(request_group)
+    request_dictionairy[(o, d)].remove(request_group)

@@ -1,6 +1,6 @@
-import requests_generation as rg
+import requests as rg
 import solution_generation as sg
-import vehicle_generation as vg
+import vehicle as vg
 import solution_evaluation as se
 
 import numpy as np

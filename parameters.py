@@ -1,5 +1,5 @@
 import network_generation as netg
-import requests_generation as rg
+import requests as rg
 
 network_size = 'small'
 interstop_distance = 'half'

@@ -5,8 +5,8 @@
 
 import copy
 import numpy as np
-import vehicle_generation as vg
-import requests_generation as rg
+import vehicle as vg
+import requests as rg
 
 from parameters import cost_matrix, network_dim, cap_per_veh
 
@@ -18,7 +18,7 @@ def occupy_available_capacity(request_dict, index_rg, rg, vehicles_dict, curr_ve
 
     # this function should encompass: available_capacity, add_pax_to_veh, update requests!
 
-    curr_available_cap = available_capacity(vehicles_dict, curr_veh, max_capacity, od)
+    curr_available_cap = available_capacity(vehicles_dict, curr_veh, max_capacity)
 
     if od == (network_dim[0], network_dim[1]):
         allowable_add = 10
