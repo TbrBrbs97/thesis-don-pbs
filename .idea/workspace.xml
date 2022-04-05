@@ -2,16 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="da9fdea6-face-44e3-9aed-8a24aecdd7dc" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/alt_solution_gen.py" beforeDir="false" afterPath="$PROJECT_DIR$/alt_solution_gen.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/break_and_repair_op.py" beforeDir="false" afterPath="$PROJECT_DIR$/break_and_repair_op.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/parameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requests_generation.py" beforeDir="false" afterPath="$PROJECT_DIR$/requests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/solution_generation.py" beforeDir="false" afterPath="$PROJECT_DIR$/solution_generation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_optimization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requests.py" beforeDir="false" afterPath="$PROJECT_DIR$/requests.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testfile_initial_solution.py" beforeDir="false" afterPath="$PROJECT_DIR$/testfile_initial_solution.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testfile_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/testfile_optimization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vehicle_generation.py" beforeDir="false" afterPath="$PROJECT_DIR$/vehicle.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vehicle.py" beforeDir="false" afterPath="$PROJECT_DIR$/vehicle.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,11 +15,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/testfile_initial_solution.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="161">
-              <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
+            <state relative-caret-position="102">
+              <caret line="26" column="18" selection-start-line="26" selection-start-column="18" selection-end-line="26" selection-end-column="18" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -33,11 +27,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/alt_solution_gen.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="161">
-              <caret line="244" selection-start-line="244" selection-end-line="244" />
+            <state relative-caret-position="97">
+              <caret line="211" column="34" selection-start-line="211" selection-start-column="34" selection-end-line="211" selection-end-column="34" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -48,8 +42,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/solution_generation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2022">
-              <caret line="131" lean-forward="true" selection-start-line="131" selection-end-line="131" />
+            <state relative-caret-position="1139">
+              <caret line="131" selection-start-line="131" selection-end-line="131" />
               <folding>
                 <element signature="e#198#209#0" expanded="true" />
               </folding>
@@ -60,8 +54,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/requests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="149">
-              <caret line="175" selection-start-line="175" selection-end-line="175" />
+            <state relative-caret-position="68">
+              <caret line="201" column="30" selection-start-line="201" selection-start-column="30" selection-end-line="201" selection-end-column="30" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -72,11 +66,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vehicle.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-9">
-              <caret line="259" column="25" selection-start-line="259" selection-start-column="25" selection-end-line="259" selection-end-column="25" />
-              <folding>
-                <element signature="e#0#4#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="194">
+              <caret line="167" selection-start-line="167" selection-end-line="167" />
             </state>
           </provider>
         </entry>
@@ -137,11 +128,11 @@
         <option value="$PROJECT_DIR$/requests_generation.py" />
         <option value="$PROJECT_DIR$/parameters.py" />
         <option value="$PROJECT_DIR$/vehicle_generation.py" />
-        <option value="$PROJECT_DIR$/requests.py" />
         <option value="$PROJECT_DIR$/solution_generation.py" />
-        <option value="$PROJECT_DIR$/testfile_initial_solution.py" />
         <option value="$PROJECT_DIR$/vehicle.py" />
+        <option value="$PROJECT_DIR$/requests.py" />
         <option value="$PROJECT_DIR$/alt_solution_gen.py" />
+        <option value="$PROJECT_DIR$/testfile_initial_solution.py" />
       </list>
     </option>
   </component>
@@ -159,7 +150,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -171,6 +161,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -245,8 +236,8 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4985119" weight="0.32718894" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49627978" weight="0.20430107" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49776787" weight="0.47311828" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49627978" weight="0.5560676" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49776787" weight="0.4393241" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32872504" />
@@ -264,14 +255,14 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4985119" weight="0.32718894" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49627978" visible="true" weight="0.5591398" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.47311828" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49627978" weight="0.20430107" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49776787" weight="0.47311828" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32872504" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32872504" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.47158217" />
-      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50241256" side_tool="true" weight="0.36227223" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50223213" side_tool="true" weight="0.47311828" />
       <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.49758744" weight="0.31336406" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -335,6 +326,26 @@
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
       <expression>
+        <expression-string>int(all_nodes[idx][0])</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>int(vehicles_schedule[vehicle][all_nodes[idx]][0])</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>i=1</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>i = 1</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
         <expression-string>group = [((4, 5), 0.0, 0)]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
@@ -356,31 +367,6 @@
       </expression>
       <expression>
         <expression-string>tup_request_group = [((3, 4), 47.76, 0), ((3, 4), 55.72, 0)]</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>v=5</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>v=8</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>i = 29</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>i = 3</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>i = 20</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -500,52 +486,56 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requests.py">
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="175" selection-start-line="175" selection-end-line="175" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/testfile_initial_solution.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="114">
+          <caret line="1757" selection-start-line="1757" selection-end-line="1757" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/vehicle.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-9">
-          <caret line="259" column="25" selection-start-line="259" selection-start-column="25" selection-end-line="259" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#4#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="194">
+          <caret line="167" selection-start-line="167" selection-end-line="167" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/solution_generation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2022">
-          <caret line="131" lean-forward="true" selection-start-line="131" selection-end-line="131" />
+        <state relative-caret-position="1139">
+          <caret line="131" selection-start-line="131" selection-end-line="131" />
           <folding>
             <element signature="e#198#209#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/requests.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="201" column="30" selection-start-line="201" selection-start-column="30" selection-end-line="201" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/alt_solution_gen.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="244" selection-start-line="244" selection-end-line="244" />
+        <state relative-caret-position="97">
+          <caret line="211" column="34" selection-start-line="211" selection-start-column="34" selection-end-line="211" selection-end-column="34" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/testfile_initial_solution.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="26" column="18" selection-start-line="26" selection-start-column="18" selection-end-line="26" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -29,7 +29,7 @@ def generate_initial_solution(requests_dict, vehicles_schedule=None):
     candidate_position = find_best_position_for_request_group(vehicles_schedule, request_group)
     candidate_vehicle, candidate_pos_within_veh = candidate_position[0], candidate_position[1]
     insert_request_group(vehicles_schedule, request_group, candidate_vehicle, candidate_pos_within_veh)
-    remove_from_request_dictionairy(requests_dict, request_group)
+    #remove_from_request_dictionairy(requests_dict, request_group) >> this is done internally
     return generate_initial_solution(requests_dict, vehicles_schedule)
 
 
@@ -100,28 +100,34 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     detour_cost = 500
     dep_time_offset = 500
 
+    # two subcases for 'insert d after', o : (1) the selected o is not the last node, (2) o is the last node
     if insertion_constraint[0] == 'insert d after' and \
-            room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1]) > 0:
-        # o = int(insertion_constraint[1][0])
-        # d = get_od_from_request_group(request_group)[1]
+            room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1]) > 0 and\
+            get_next_node(vehicles_schedule, vehicle, insertion_constraint[1]):
+
         x = int(get_next_node(vehicles_schedule, vehicle, insertion_constraint[1])[0])
 
         detour_cost = cost_matrix[(o, d)] + cost_matrix[(d, x)] - cost_matrix[(o, x)]
         dep_time_offset = abs(request_group_max_pt - get_departure_time_at_node(vehicles_schedule,
                                                                                 vehicle, insertion_constraint[1]))
 
+    elif insertion_constraint[0] == 'insert d after' and \
+            room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1]) > 0 and \
+            not get_next_node(vehicles_schedule, vehicle, insertion_constraint[1]):
+
+        detour_cost = 0
+        dep_time_offset = abs(request_group_max_pt - get_departure_time_at_node(vehicles_schedule,
+                                                                                vehicle, insertion_constraint[1]))
+
     # we don't have to check for capacity if it is the first node we're checking
     elif insertion_constraint[0] == 'insert o before':
-        # o = get_od_from_request_group(request_group)[0]
-        # d = int(insertion_constraint[1][0])
-
         detour_cost = 0
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
                               - cost_matrix[o, d] - request_group_max_pt)
 
     elif insertion_constraint[0] == 'on arc with o: ' and \
             room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1],
-                                       get_next_occ_of_node(vehicles_schedule, vehicle, insertion_constraint[1], d)[1]) > 0:
+                                       get_next_occ_of_node(vehicles_schedule, vehicle, insertion_constraint[1], d)) > 0:
         detour_cost = 0
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
                               - request_group_max_pt)
@@ -129,8 +135,6 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     elif insertion_constraint[0] == 'insert o after' and \
             room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1]) > 0:
         x = int(insertion_constraint[1][0])
-        # o = get_od_from_request_group(request_group)[0]
-        # d = int(get_next_node(vehicles_schedule, vehicle, insertion_constraint[1])[0])
 
         detour_cost = cost_matrix[(x, o)] + cost_matrix[(o, d)] - cost_matrix[(x, d)]
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
@@ -161,28 +165,31 @@ def insert_request_group(vehicles_schedule, request_group, vehicle, position):
     '''
     o, d = get_od_from_request_group(request_group)
     get_max_pick_time(request_group)
+    node_to_insert_pax = None
+    end_node = None
 
     if position[0] == 'insert d after':
-        new_stop = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=d,
+        insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=d,
                                           next_stop=get_next_node(vehicles_schedule, vehicle, position[1]))
+        node_to_insert_pax = position[1]
 
     elif position[0] == 'insert o before':
-        new_stop = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=o, next_stop=position[1])
+        node_to_insert_pax = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=o, next_stop=position[1])
     elif position[0] == 'on arc with o: ':
-        #you will have to check capacity on the trajectory o --> d
-        #new_stop = the origin
-        return None
+        node_to_insert_pax = position[1]
+        end_node = get_next_occ_of_node(vehicles_schedule, vehicle, position[1], d)
     elif position[0] == 'insert o after':
-        new_stop = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=o,
+        node_to_insert_pax = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=o,
                                           next_stop=get_next_node(vehicles_schedule, vehicle, position[1]))
     elif position == 'in front':
-        new_stop = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=(o, d), next_stop='first stop')
-    else:
-        new_stop = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=(o, d))
+        node_to_insert_pax = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=(o, d), next_stop='first stop')
+    elif position == 'back':
+        node_to_insert_pax = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=(o, d))
 
-    occupy_available_seats(vehicles_schedule, vehicle, request_group, new_stop)
-    update_dep_time_at_node(vehicles_schedule, vehicle, new_stop)
-    for next_node in get_nodes_in_range(vehicles_schedule, vehicle, start_node=new_stop):
+    occupy_available_seats(vehicles_schedule, vehicle, request_group, node_to_insert_pax, end_node)
+    update_dep_time_at_node(vehicles_schedule, vehicle, node_to_insert_pax)
+    # update the departure time of all upcoming nodes
+    for next_node in get_nodes_in_range(vehicles_schedule, vehicle, start_node=node_to_insert_pax):
         update_dep_time_at_node(vehicles_schedule, vehicle, next_node)
 
 
@@ -191,9 +198,6 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
     Function that adds a new stop in the vehicle, in front of the 'next_stop' parameter. By default, if the node_type doesn't
     occur in the schedule already, the node is inserted as a key 'node_type, 0'. But if node_type already occurs, then this second
     element of the key is increased by 1. The value or content of the stop is initiated as an empty list.
-
-    TODO:(EXTRA) make it so that it doesn't add a number per time a stop is added, but that
-     -this number corresponds to the order of the node within the sequence
 
     see: https://stackoverflow.com/questions/44390818/how-to-insert-key-value-pair-into-dictionary-at-a-specified-position
     '''
@@ -205,7 +209,7 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
     if type(node_type) is int:
         all_occ_of_node_type = get_all_occurrences_of_node(vehicle_schedule, vehicle, node_type)
         if len(all_occ_of_node_type) > 0:
-            max_occ = max([int(t[1]) for t in all_occ_of_node_type])
+            max_occ = max([int(t[-1]) for t in all_occ_of_node_type])
             curr_occ = max_occ + 1
     elif len(node_type) == 2:
         for n in node_type:
@@ -217,31 +221,52 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
 
     if next_stop and next_stop != 'first stop':
         insert_before = list(vehicle_schedule[vehicle].keys()).index(next_stop)
-        new_stop = str(node_type)+',' + str(curr_occ), []
-        items.insert(insert_before, new_stop)
+        new_stop = str(node_type)+',' + str(curr_occ)
+        items.insert(insert_before, (new_stop, [0.0]))
         vehicle_schedule[vehicle] = dict(items)
 
     elif next_stop == 'first stop':
         insert_before = list(vehicle_schedule[vehicle].keys()).index(get_prev_node(vehicle_schedule, vehicle))
-        new_stop = (str(node_type[1]) + ',' + str(occ[node_type[1]]), [])
-        items.insert(insert_before, new_stop)
-        items.insert(insert_before, (str(node_type[0]) + ',' + str(occ[node_type[0]]), []))
+        items.insert(insert_before, (str(node_type[1]) + ',' + str(occ[node_type[1]]), [0.0]))
+        new_stop = str(node_type[0]) + ',' + str(occ[node_type[0]])
+        items.insert(insert_before, (new_stop, [0.0]))
         vehicle_schedule[vehicle] = dict(items)
 
     else:
         items = list(vehicle_schedule[vehicle].items())
-        new_stop = (str(node_type[0]) + ',' + str(occ[node_type[0]]), [])
-        items.append(new_stop)
-        items.append((str(node_type[1]) + ',' + str(occ[node_type[1]]), []))
+        new_stop = str(node_type[0]) + ',' + str(occ[node_type[0]])
+        items.append((new_stop, [0.0]))
+        items.append((str(node_type[1]) + ',' + str(occ[node_type[1]]), [0.0]))
         vehicle_schedule[vehicle] = dict(items)
 
     return new_stop
 
 
-def occupy_available_seats(vehicles_schedule, vehicle, node, request_group):
+def occupy_available_seats(vehicles_schedule, vehicle, request_group, start_node, end_node=None):
     """
-    Positions the available capacity within the vehicle.
+    Positions the available capacity within the vehicle. Part of the request group that can be added
+    into the schedule is added and that same part is removed from the request dictionairy.
+    The remaining part is kept in the request dictionairy.
     """
+
+    if not start_node:
+        return
+
+    available_seats = room_for_insertion_at_node(vehicles_schedule, vehicle, start_node, end_node)
+    portion_to_add = request_group[:min(available_seats, len(request_group))]
+
+    # add portion to the schedule
+    if not boarding_pass_at_node(vehicles_schedule, vehicle, start_node):
+        vehicles_schedule[vehicle][start_node][0] = get_max_pick_time(portion_to_add)
+    vehicles_schedule[vehicle][start_node].append(portion_to_add)
+
+    # remove it from request dictionairy
+    o, d = get_od_from_request_group(request_group)
+    idx_rq = grouped_requests[(o, d)].index(request_group)
+    if len(request_group[min(available_seats, len(request_group)):]) > 0:
+        grouped_requests[(o, d)][idx_rq] = request_group[min(available_seats, len(request_group)):]
+    else:
+        grouped_requests[(o, d)].remove(grouped_requests[(o, d)][idx_rq])
 
 
 def update_dep_time_at_node(vehicles_schedule, vehicle, node):
@@ -260,5 +285,5 @@ def update_dep_time_at_node(vehicles_schedule, vehicle, node):
     else:
         imposed_dep_time_by_prev_stop = np.float64()
 
-    return round(max(imposed_dep_time_by_prev_stop, imposed_dep_time_by_req_pt), 2)
+    vehicles_schedule[vehicle][node][0] = round(max(imposed_dep_time_by_prev_stop, imposed_dep_time_by_req_pt), 2)
 

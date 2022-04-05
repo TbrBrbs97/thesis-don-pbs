@@ -106,7 +106,7 @@ def get_insertion_possibilities(vehicles_schedule, current_vehicle, request_grou
     positions_before_first_stop = [('insert o before', node) for node in vehicles_schedule[current_vehicle]
                                    if int(node[0]) == d and get_prev_node(vehicles_schedule, current_vehicle, node) is None]
     positions_on_existing_arc = [('on arc with o: ', node) for node in vehicles_schedule[current_vehicle]
-                                   if int(node[0]) == d and get_next_occ_of_node(vehicles_schedule, current_vehicle, node, d) is not None]
+                                   if int(node[0]) == o and get_next_occ_of_node(vehicles_schedule, current_vehicle, node, d) is not None]
     positions_before_dest = [('insert o after', node) for node in vehicles_schedule[current_vehicle] if
                              get_next_node(vehicles_schedule, current_vehicle, node) is not None and
                              int(get_next_node(vehicles_schedule, current_vehicle, node)[0]) == d and node not in
@@ -207,7 +207,7 @@ def get_next_occ_of_node(vehicles_schedule, vehicle, start_node, target_node):
     idx_start_node = all_nodes.index(start_node)
 
     for idx in range(idx_start_node, len(all_nodes)):
-        if vehicles_schedule[vehicle][all_nodes[idx]][0] == target_node:
+        if int(all_nodes[idx][0]) == target_node:
             return all_nodes[idx]
 
 
@@ -260,10 +260,9 @@ def count_inveh_pax_over_node(vehicles_schedule, vehicle, start_node):
         if boarding_pass_at_node(vehicles_schedule, vehicle, start_node):
             for group in vehicles_schedule[vehicle][start_node][1:]:
                 group_origin, group_destination = get_od_from_request_group(group)
-                idx_occ, destination_node = get_next_occ_of_node(vehicles_schedule,
-                                                                 vehicle, all_nodes[0], group_destination)
+                destination_node = get_next_occ_of_node(vehicles_schedule, vehicle, all_nodes[0], group_destination)
                 if destination_node not in all_previous_nodes:
-                    inveh_pax  += len(group)
+                    inveh_pax += len(group)
 
     return inveh_pax
 

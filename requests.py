@@ -200,9 +200,10 @@ def pop_request(request_dictionairy):
 
 
 def remove_from_request_dictionairy(request_dictionairy, request_group):
-    '''
+    """
     Function that removes a request from the request dictionairy
-    '''
+    """
 
     o, d = get_od_from_request_group(request_group)
     request_dictionairy[(o, d)].remove(request_group)
+

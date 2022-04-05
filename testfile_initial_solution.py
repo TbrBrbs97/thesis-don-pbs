@@ -19,18 +19,39 @@ from parameters import network, lambdapeak, mupeak, demand_scenario, peak_durati
     req_max_cluster_time, cap_per_veh, max_services_per_vehicle, cost_matrix, grouped_requests, nb_of_required_ser
 
 initial_solution = init_fill_every_vehicle(grouped_requests, nb_of_required_ser)
-# for i in initial_solution:
-#     print('veh: ', i, ', stops: ', initial_solution[i])
 
-request_group = pop_request(grouped_requests)
-o, d = get_od_from_request_group(request_group)
-
-print(request_group)
-best_pos = find_best_position_for_request_group(initial_solution, request_group)
-insert_request_group(initial_solution, request_group, best_pos[0], best_pos[1])
+i = 0
+while i < 40:
+    request_group = pop_request(grouped_requests)
+    best_pos = find_best_position_for_request_group(initial_solution, request_group)
+    print(best_pos)
+    insert_request_group(initial_solution, request_group, best_pos[0], best_pos[1])
+    i += 1
 
 for i in initial_solution:
     print('veh: ', i, ', stops: ', initial_solution[i])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # # maybe you need one column extra (abboard_pax3) ! Depends...
