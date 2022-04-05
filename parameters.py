@@ -9,6 +9,7 @@ time_of_day = 1 #1 = peak, 0 = off-peak
 peak_duration = 60 #min.
 cap_per_veh = 20
 req_max_cluster_time = 2 #min.
+max_vehicle_ride_time = 70 #min.
 
 chaining_penalty = 20 #min.
 

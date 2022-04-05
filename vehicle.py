@@ -3,7 +3,6 @@ from requests import get_od_from_request_group, get_max_pick_time
 from parameters import cap_per_veh, req_max_cluster_time, cost_matrix, network_dim
 
 
-
 def is_empty_vehicle(solution, vehicle):
     if all([is_empty_stop(solution, vehicle, stop) for stop in solution[vehicle] if stop < get_last_stop(solution, vehicle)]):
         return True
@@ -274,3 +273,7 @@ def boarding_pass_at_node(vehicles_schedule, vehicle, node):
 def get_departure_time_at_node(vehicles_schedule, vehicle, node):
     return vehicles_schedule[vehicle][node][0]
 
+
+def get_last_arrival(vehicle_schedule, vehicle):
+    all_nodes = get_existing_nodes(vehicle_schedule, vehicle)
+    return get_departure_time_at_node(vehicle_schedule, vehicle, all_nodes[-1])

@@ -10,10 +10,12 @@ import solution_visualisation as sv
 
 from requests import get_od_from_request_group
 
+from vehicle import get_last_arrival
+
 from alt_solution_gen import generate_initial_solution, init_fill_every_vehicle, pop_request, \
     get_existing_arcs, get_existing_nodes, get_insertion_possibilities, get_all_occurrences_of_node, \
     get_next_node, get_prev_node, room_for_insertion_at_node, find_best_position_for_request_group, \
-    insert_request_group, insert_stop_in_vehicle
+    insert_request_group, insert_stop_in_vehicle, get_departure_time_at_node
 
 from parameters import network, lambdapeak, mupeak, demand_scenario, peak_duration, \
     req_max_cluster_time, cap_per_veh, max_services_per_vehicle, cost_matrix, grouped_requests, nb_of_required_ser
@@ -21,10 +23,10 @@ from parameters import network, lambdapeak, mupeak, demand_scenario, peak_durati
 initial_solution = init_fill_every_vehicle(grouped_requests, nb_of_required_ser)
 
 i = 0
-while i < 40:
+while i < 13:
     request_group = pop_request(grouped_requests)
     best_pos = find_best_position_for_request_group(initial_solution, request_group)
-    print(best_pos)
+    # print(best_pos)
     insert_request_group(initial_solution, request_group, best_pos[0], best_pos[1])
     i += 1
 
