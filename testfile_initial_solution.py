@@ -15,24 +15,27 @@ from vehicle import get_last_arrival
 from alt_solution_gen import generate_initial_solution, init_fill_every_vehicle, pop_request, \
     get_existing_arcs, get_existing_nodes, get_insertion_possibilities, get_all_occurrences_of_node, \
     get_next_node, get_prev_node, room_for_insertion_at_node, find_best_position_for_request_group, \
-    insert_request_group, insert_stop_in_vehicle, get_departure_time_at_node
+    insert_request_group, insert_request_group2, insert_stop_in_vehicle, get_departure_time_at_node
 
 from parameters import network, lambdapeak, mupeak, demand_scenario, peak_duration, \
     req_max_cluster_time, cap_per_veh, max_services_per_vehicle, cost_matrix, grouped_requests, nb_of_required_ser
 
-initial_solution = init_fill_every_vehicle(grouped_requests, nb_of_required_ser)
+# i = 0
+# while i < 67:
+#     request_group = pop_request(grouped_requests)
+#     best_pos = find_best_position_for_request_group(initial_solution, request_group)
+#     # print(best_pos)
+#     #initial_solution, grouped_requests = insert_request_group(initial_solution, grouped_requests, request_group, best_pos[0], best_pos[1])
+#     insert_request_group2(initial_solution, grouped_requests, request_group, best_pos[0], best_pos[1])
+#     i += 1
 
-i = 0
-while i < 13:
-    request_group = pop_request(grouped_requests)
-    best_pos = find_best_position_for_request_group(initial_solution, request_group)
-    # print(best_pos)
-    insert_request_group(initial_solution, request_group, best_pos[0], best_pos[1])
-    i += 1
+initial_solution = generate_initial_solution(grouped_requests)
 
 for i in initial_solution:
     print('veh: ', i, ', stops: ', initial_solution[i])
 
+print('GROUPED REQUESTS')
+print(grouped_requests)
 
 
 
