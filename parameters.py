@@ -11,7 +11,7 @@ cap_per_veh = 20
 req_max_cluster_time = 2 #min.
 max_vehicle_ride_time = 70 #min.
 
-chaining_penalty = 20 #min.
+chaining_penalty = 10 #min.
 
 network = netg.import_network(network_size, interstop_distance)
 cost_matrix = netg.generate_cost_matrix(network, v_mean)

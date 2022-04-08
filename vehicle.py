@@ -150,7 +150,7 @@ def get_next_node(vehicles_schedule, vehicle, node=None):
         return nodes_in_vehicle[-1]
 
 
-def get_nodes_in_range(vehicles_schedule, vehicle, start_node=None, end_node=None):
+def get_nodes_in_range(vehicles_schedule, vehicle, start_node=None, end_node=None, start_included=False):
     """
     Returns all nodes in a given range
     """
@@ -161,11 +161,17 @@ def get_nodes_in_range(vehicles_schedule, vehicle, start_node=None, end_node=Non
         return all_nodes[:idx_end_node]
     elif start_node and not end_node:
         idx_start_node = all_nodes.index(start_node)
-        return all_nodes[idx_start_node+1:]
+        if start_node:
+            return all_nodes[idx_start_node:]
+        else:
+            return all_nodes[idx_start_node + 1:]
     elif start_node and end_node:
         idx_start_node = all_nodes.index(start_node)
         idx_end_node = all_nodes.index(end_node)
-        return all_nodes[idx_start_node+1:idx_end_node]
+        if start_included:
+            return all_nodes[idx_start_node:idx_end_node + 1]
+        else:
+            return all_nodes[idx_start_node + 1:idx_end_node + 1]
     else:
         return all_nodes
 
@@ -236,7 +242,7 @@ def count_boarding_pax_until_dest(vehicles_schedule, vehicle, start_node, end_no
             count += sum(
                 [len(request_group) for request_group in vehicles_schedule[vehicle][start_node][1:]])
     else:
-        for n in get_nodes_in_range(vehicles_schedule, vehicle, start_node, end_node):
+        for n in get_nodes_in_range(vehicles_schedule, vehicle, start_node, end_node, start_included=True):
             if boarding_pass_at_node(vehicles_schedule, vehicle, n):
                 count += sum(
                     [len(request_group) for request_group in vehicles_schedule[vehicle][n][1:]])

@@ -337,7 +337,7 @@ def occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_gr
 
     # add portion to the schedule
     if not boarding_pass_at_node(vehicles_schedule, vehicle, start_node):
-        vehicles_schedule[vehicle][start_node][0] = get_max_pick_time(portion_to_add)
+        vehicles_schedule[vehicle][start_node][0] = round(get_max_pick_time(portion_to_add), 2)
     vehicles_schedule[vehicle][start_node].append(portion_to_add)
 
     # remove it from request dictionairy
