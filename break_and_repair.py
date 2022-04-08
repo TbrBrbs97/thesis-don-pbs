@@ -1,41 +1,44 @@
-import requests as rg
-import solution_generation as sg
-import vehicle as vg
-import solution_evaluation as se
-
 import numpy as np
 import copy
 
-from parameters import network_dim, cost_matrix, cap_per_veh
+from vehicle import locate_request_group_in_schedule, get_departure_time_at_node
+
+from requests import get_od_from_request_group
+
+from parameters import cost_matrix, cap_per_veh
 
 # perhaps create a 'dumpster' in which removed requests are put? Then create a Not-None return for removal functions
 
 
-def remove_request_group(solution, request_group, service=None):
-    if service is None:
-        service = sg.get_request_group_position(solution, request_group)[0]
+def remove_request_group(vehicles_schedule, request_group):
+    vehicle, node = locate_request_group_in_schedule(vehicles_schedule, request_group)
+    o, d = get_od_from_request_group(request_group)
+    old_departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
 
-    first_cut, end_cut = rg.get_od_from_request_group(request_group)
-    old_departure_time = vg.get_stop_dep_time(solution, service, first_cut)
+    # TODO:
+    #   You will need to not only delete the stop where passenger get on the bus,
+    #   but also the next occurence of the drop-off node if this drop-off node
+    #   only serves the passengers who were just removed.
+    #   >> So write a function that can detect whether this is such a stop.
 
     # only retain values which do not correspond to the request_group removed
     for s in range(first_cut, end_cut):
         retained_requests = [value for group in
-                             solution[service][s][1:] for value in group if value not in request_group]
-        solution[service][s] = [solution[service][s][0], retained_requests]
+                             vehicles_schedule[vehicle][s][1:] for value in group if value not in request_group]
+        vehicles_schedule[service][s] = [vehicles_schedule[service][s][0], retained_requests]
         # if not a single request is retained for the stop, render the list empty
-        # or solution[service][s][0] == 0.0)
-        if type(solution[service][s][0]) is np.float64 and len(solution[service][s][1]) == 0:
-            solution[service][s] = []
+        # or vehicles_schedule[service][s][0] == 0.0)
+        if type(vehicles_schedule[service][s][0]) is np.float64 and len(vehicles_schedule[service][s][1]) == 0:
+            vehicles_schedule[service][s] = []
 
     # check if the max pick up time is binding for the departure time at the stop
-    if rg.get_max_pick_time(request_group) == old_departure_time and vg.is_empty_vehicle(solution, service) is False:
+    if rg.get_max_pick_time(request_group) == old_departure_time and vg.is_empty_vehicle(vehicles_schedule, service) is False:
         # TODO: check if statement below still holds
         # correct the departure times at other stops (check if removing a request doesn't make departure time 'too early')
         # correct the departure times of other services of the same service
-        update_dep_times(solution, service, (first_cut, end_cut))
-    elif vg.is_empty_vehicle(solution, service):
-        update_service_sequence(solution, service, 'removal')
+        update_dep_times(vehicles_schedule, service, (first_cut, end_cut))
+    elif vg.is_empty_vehicle(vehicles_schedule, service):
+        update_service_sequence(vehicles_schedule, service, 'removal')
 
     return None
 

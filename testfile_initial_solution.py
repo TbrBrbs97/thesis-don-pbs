@@ -35,16 +35,14 @@ total_requests = count_requests(grouped_requests)
 
 initial_solution = generate_initial_solution(grouped_requests)
 
-for i in initial_solution:
-    print('veh: ', i, ', stops: ', initial_solution[i])
+# for i in initial_solution:
+#     print('veh: ', i, ', stops: ', initial_solution[i])
 
-print('GROUPED REQUESTS')
-print(grouped_requests)
+# print('GROUPED REQUESTS')
+# print(grouped_requests)
 
-waiting_time_dict = generate_waiting_time_dict(initial_solution)
-in_vehicle_time_dict = generate_in_vehicle_time_dict(initial_solution)
-total_travel_time_dict = generate_total_travel_time_dict(in_vehicle_time_dict, waiting_time_dict)
-
+total_travel_time_dict = generate_total_travel_time_dict(initial_solution, relative=True)
+print(total_travel_time_dict)
 print(get_objective_function_val(initial_solution)/total_requests)
 
 # To dataframe

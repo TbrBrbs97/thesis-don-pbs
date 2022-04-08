@@ -2,28 +2,38 @@ from vehicle import locate_request_group_in_schedule, get_departure_time_at_node
 from requests import get_od_from_request_group
 
 
-def calc_request_group_waiting_time(vehicles_schedule, request_group):
+def calc_request_group_waiting_time(vehicles_schedule, request_group, relative=False):
+    if relative:
+        denominator = len(request_group)
+    else:
+        denominator = 1
+
     vehicle, node = locate_request_group_in_schedule(vehicles_schedule, request_group)
     departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
-    waiting_time = sum([departure_time - request[1] for request in request_group])
+    waiting_time = round(sum([departure_time - request[1] for request in request_group])/denominator, 2)
 
     return waiting_time
 
 
-def calc_request_group_invehicle_time(vehicles_schedule, request_group):
-    o, d = get_od_from_request_group(request_group)
+def calc_request_group_invehicle_time(vehicles_schedule, request_group, relative=False):
+    if relative:
+        denominator = len(request_group)
+    else:
+        denominator = 1
 
+    o, d = get_od_from_request_group(request_group)
     vehicle, node = locate_request_group_in_schedule(vehicles_schedule, request_group)
+
     departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
     arrival_node = get_next_occ_of_node(vehicles_schedule, vehicle, node, d)
     arrival_time = get_departure_time_at_node(vehicles_schedule, vehicle, arrival_node)
 
-    in_vehicle_time = (arrival_time - departure_time)*len(request_group)
+    in_vehicle_time = round((arrival_time - departure_time)*len(request_group)/denominator, 2)
 
     return in_vehicle_time
 
 
-def generate_waiting_time_dict(vehicles_schedule):
+def generate_waiting_time_dict(vehicles_schedule, relative=False):
     waiting_time_dict = {}
 
     for vehicle in vehicles_schedule:
@@ -33,12 +43,12 @@ def generate_waiting_time_dict(vehicles_schedule):
             for request_group in vehicles_schedule[vehicle][node][1:]:
                 if boarding_pass_at_node(vehicles_schedule, vehicle, node):
                     waiting_time_dict[vehicle][node].\
-                        append(calc_request_group_waiting_time(vehicles_schedule, request_group))
+                        append(calc_request_group_waiting_time(vehicles_schedule, request_group, relative))
 
     return waiting_time_dict
 
 
-def generate_in_vehicle_time_dict(vehicles_schedule):
+def generate_in_vehicle_time_dict(vehicles_schedule, relative=False):
     in_vehicle_time_dict = {}
 
     for vehicle in vehicles_schedule:
@@ -48,12 +58,15 @@ def generate_in_vehicle_time_dict(vehicles_schedule):
             for request_group in vehicles_schedule[vehicle][node][1:]:
                 if boarding_pass_at_node(vehicles_schedule, vehicle, node):
                     in_vehicle_time_dict[vehicle][node].\
-                        append(calc_request_group_invehicle_time(vehicles_schedule, request_group))
+                        append(calc_request_group_invehicle_time(vehicles_schedule, request_group, relative))
 
     return in_vehicle_time_dict
 
 
-def generate_total_travel_time_dict(in_vehicle_time_dict, waiting_time_dict):
+def generate_total_travel_time_dict(vehicles_schedule, relative=False):
+    in_vehicle_time_dict = generate_in_vehicle_time_dict(vehicles_schedule, relative)
+    waiting_time_dict = generate_waiting_time_dict(vehicles_schedule, relative)
+
     total_travel_time_dict = {}
 
     for vehicle in in_vehicle_time_dict:
@@ -62,8 +75,8 @@ def generate_total_travel_time_dict(in_vehicle_time_dict, waiting_time_dict):
             total_travel_time_dict[vehicle][node] = list(range(len(in_vehicle_time_dict[vehicle][node])))
             for t in range(len(in_vehicle_time_dict[vehicle][node])):
                 if len(in_vehicle_time_dict[vehicle][node]) != 0 and len(waiting_time_dict[vehicle][node]) != 0:
-                    total_travel_time_dict[vehicle][node][t] = in_vehicle_time_dict[vehicle][node][t] + \
-                                                               waiting_time_dict[vehicle][node][t]
+                    total_travel_time_dict[vehicle][node][t] = round(in_vehicle_time_dict[vehicle][node][t] +
+                                                                     waiting_time_dict[vehicle][node][t], 2)
 
     return total_travel_time_dict
 
@@ -85,11 +98,8 @@ def sum_total_travel_time(total_travel_time_dict, level='total'):
     return result
 
 
-def get_objective_function_val(vehicles_schedule):
-    in_vehicle_time_dict = generate_in_vehicle_time_dict(vehicles_schedule)
-    waiting_time_dict = generate_waiting_time_dict(vehicles_schedule)
-    total_travel_time = generate_total_travel_time_dict(in_vehicle_time_dict, waiting_time_dict)
-
+def get_objective_function_val(vehicles_schedule, relative=False):
+    total_travel_time = generate_total_travel_time_dict(vehicles_schedule, relative)
     return round(sum_total_travel_time(total_travel_time, 'total'), 2)
 
 
