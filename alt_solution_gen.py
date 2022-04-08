@@ -8,7 +8,7 @@ from vehicle import get_departure_time_at_node, get_insertion_possibilities, \
     get_existing_nodes, get_existing_arcs, get_prev_node, get_next_node, get_next_occ_of_node, get_vehicle_first_departure, \
     get_all_occurrences_of_node, room_for_insertion_at_node, boarding_pass_at_node, get_nodes_in_range, get_last_arrival
 
-from parameters import cost_matrix, nb_of_required_ser, max_vehicle_ride_time
+from parameters import cost_matrix, nb_of_required_ser, max_vehicle_ride_time, chaining_penalty
 
 
 def generate_initial_solution(requests_dict, vehicles_schedule=None):
@@ -27,6 +27,12 @@ def generate_initial_solution(requests_dict, vehicles_schedule=None):
 
     candidate_position = find_best_position_for_request_group(vehicles_schedule, request_group)
     candidate_vehicle, candidate_pos_within_veh = candidate_position[0], candidate_position[1]
+
+    if request_group == [((2, 3), 13.2, 0), ((2, 3), 13.4, 0), ((2, 3), 13.6, 0), ((2, 3), 13.8, 0), ((2, 3), 14.0, 0),
+                         ((2, 3), 14.2, 0), ((2, 3), 14.4, 0), ((2, 3), 14.6, 0), ((2, 3), 14.8, 0), ((2, 3), 15.0, 0),
+                         ((2, 3), 15.2, 0)]:
+        print(candidate_position)
+        print(room_for_insertion_at_node(vehicles_schedule, candidate_position[0], candidate_position[1][-1]))
 
     insert_request_group2(vehicles_schedule, requests_dict, request_group, candidate_vehicle, candidate_pos_within_veh)
     return generate_initial_solution(requests_dict, vehicles_schedule)
@@ -152,9 +158,9 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     # we don't need to check for capacity in the following two cases
     elif insertion_constraint == 'in front':
         first_node = get_prev_node(vehicles_schedule, vehicle)
-        detour_cost = 0
+        detour_cost = chaining_penalty
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, first_node) -
-                                    cost_matrix[(d, int(first_node[0]))] - request_group_max_pt + cost_matrix[(o, d)])
+                              cost_matrix[(d, int(first_node[0]))] - request_group_max_pt + cost_matrix[(o, d)])
 
     elif insertion_constraint == 'back':
         last_node = get_next_node(vehicles_schedule, vehicle)

@@ -10,15 +10,20 @@ import solution_visualisation as sv
 
 from requests import get_od_from_request_group
 
-from vehicle import get_last_arrival
+from vehicle import get_last_arrival, locate_request_group_in_schedule
 
 from alt_solution_gen import generate_initial_solution, init_fill_every_vehicle, pop_request, \
     get_existing_arcs, get_existing_nodes, get_insertion_possibilities, get_all_occurrences_of_node, \
     get_next_node, get_prev_node, room_for_insertion_at_node, find_best_position_for_request_group, \
     insert_request_group, insert_request_group2, insert_stop_in_vehicle, get_departure_time_at_node
 
+from solution_evaluation import calc_request_group_waiting_time, calc_request_group_invehicle_time, get_objective_function_val
+
 from parameters import network, lambdapeak, mupeak, demand_scenario, peak_duration, \
     req_max_cluster_time, cap_per_veh, max_services_per_vehicle, cost_matrix, grouped_requests, nb_of_required_ser
+
+
+# ITERATIVE TESTS
 
 # i = 0
 # while i < 67:
@@ -37,13 +42,11 @@ for i in initial_solution:
 print('GROUPED REQUESTS')
 print(grouped_requests)
 
-
-
-
-
-
-
-
+test_rg = [((1, 3), 15.4, 0), ((1, 3), 15.6, 0), ((1, 3), 15.8, 0), ((1, 3), 16.0, 0), ((1, 3), 16.2, 0), ((1, 3), 16.4, 0), ((1, 3), 16.6, 0), ((1, 3), 16.8, 0), ((1, 3), 17.0, 0), ((1, 3), 17.2, 0), ((1, 3), 17.4, 0)]
+# in_veh_time = calc_request_group_invehicle_time(initial_solution, test_rg)
+# waiting_time = calc_request_group_waiting_time(initial_solution, test_rg)
+# print(in_veh_time, waiting_time)
+print(get_objective_function_val(initial_solution))
 
 
 

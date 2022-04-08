@@ -205,7 +205,7 @@ def get_next_occ_of_node(vehicles_schedule, vehicle, start_node, target_node):
     all_nodes = get_existing_nodes(vehicles_schedule, vehicle)
     idx_start_node = all_nodes.index(start_node)
 
-    for idx in range(idx_start_node, len(all_nodes)):
+    for idx in range(idx_start_node+1, len(all_nodes)):
         if int(all_nodes[idx][0]) == target_node:
             return all_nodes[idx]
 
@@ -264,6 +264,16 @@ def count_inveh_pax_over_node(vehicles_schedule, vehicle, start_node):
                     inveh_pax += len(group)
 
     return inveh_pax
+
+
+def locate_request_group_in_schedule(vehicles_schedule, request_group):
+    """
+    Function that returns the vehicle and the node at which a request group is located in the vehicle schedule.
+    """
+    for vehicle in vehicles_schedule:
+        for node in vehicles_schedule[vehicle]:
+            if request_group in vehicles_schedule[vehicle][node][1:]:
+                return vehicle, node
 
 
 def boarding_pass_at_node(vehicles_schedule, vehicle, node):

@@ -6,7 +6,7 @@ import solution_evaluation as se
 import numpy as np
 import copy
 
-from parameters import network_dim, od_matrix, cap_per_veh
+from parameters import network_dim, cost_matrix, cap_per_veh
 
 # perhaps create a 'dumpster' in which removed requests are put? Then create a Not-None return for removal functions
 

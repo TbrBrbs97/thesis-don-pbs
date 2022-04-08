@@ -187,10 +187,13 @@ def get_max_pick_time(request_group):
         return 0
 
 
-def pop_request(request_dictionairy):
+def pop_request(request_dictionairy, seed=True):
     '''
     Function that returns a random request group from the request dictionairy.
     '''
+
+    if seed is True:
+        random.seed(2022)
 
     random_od_pair = random.choice(list(request_dictionairy))
     while count_requests(request_dictionairy, random_od_pair) == 0:

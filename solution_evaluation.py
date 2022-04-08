@@ -1,79 +1,96 @@
-
-def calc_waiting_time(solution):
-    wt_dict = {}
-
-    for v in solution.keys():
-        wt_dict[v] = {}
-        for s in solution[v]:
-            wt_dict[v][s] = []
-            for rg in range(1, len(solution[v][s])):
-                for req in range(len(solution[v][s][rg])):
-                    # only if the starting station is equal to the stop > this is where the waiting time counts
-                    if solution[v][s][rg][req][0][0] == s:
-                        wt = abs(solution[v][s][rg][req][1] - solution[v][s][0])
-                        wt_dict[v][s].append(wt)
-
-    return wt_dict
+from vehicle import locate_request_group_in_schedule, get_departure_time_at_node, get_next_occ_of_node, boarding_pass_at_node
+from requests import get_od_from_request_group
 
 
-def get_req_ivt(request, vehicle, solution):
-    pickup = request[0][0]
-    dropoff = request[0][1]
+def calc_request_group_waiting_time(vehicles_schedule, request_group):
+    vehicle, node = locate_request_group_in_schedule(vehicles_schedule, request_group)
+    departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
+    waiting_time = sum([departure_time - request[1] for request in request_group])
 
-    ivt = solution[vehicle][dropoff][0] - solution[vehicle][pickup][0]
-
-    return ivt
-
-
-def calc_in_vehicle_time(solution):
-    ivt_dict = {}
-
-    for v in solution.keys():
-        ivt_dict[v] = {}
-        for s in solution[v]:
-            ivt_dict[v][s] = []
-            for rg in range(1, len(solution[v][s])):
-                for req in range(len(solution[v][s][rg])):
-                    if solution[v][s][rg][req][0][0] == s:
-                        ivt = get_req_ivt(solution[v][s][rg][req], v, solution)
-                        ivt_dict[v][s].append(ivt)
-
-    return ivt_dict
+    return waiting_time
 
 
-def calculate_ttt(ivt_dict, wt_dict):
-    ttt_dict = {}
+def calc_request_group_invehicle_time(vehicles_schedule, request_group):
+    o, d = get_od_from_request_group(request_group)
 
-    for v in ivt_dict.keys():
-        ttt_dict[v] = {}
-        for s in ivt_dict[v]:
-            ttt_dict[v][s] = list(range(len(ivt_dict[v][s])))
-            for t in range(len(ivt_dict[v][s])):
-                if len(ivt_dict[v][s]) != 0 and len(wt_dict[v][s]) != 0:
-                    ttt_dict[v][s][t] = ivt_dict[v][s][t] + wt_dict[v][s][t]
+    vehicle, node = locate_request_group_in_schedule(vehicles_schedule, request_group)
+    departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
+    arrival_node = get_next_occ_of_node(vehicles_schedule, vehicle, node, d)
+    arrival_time = get_departure_time_at_node(vehicles_schedule, vehicle, arrival_node)
 
-    return ttt_dict
+    in_vehicle_time = (arrival_time - departure_time)*len(request_group)
+
+    return in_vehicle_time
 
 
-# maybe also provide the ability to sum per request group? for later swappings
-def sum_total_tt(ttt_dict, level='vehicle'):
+def generate_waiting_time_dict(vehicles_schedule):
+    waiting_time_dict = {}
+
+    for vehicle in vehicles_schedule:
+        waiting_time_dict[vehicle] = {}
+        for node in vehicles_schedule[vehicle]:
+            waiting_time_dict[vehicle][node] = []
+            for request_group in vehicles_schedule[vehicle][node][1:]:
+                if boarding_pass_at_node(vehicles_schedule, vehicle, node):
+                    waiting_time_dict[vehicle][node].\
+                        append(calc_request_group_waiting_time(vehicles_schedule, request_group))
+
+    return waiting_time_dict
+
+
+def generate_in_vehicle_time_dict(vehicles_schedule):
+    in_vehicle_time_dict = {}
+
+    for vehicle in vehicles_schedule:
+        in_vehicle_time_dict[vehicle] = {}
+        for node in vehicles_schedule[vehicle]:
+            in_vehicle_time_dict[vehicle][node] = []
+            for request_group in vehicles_schedule[vehicle][node][1:]:
+                if boarding_pass_at_node(vehicles_schedule, vehicle, node):
+                    in_vehicle_time_dict[vehicle][node].\
+                        append(calc_request_group_invehicle_time(vehicles_schedule, request_group))
+
+    return in_vehicle_time_dict
+
+
+def calculate_ttt(in_vehicle_time_dict, waiting_time_dict):
+    total_travel_time_dict = {}
+
+    for vehicle in in_vehicle_time_dict:
+        total_travel_time_dict[vehicle] = {}
+        for node in in_vehicle_time_dict[vehicle]:
+            total_travel_time_dict[vehicle][node] = list(range(len(in_vehicle_time_dict[vehicle][node])))
+            for t in range(len(in_vehicle_time_dict[vehicle][node])):
+                if len(in_vehicle_time_dict[vehicle][node]) != 0 and len(waiting_time_dict[vehicle][node]) != 0:
+                    total_travel_time_dict[vehicle][node][t] = in_vehicle_time_dict[vehicle][node][t] + \
+                                                               waiting_time_dict[vehicle][node][t]
+
+    return total_travel_time_dict
+
+
+def sum_total_travel_time(total_travel_time_dict, level='total'):
 
     if level == 'stop':
-        result = {v: {s: sum([r for r in ttt_dict[v][s]]) for s in ttt_dict[v]} for v in ttt_dict}
+        result = {v: {s: sum([r for r in total_travel_time_dict[v][s]]) for s in total_travel_time_dict[v]}
+                  for v in total_travel_time_dict}
     elif level == 'vehicle':
-        result = {v: sum([sum([r for r in ttt_dict[v][s]]) for s in ttt_dict[v]]) for v in ttt_dict}
+        result = {v: sum([sum([r for r in total_travel_time_dict[v][s]]) for s in total_travel_time_dict[v]])
+                  for v in total_travel_time_dict}
+    elif level == 'total':
+        result = sum([sum([sum([r for r in total_travel_time_dict[v][s]]) for s in total_travel_time_dict[v]])
+                      for v in total_travel_time_dict])
     else:
-        result = sum([sum([sum([r for r in ttt_dict[v][s]]) for s in ttt_dict[v]]) for v in ttt_dict])
+        result = 0
 
     return result
 
 
-def get_objective_function_val(solution):
-    wt = calc_waiting_time(solution)
-    ivt = calc_waiting_time(solution)
-    total_travel_time = calculate_ttt(ivt, wt)
+def get_objective_function_val(vehicles_schedule):
+    in_vehicle_time_dict = generate_in_vehicle_time_dict(vehicles_schedule)
+    waiting_time_dict = generate_waiting_time_dict(vehicles_schedule)
+    total_travel_time = calculate_ttt(in_vehicle_time_dict, waiting_time_dict)
 
-    return round(sum_total_tt(total_travel_time, 'total'), 2)
+    return round(sum_total_travel_time(total_travel_time, 'total'), 2)
 
 
 def calc_occupancy_rate(solution, capacity):
