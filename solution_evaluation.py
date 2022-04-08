@@ -53,7 +53,7 @@ def generate_in_vehicle_time_dict(vehicles_schedule):
     return in_vehicle_time_dict
 
 
-def calculate_ttt(in_vehicle_time_dict, waiting_time_dict):
+def generate_total_travel_time_dict(in_vehicle_time_dict, waiting_time_dict):
     total_travel_time_dict = {}
 
     for vehicle in in_vehicle_time_dict:
@@ -88,7 +88,7 @@ def sum_total_travel_time(total_travel_time_dict, level='total'):
 def get_objective_function_val(vehicles_schedule):
     in_vehicle_time_dict = generate_in_vehicle_time_dict(vehicles_schedule)
     waiting_time_dict = generate_waiting_time_dict(vehicles_schedule)
-    total_travel_time = calculate_ttt(in_vehicle_time_dict, waiting_time_dict)
+    total_travel_time = generate_total_travel_time_dict(in_vehicle_time_dict, waiting_time_dict)
 
     return round(sum_total_travel_time(total_travel_time, 'total'), 2)
 
