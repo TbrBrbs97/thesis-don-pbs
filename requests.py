@@ -181,8 +181,8 @@ def get_max_pick_time(request_group):
 
     if len(request_group) != 0:
         return max([value[1] for value in request_group])
-    elif type(request_group[0]) == np.float64:
-        return request_group[0]
+    # elif type(request_group[0]) == np.float64:
+    #     return request_group[0]
     else:
         return 0
 

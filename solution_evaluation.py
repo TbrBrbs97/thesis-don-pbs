@@ -1,6 +1,7 @@
 from vehicle import locate_request_group_in_schedule, get_departure_time_at_node, get_next_occ_of_node, boarding_pass_at_node
 from requests import get_od_from_request_group
-
+from static_operators import remove_request_group
+from copy import deepcopy
 
 def calc_request_group_waiting_time(vehicles_schedule, request_group, relative=False):
     if relative:
@@ -103,13 +104,38 @@ def get_objective_function_val(vehicles_schedule, relative=False):
     return round(sum_total_travel_time(total_travel_time, 'total'), 2)
 
 
+def select_most_costly_request_groups(vehicles_schedule, required_amount=1, request_groups=None, relative=True):
+    """
+    Returns a list of length 'required_amount' with the most costly request_groups.
+    """
+    if request_groups is None:
+        request_groups = []
+
+    if required_amount == 0:
+        return request_groups
+
+    most_costly_so_far = None
+    original_obj_func_val = get_objective_function_val(vehicles_schedule)
+
+    for vehicle in vehicles_schedule:
+        for node in vehicles_schedule[vehicle]:
+            if boarding_pass_at_node(vehicles_schedule, vehicle, node):
+                for request_group in vehicles_schedule[vehicle][node][1:]:
+                    schedule_copy = deepcopy(vehicles_schedule)
+                    remove_request_group(schedule_copy, request_group)
+                    opportunity_cost = original_obj_func_val - get_objective_function_val(schedule_copy)
+                    if not most_costly_so_far or opportunity_cost > most_costly_so_far[1] \
+                            and request_group not in request_groups:
+                        most_costly_so_far = request_group, opportunity_cost
+
+    request_groups.append(most_costly_so_far[0])
+    required_amount -= 1
+    return select_most_costly_request_groups(vehicles_schedule, required_amount, request_groups, relative)
+
+
 def calc_occupancy_rate(solution, capacity):
+    #TODO: rebuild function!
     # [1:] slice: because the departure time should not be counted!
     return {v: {s: len([j for i in solution[v][s][1:] for j in i])/capacity for s in solution[v]} for v in solution}
 
-
-### TEST FUNCTIONS:
-
-# fucntion that asserts that no vehicle goes over its capacity at no stop
-# function that asserts that departure time goes up!
 

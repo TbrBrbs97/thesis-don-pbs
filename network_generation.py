@@ -46,7 +46,7 @@ def generate_cost_matrix(network, v_mean):
             distance = calculate_euclidean_dist(x_a, y_a, x_b, y_b)
             travel_time = (distance / v_mean)*60 # to get the travel time in minutes
             
-            cost_matrix[(i, j)] = travel_time
+            cost_matrix[(i, j)] = round(travel_time, 2)
             
     return cost_matrix
 
@@ -56,7 +56,6 @@ def get_network_boundaries(network):
 
     terminal = min(all_stops)
     terminal_end = max(all_stops)
-    # identify the turning point at the city center
     city = round(terminal_end/2) + 1
 
     return terminal, city, terminal_end

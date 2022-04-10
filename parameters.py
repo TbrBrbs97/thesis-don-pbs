@@ -32,3 +32,6 @@ count_groups = rg.count_requests_per_od(grouped_requests)
 size_groups = rg.size_request_groups_per_od(grouped_requests)
 
 nb_of_required_ser = round(len(list_all_requests)/(cap_per_veh*max_services_per_vehicle))
+
+# optimization
+shuffle_threshold = 20

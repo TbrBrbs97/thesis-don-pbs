@@ -1,47 +1,4 @@
-import numpy as np
-import copy
-
-from vehicle import locate_request_group_in_schedule, get_departure_time_at_node
-
-from requests import get_od_from_request_group
-
-from parameters import cost_matrix, cap_per_veh
-
-# perhaps create a 'dumpster' in which removed requests are put? Then create a Not-None return for removal functions
-
-
-def remove_request_group(vehicles_schedule, request_group):
-    vehicle, node = locate_request_group_in_schedule(vehicles_schedule, request_group)
-    o, d = get_od_from_request_group(request_group)
-    old_departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
-
-    # TODO:
-    #   You will need to not only delete the stop where passenger get on the bus,
-    #   but also the next occurence of the drop-off node if this drop-off node
-    #   only serves the passengers who were just removed.
-    #   >> So write a function that can detect whether this is such a stop.
-
-    # only retain values which do not correspond to the request_group removed
-    for s in range(first_cut, end_cut):
-        retained_requests = [value for group in
-                             vehicles_schedule[vehicle][s][1:] for value in group if value not in request_group]
-        vehicles_schedule[service][s] = [vehicles_schedule[service][s][0], retained_requests]
-        # if not a single request is retained for the stop, render the list empty
-        # or vehicles_schedule[service][s][0] == 0.0)
-        if type(vehicles_schedule[service][s][0]) is np.float64 and len(vehicles_schedule[service][s][1]) == 0:
-            vehicles_schedule[service][s] = []
-
-    # check if the max pick up time is binding for the departure time at the stop
-    if rg.get_max_pick_time(request_group) == old_departure_time and vg.is_empty_vehicle(vehicles_schedule, service) is False:
-        # TODO: check if statement below still holds
-        # correct the departure times at other stops (check if removing a request doesn't make departure time 'too early')
-        # correct the departure times of other services of the same service
-        update_dep_times(vehicles_schedule, service, (first_cut, end_cut))
-    elif vg.is_empty_vehicle(vehicles_schedule, service):
-        update_service_sequence(vehicles_schedule, service, 'removal')
-
-    return None
-
+import requests as rg
 
 def insert_request_group(solution, service, request_group):
     first_ins, end_ins = rg.get_od_from_request_group(request_group)
@@ -64,48 +21,48 @@ def insert_request_group(solution, service, request_group):
     return None
 
 
-def update_dep_times(solution, service, od):
+def update_dep_times(vehicles_schedule, vehicle, od):
 
-    if len(solution[service][od[0]]) == 0:
-        curr_stop = vg.get_first_stop(solution, service)
+    if len(vehicles_schedule[vehicle][od[0]]) == 0:
+        curr_stop = vg.get_first_stop(vehicles_schedule, vehicle)
     else:
         curr_stop = od[0]
 
-    candidate_dep_time = max([rg.get_max_pick_time(group) for group in solution[service][curr_stop][1:]])
+    candidate_dep_time = max([rg.get_max_pick_time(group) for group in vehicles_schedule[vehicle][curr_stop][1:]])
 
     # you have to look at the previous non-empty (and thus visited stop!)
 
     # adapt dep time at the current stop, considering the lower bound set by departure time at the previous stop.
     # Make the distinction: if the removal is in the first stop,
-    if curr_stop != network_dim[0] and curr_stop != vg.get_first_stop(solution, service):
-        candidate_dep_time = max(vg.get_stop_dep_time(solution, service, curr_stop-1)) + od_matrix((curr_stop-1, curr_stop), candidate_dep_time)
+    if curr_stop != network_dim[0] and curr_stop != vg.get_first_stop(vehicles_schedule, vehicle):
+        candidate_dep_time = max(vg.get_stop_dep_time(vehicles_schedule, vehicle, curr_stop - 1)) + od_matrix((curr_stop - 1, curr_stop), candidate_dep_time)
 
-    # if the stop where the removed passengers originate is the first stop, look at the previous service (if there is any)!
-    elif service[1] != 1 and curr_stop != vg.get_first_stop(solution, service):
-        previous_service_arr = vg.get_vehicle_availability(solution, (service[0], service[1]-1), network_dim, od_matrix)
+    # if the stop where the removed passengers originate is the first stop, look at the previous vehicle (if there is any)!
+    elif vehicle[1] != 1 and curr_stop != vg.get_first_stop(vehicles_schedule, vehicle):
+        previous_service_arr = vg.get_vehicle_availability(vehicles_schedule, (vehicle[0], vehicle[1] - 1), network_dim, od_matrix)
         candidate_dep_time = max(candidate_dep_time, previous_service_arr)
     else:
         candidate_dep_time = candidate_dep_time
 
     # After calculating the difference and the backward check, apply the new candidate departure time
-    dep_time_diff = candidate_dep_time - vg.get_stop_dep_time(solution, service, curr_stop)
-    solution[service][curr_stop][0] = candidate_dep_time
+    dep_time_diff = candidate_dep_time - vg.get_stop_dep_time(vehicles_schedule, vehicle, curr_stop)
+    vehicles_schedule[vehicle][curr_stop][0] = candidate_dep_time
 
     # adapt forward departure times (i.e. at the next stops)
-    next_stops = range(curr_stop+1, vg.get_last_stop(solution, service)+1)
+    next_stops = range(curr_stop + 1, vg.get_last_stop(vehicles_schedule, vehicle) + 1)
 
     for stop in next_stops:
-        if stop == vg.get_last_stop(solution, service):
-            max_imposed_dep_time = vg.get_stop_dep_time(solution, service, stop)
-            solution[service][stop][0] = max_imposed_dep_time + dep_time_diff
+        if stop == vg.get_last_stop(vehicles_schedule, vehicle):
+            max_imposed_dep_time = vg.get_stop_dep_time(vehicles_schedule, vehicle, stop)
+            vehicles_schedule[vehicle][stop][0] = max_imposed_dep_time + dep_time_diff
         else:
-            max_imposed_dep_time = max([rg.get_max_pick_time(group) for group in solution[service][stop][1:]])
+            max_imposed_dep_time = max([rg.get_max_pick_time(group) for group in vehicles_schedule[vehicle][stop][1:]])
             # The future departure times are diminished, ONLY in the case that they are not constrained by
             # the departure times
-            solution[service][stop][0] = max(solution[service][stop][0] + dep_time_diff, max_imposed_dep_time)
+            vehicles_schedule[vehicle][stop][0] = max(vehicles_schedule[vehicle][stop][0] + dep_time_diff, max_imposed_dep_time)
 
     # update the departure times of the next services of the same vehicle!
-    update_dep_times_next_services(solution, service, dep_time_diff)
+    update_dep_times_next_services(vehicles_schedule, vehicle, dep_time_diff)
 
     return None
 
@@ -249,14 +206,5 @@ def find_first_available_best_insertion(solution, request_group, excluded_insert
         excluded_insertions.append(candidate_service)
         start += 1
         return find_first_available_best_insertion(solution, request_group, excluded_insertions, start)
-
-
-def get_random_requests(solution, nb_of_requests, excluded_requests=None):
-    '''
-    Function that returns the position 'number_of_requests' amount of requests, which are not
-    in excluded requests.
-    '''
-    return None
-
 
 
