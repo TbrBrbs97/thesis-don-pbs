@@ -86,7 +86,7 @@ def find_random_position_for_request_group(vehicles_schedule, request_group, cur
     while is_empty_vehicle_schedule(vehicles_schedule, random_vehicle):
         random_vehicle = random.choice(list(vehicles_schedule))
 
-    insertion_constraints = get_insertion_possibilities(vehicles_schedule, current_vehicle, request_group)
+    insertion_constraints = get_insertion_possibilities(vehicles_schedule, random_vehicle, request_group)
     random_ins_cons = random.choice(insertion_constraints)
 
     return random_vehicle, random_ins_cons
@@ -256,7 +256,11 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
                 occ[n] = max_occ + 1
 
     if next_stop and next_stop != 'first stop':
-        insert_before = list(vehicle_schedule[vehicle].keys()).index(next_stop)
+        # if next_stop == '1,1':
+        #     print(vehicle_schedule[vehicle])
+        #     print(list(vehicle_schedule[vehicle]))
+
+        insert_before = list(vehicle_schedule[vehicle]).index(next_stop)
         new_stop = str(node_type) + ',' + str(curr_occ)
         items.insert(insert_before, (new_stop, [0.0]))
         vehicle_schedule[vehicle] = dict(items)

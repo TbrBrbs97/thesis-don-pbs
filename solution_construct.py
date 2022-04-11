@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import copy
+from pdb import set_trace
 
 from requests import count_requests, get_od_from_request_group, get_max_pick_time, \
     pop_request, remove_from_request_dictionairy
@@ -61,7 +62,8 @@ def generate_initial_solution(requests_dict, vehicles_schedule=None):
     return generate_initial_solution(requests_dict, vehicles_schedule)
 
 
-def static_optimization(vehicles_schedule, required_requests_per_it=1, nb_of_iterations=1, temp_request_dict=None):
+def static_optimization(vehicles_schedule, required_requests_per_it=1, nb_of_iterations=1, temp_request_dict=None,
+                        shuffle_intensity=20):
     """
     Performs the static optimization for a number of iterations. The static optimization happens as follows:
     - In every iteration, the 'required_request_per_it' most costly requests are (1) removed from their current position
@@ -99,7 +101,7 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, nb_of_ite
             vehicles_schedule = temp_schedule
         else:
             print('start shuffle...')
-            vehicles_schedule = shuffle_solution(vehicles_schedule, intensity=50)
+            vehicles_schedule = shuffle_solution(vehicles_schedule, intensity=shuffle_intensity)
 
         it += 1
 

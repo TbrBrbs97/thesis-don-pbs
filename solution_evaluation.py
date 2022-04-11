@@ -1,7 +1,8 @@
-from vehicle import locate_request_group_in_schedule, get_departure_time_at_node, get_next_occ_of_node, boarding_pass_at_node
+from vehicle import locate_request_group_in_schedule, get_departure_time_at_node, get_next_occ_of_node, boarding_pass_at_node, is_empty_vehicle_schedule
 from requests import get_od_from_request_group
 from static_operators import remove_request_group
 from copy import deepcopy
+
 
 def calc_request_group_waiting_time(vehicles_schedule, request_group, relative=False):
     if relative:
@@ -9,9 +10,12 @@ def calc_request_group_waiting_time(vehicles_schedule, request_group, relative=F
     else:
         denominator = 1
 
-    vehicle, node = locate_request_group_in_schedule(vehicles_schedule, request_group)
-    departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
-    waiting_time = round(sum([departure_time - request[1] for request in request_group])/denominator, 2)
+    waiting_time = 0
+
+    if len(request_group) > 0:
+        vehicle, node = locate_request_group_in_schedule(vehicles_schedule, request_group)
+        departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
+        waiting_time = round(sum([departure_time - request[1] for request in request_group])/denominator, 2)
 
     return waiting_time
 
@@ -22,20 +26,24 @@ def calc_request_group_invehicle_time(vehicles_schedule, request_group, relative
     else:
         denominator = 1
 
-    o, d = get_od_from_request_group(request_group)
-    vehicle, node = locate_request_group_in_schedule(vehicles_schedule, request_group)
+    in_vehicle_time = 0
 
-    departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
-    arrival_node = get_next_occ_of_node(vehicles_schedule, vehicle, node, d)
-    arrival_time = get_departure_time_at_node(vehicles_schedule, vehicle, arrival_node)
+    if len(request_group) > 0:
+        o, d = get_od_from_request_group(request_group)
+        vehicle, node = locate_request_group_in_schedule(vehicles_schedule, request_group)
 
-    in_vehicle_time = round((arrival_time - departure_time)*len(request_group)/denominator, 2)
+        departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
+        arrival_node = get_next_occ_of_node(vehicles_schedule, vehicle, node, d)
+        arrival_time = get_departure_time_at_node(vehicles_schedule, vehicle, arrival_node)
+
+        in_vehicle_time = round((arrival_time - departure_time)*len(request_group)/denominator, 2)
 
     return in_vehicle_time
 
 
 def generate_waiting_time_dict(vehicles_schedule, relative=False):
     waiting_time_dict = {}
+
 
     for vehicle in vehicles_schedule:
         waiting_time_dict[vehicle] = {}
@@ -54,12 +62,13 @@ def generate_in_vehicle_time_dict(vehicles_schedule, relative=False):
 
     for vehicle in vehicles_schedule:
         in_vehicle_time_dict[vehicle] = {}
-        for node in vehicles_schedule[vehicle]:
-            in_vehicle_time_dict[vehicle][node] = []
-            for request_group in vehicles_schedule[vehicle][node][1:]:
-                if boarding_pass_at_node(vehicles_schedule, vehicle, node):
-                    in_vehicle_time_dict[vehicle][node].\
-                        append(calc_request_group_invehicle_time(vehicles_schedule, request_group, relative))
+        if not is_empty_vehicle_schedule(vehicles_schedule, vehicle):
+            for node in vehicles_schedule[vehicle]:
+                in_vehicle_time_dict[vehicle][node] = []
+                for request_group in vehicles_schedule[vehicle][node][1:]:
+                    if boarding_pass_at_node(vehicles_schedule, vehicle, node):
+                        in_vehicle_time_dict[vehicle][node].\
+                            append(calc_request_group_invehicle_time(vehicles_schedule, request_group, relative))
 
     return in_vehicle_time_dict
 

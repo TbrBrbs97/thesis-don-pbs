@@ -42,15 +42,8 @@ initial_solution = generate_initial_solution(grouped_requests)
 
 print(get_objective_function_val(initial_solution))
 
-# print(select_random_request_groups(initial_solution, required_amount=40))
-shuffled_solution = shuffle_solution(initial_solution, intensity=50)
-
-for i in shuffled_solution:
-    print('veh: ', i, ', stops: ', initial_solution[i])
-
-print(get_objective_function_val(shuffled_solution))
-
-# optimized_solution, new_positions = static_optimization(initial_solution, required_requests_per_it=10, nb_of_iterations=20)
+optimized_solution, new_positions = static_optimization(initial_solution,
+                                                        required_requests_per_it=10, nb_of_iterations=5, shuffle_intensity=20)
 # print(get_objective_function_val(optimized_solution))
 # print(new_positions)
 

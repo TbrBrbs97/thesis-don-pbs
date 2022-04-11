@@ -170,6 +170,7 @@ def count_requests(request_dict, od=None):
 
 
 def get_od_from_request_group(request_group):
+    # print(request_group)
     o = request_group[0][0][0]
     d = request_group[0][0][1]
 
