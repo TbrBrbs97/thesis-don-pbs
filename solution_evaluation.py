@@ -124,7 +124,7 @@ def select_most_costly_request_groups(vehicles_schedule, required_amount=1, requ
                     schedule_copy = deepcopy(vehicles_schedule)
                     remove_request_group(schedule_copy, request_group)
                     opportunity_cost = original_obj_func_val - get_objective_function_val(schedule_copy)
-                    if not most_costly_so_far or opportunity_cost > most_costly_so_far[1] \
+                    if (not most_costly_so_far or opportunity_cost > most_costly_so_far[1]) \
                             and request_group not in request_groups:
                         most_costly_so_far = request_group, opportunity_cost
 

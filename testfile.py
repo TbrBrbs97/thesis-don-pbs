@@ -7,9 +7,9 @@ from vehicle import locate_request_group_in_schedule, is_empty_vehicle_schedule
 
 from requests import count_requests
 
-from static_operators import remove_request_group, find_best_position_for_request_group
+from static_operators import remove_request_group, find_best_position_for_request_group, select_random_request_groups
 
-from solution_construct import generate_initial_solution, static_optimization
+from solution_construct import generate_initial_solution, static_optimization, shuffle_solution
 
 from solution_evaluation import calc_request_group_waiting_time, calc_request_group_invehicle_time, \
     get_objective_function_val, generate_waiting_time_dict, generate_in_vehicle_time_dict, generate_total_travel_time_dict, select_most_costly_request_groups
@@ -37,13 +37,22 @@ initial_solution = generate_initial_solution(grouped_requests)
 # for i in initial_solution:
 #     print('veh: ', i, ', stops: ', initial_solution[i])
 
-print('GROUPED REQUESTS')
-print(grouped_requests)
+# print('GROUPED REQUESTS')
+# print(grouped_requests)
+
 print(get_objective_function_val(initial_solution))
 
-optimized_solution, new_positions = static_optimization(initial_solution, required_requests_per_it=5, nb_of_iterations=10)
-print(get_objective_function_val(optimized_solution))
+# print(select_random_request_groups(initial_solution, required_amount=40))
+shuffled_solution = shuffle_solution(initial_solution, intensity=50)
 
+for i in shuffled_solution:
+    print('veh: ', i, ', stops: ', initial_solution[i])
+
+print(get_objective_function_val(shuffled_solution))
+
+# optimized_solution, new_positions = static_optimization(initial_solution, required_requests_per_it=10, nb_of_iterations=20)
+# print(get_objective_function_val(optimized_solution))
+# print(new_positions)
 
 
 

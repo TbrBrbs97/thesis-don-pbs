@@ -1,5 +1,6 @@
 import numpy as np
 import copy
+import random
 
 from vehicle import locate_request_group_in_schedule, get_departure_time_at_node, is_empty_vehicle_schedule, \
     is_empty_stop, get_next_occ_of_node, get_pick_up_nodes_dest, get_nodes_in_range, \
@@ -8,7 +9,8 @@ from vehicle import locate_request_group_in_schedule, get_departure_time_at_node
 
 from requests import get_od_from_request_group, get_max_pick_time
 
-from parameters import cost_matrix, cap_per_veh, nb_of_required_ser, chaining_penalty, max_vehicle_ride_time
+from parameters import cost_matrix, cap_per_veh, nb_of_required_ser, chaining_penalty, \
+    penalty_threshold, max_vehicle_ride_time
 
 # perhaps create a 'dumpster' in which removed requests are put? Then create a Not-None return for removal functions
 
@@ -72,6 +74,22 @@ def find_best_position_for_request_group(vehicles_schedule, request_group, curre
 
     current_vehicle += 1
     return find_best_position_for_request_group(vehicles_schedule, request_group, current_vehicle, best_pos_so_far)
+
+
+def find_random_position_for_request_group(vehicles_schedule, request_group, current_vehicle=1):
+    """
+    Function that returns a feasible (that is, respecting the capacity constraint) position for a request group.
+    The cost of this position does not matter. Also, it could very well be the same position as it was in before.
+    """
+
+    random_vehicle = random.choice(list(vehicles_schedule))
+    while is_empty_vehicle_schedule(vehicles_schedule, random_vehicle):
+        random_vehicle = random.choice(list(vehicles_schedule))
+
+    insertion_constraints = get_insertion_possibilities(vehicles_schedule, current_vehicle, request_group)
+    random_ins_cons = random.choice(insertion_constraints)
+
+    return random_vehicle, random_ins_cons
 
 
 def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, insertion_constraint):
@@ -147,7 +165,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     elif insertion_constraint == 'in front':
         first_node = get_prev_node(vehicles_schedule, vehicle)
         # here you add a penalty for adding requests in front, because it is often too cheap
-        detour_cost = chaining_penalty
+        detour_cost = chaining_penalty*(len(get_nodes_in_range(vehicles_schedule, vehicle)) - penalty_threshold)
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, first_node) -
                               cost_matrix[(d, int(first_node[0]))] - request_group_max_pt + cost_matrix[(o, d)])
 
@@ -327,10 +345,29 @@ def add_request_group_to_dict(request_group, request_dict=None):
     return request_dict
 
 
-def select_random_request_groups(vehicles_schedule, required_amount=1):
+def select_random_request_groups(vehicles_schedule, required_amount=1, random_request_groups=None):
     """
     Function that selects 'required_amount' request groups randomly from the schedule.
     """
+    if random_request_groups is None:
+        random_request_groups = []
 
+    if required_amount == 0:
+        return random_request_groups
 
+    random_vehicle = random.choice(list(vehicles_schedule))
+    while is_empty_vehicle_schedule(vehicles_schedule, random_vehicle):
+        random_vehicle = random.choice(list(vehicles_schedule))
 
+    random_stop = random.choice(list(vehicles_schedule[random_vehicle]))
+    while is_empty_stop(vehicles_schedule, random_vehicle, random_stop):
+        random_stop = random.choice(list(vehicles_schedule[random_vehicle]))
+
+    random_request_group = random.choice(vehicles_schedule[random_vehicle][random_stop][1:])
+    if random_request_group not in random_request_groups:
+        random_request_groups.append(random_request_group)
+        return select_random_request_groups(vehicles_schedule, required_amount, random_request_groups)
+
+    else:
+        required_amount -= 1
+        return select_random_request_groups(vehicles_schedule, required_amount, random_request_groups)

@@ -257,7 +257,6 @@ def count_inveh_pax_over_node(vehicles_schedule, vehicle, start_node):
         # print(boarding_pass_at_node(vehicles_schedule, vehicle, start_node))
         if boarding_pass_at_node(vehicles_schedule, vehicle, start_node):
             for group in vehicles_schedule[vehicle][start_node][1:]:
-                # print(group)
                 group_origin, group_destination = get_od_from_request_group(group)
                 destination_node = get_next_occ_of_node(vehicles_schedule, vehicle, all_nodes[0], group_destination)
                 if destination_node not in all_previous_nodes:

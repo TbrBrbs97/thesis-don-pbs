@@ -6,13 +6,13 @@ from requests import count_requests, get_od_from_request_group, get_max_pick_tim
     pop_request, remove_from_request_dictionairy
 
 from static_operators import find_best_position_for_request_group, insert_request_group, \
-    remove_request_group, add_request_group_to_dict
+    remove_request_group, add_request_group_to_dict, select_random_request_groups, find_random_position_for_request_group
 
 from vehicle import locate_request_group_in_schedule
 
-from solution_evaluation import select_most_costly_request_groups
+from solution_evaluation import select_most_costly_request_groups, get_objective_function_val
 
-from parameters import cost_matrix, nb_of_required_ser, shuffle_threshold
+from parameters import cost_matrix, nb_of_required_ser
 
 
 def init_fill_every_vehicle(request_dict, nb_of_available_veh, seed=True):
@@ -71,42 +71,62 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, nb_of_ite
     """
 
     # should we do the copy do inside the loop, and only make this the incumbent if we achieve an improvement?
-    # vehicles_schedule = copy.deepcopy(vehicles_schedule)
     it = 0
 
     new_positions = dict()
 
     while it < nb_of_iterations:
-        most_costly_requests = select_most_costly_request_groups(vehicles_schedule, required_requests_per_it)
+        temp_schedule = copy.deepcopy(vehicles_schedule)
 
-        print(it)
+        most_costly_requests = select_most_costly_request_groups(temp_schedule, required_requests_per_it)
+
+        print('current iteration: ', it)
         for request_group in most_costly_requests:
-            print(request_group)
-            remove_request_group(vehicles_schedule, request_group)
+            # print(request_group)
+            remove_request_group(temp_schedule, request_group)
             temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
 
         new_positions[it] = []
 
         while count_requests(temp_request_dict) != 0:
             request_group = pop_request(temp_request_dict, seed=True)
-            candidate_vehicle, candidate_node, score = find_best_position_for_request_group(vehicles_schedule, request_group)
+            candidate_vehicle, candidate_node, score = find_best_position_for_request_group(temp_schedule, request_group)
             new_positions[it].append((request_group, candidate_vehicle, candidate_node))
-            insert_request_group(vehicles_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
+            insert_request_group(temp_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
 
-        if it % shuffle_threshold == 0:
-            shuffle_solution(vehicles_schedule, intensity=50)
+        if get_objective_function_val(temp_schedule) < get_objective_function_val(vehicles_schedule):
+            print('new improvement found: ', get_objective_function_val(temp_schedule))
+            vehicles_schedule = temp_schedule
+        else:
+            print('start shuffle...')
+            vehicles_schedule = shuffle_solution(vehicles_schedule, intensity=50)
 
         it += 1
 
     return vehicles_schedule, new_positions
 
 
-def shuffle_solution(solution, intensity=50):
+def shuffle_solution(vehicles_schedule, intensity=50, temp_request_dict=None):
     """
     Function which shakes a solution schedule. The intensity parameter
     indicates how many requests are lifted and moved elsewhere. The shaking process goes as follows:
     - 'intensity' amount of requests are removed from the schedule and put in a random
     """
-    return None
+
+    if not temp_request_dict:
+        temp_request_dict = dict()
+
+    random_request_groups = select_random_request_groups(vehicles_schedule, intensity)
+
+    for request_group in random_request_groups:
+        remove_request_group(vehicles_schedule, request_group)
+        temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
+
+    while count_requests(temp_request_dict) != 0:
+        request_group = pop_request(temp_request_dict, seed=False)
+        candidate_vehicle, candidate_node = find_random_position_for_request_group(vehicles_schedule, request_group)
+        insert_request_group(vehicles_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
+
+    return vehicles_schedule
 
 

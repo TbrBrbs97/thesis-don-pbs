@@ -12,6 +12,7 @@ req_max_cluster_time = 2 #min.
 max_vehicle_ride_time = 70 #min.
 
 chaining_penalty = 10 #min.
+penalty_threshold = 4 # amount of request above which the chaining penalty applies
 
 network = netg.import_network(network_size, interstop_distance)
 cost_matrix = netg.generate_cost_matrix(network, v_mean)
@@ -32,6 +33,3 @@ count_groups = rg.count_requests_per_od(grouped_requests)
 size_groups = rg.size_request_groups_per_od(grouped_requests)
 
 nb_of_required_ser = round(len(list_all_requests)/(cap_per_veh*max_services_per_vehicle))
-
-# optimization
-shuffle_threshold = 20
