@@ -1,7 +1,8 @@
 from vehicle import locate_request_group_in_schedule, get_departure_time_at_node, get_next_occ_of_node, boarding_pass_at_node, is_empty_vehicle_schedule
-from requests import get_od_from_request_group
+from requests import get_od_from_request_group, count_requests
 from static_operators import remove_request_group
 from copy import deepcopy
+from parameters import count_total_requests
 
 
 def calc_request_group_waiting_time(vehicles_schedule, request_group, relative=False):
@@ -43,7 +44,6 @@ def calc_request_group_invehicle_time(vehicles_schedule, request_group, relative
 
 def generate_waiting_time_dict(vehicles_schedule, relative=False):
     waiting_time_dict = {}
-
 
     for vehicle in vehicles_schedule:
         waiting_time_dict[vehicle] = {}
@@ -109,8 +109,11 @@ def sum_total_travel_time(total_travel_time_dict, level='total'):
 
 
 def get_objective_function_val(vehicles_schedule, relative=False):
-    total_travel_time = generate_total_travel_time_dict(vehicles_schedule, relative)
-    return round(sum_total_travel_time(total_travel_time, 'total'), 2)
+    total_travel_time = generate_total_travel_time_dict(vehicles_schedule)
+    if relative is True:
+        return round(sum_total_travel_time(total_travel_time, 'total')/count_total_requests, 2)
+    else:
+        return round(sum_total_travel_time(total_travel_time, 'total'), 2)
 
 
 def select_most_costly_request_groups(vehicles_schedule, required_amount=1, request_groups=None, relative=True):

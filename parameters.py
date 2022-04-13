@@ -1,35 +1,51 @@
-import network_generation as netg
-import requests as rg
+from network_generation import import_network, generate_cost_matrix, get_network_boundaries
+from requests import count_requests, get_od_from_request_group, get_scenario_mean_demand, \
+    list_all_requests, convert_md_todict, generate_requests, count_requests_per_od, \
+    size_request_groups_per_od, group_requests_dt
 
-network_size = 'small'
-interstop_distance = 'half'
+# GENERAL
+
 v_mean = 50 # km/h
 demand_scenario = 2
 time_of_day = 1 #1 = peak, 0 = off-peak
 peak_duration = 60 #min.
+
+# NETWORK CHARACTERISTICS
+
+network_size = 'small'
+interstop_distance = 'half'
+
+network = import_network(network_size, interstop_distance)
+cost_matrix = generate_cost_matrix(network, v_mean)
+network_dim = get_network_boundaries(network)
+
+# REQUEST CHARACTERISTICS
+
+req_max_cluster_time = 11 #min.
+
+lambdapeak = get_scenario_mean_demand('city', network_size, scen=demand_scenario, peak=1)
+mupeak = get_scenario_mean_demand('terminal', network_size, scen=demand_scenario, peak=1)
+
+mean_demand = convert_md_todict(lambdapeak, mupeak, demand_scenario)
+requests_per_od = generate_requests(mean_demand, peak_duration, seed=True)
+
+list_all_requests = list_all_requests(requests_per_od)
+
+grouped_requests = group_requests_dt(list_all_requests, req_max_cluster_time, requests_per_od.keys())
+count_total_requests = count_requests(grouped_requests)
+count_groups = count_requests_per_od(grouped_requests)
+size_groups = size_request_groups_per_od(grouped_requests)
+
+# VEHICLE CHARACTERISTICS
+
+max_vehicle_ride_time = peak_duration + 2*cost_matrix[(network_dim[0], network_dim[2])] #min.
 cap_per_veh = 20
-req_max_cluster_time = 2 #min.
-max_vehicle_ride_time = 70 #min.
-
-chaining_penalty = 10 #min.
-penalty_threshold = 4 # amount of request above which the chaining penalty applies
-
-network = netg.import_network(network_size, interstop_distance)
-cost_matrix = netg.generate_cost_matrix(network, v_mean)
-network_dim = netg.get_network_boundaries(network)
-
 max_services_per_vehicle = 2
-
-lambdapeak = rg.get_scenario_mean_demand('city', network_size, scen=demand_scenario, peak=1)
-mupeak = rg.get_scenario_mean_demand('terminal', network_size, scen=demand_scenario, peak=1)
-
-mean_demand = rg.convert_md_todict(lambdapeak, mupeak, demand_scenario)
-requests_per_od = rg.generate_requests(mean_demand, peak_duration, seed=True)
-
-list_all_requests = rg.list_all_requests(requests_per_od)
-
-grouped_requests = rg.group_requests_dt(list_all_requests, req_max_cluster_time, requests_per_od.keys())
-count_groups = rg.count_requests_per_od(grouped_requests)
-size_groups = rg.size_request_groups_per_od(grouped_requests)
-
 nb_of_required_ser = round(len(list_all_requests)/(cap_per_veh*max_services_per_vehicle))
+
+# OPTIMIZATION
+
+M = 100000.0 # a very large number
+opt_time_lim = 1 # minutes
+disturbance_ratio = 0.05
+shuffle_ratio = 0.5

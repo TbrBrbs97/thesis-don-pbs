@@ -3,82 +3,6 @@ from requests import get_od_from_request_group, get_max_pick_time
 from parameters import cap_per_veh, req_max_cluster_time, cost_matrix, network_dim
 
 
-def get_served_stops(solution, vehicle):
-    # this is only for vehicle v!
-    # check for every stop what the origin and destination of stops are
-    served_stops = set(())
-    for s in solution[vehicle]:
-        for rg in range(1, len(solution[vehicle][s])):
-            for req in solution[vehicle][s][rg]:
-                served_stops.add(req[0][0])  # add the origin and destination
-                served_stops.add(req[0][1])
-
-    return served_stops
-
-
-def get_stop_dep_time(solution, service, stop):
-    if stop in solution[service].keys() and not is_empty_stop(solution, service, stop):
-        return solution[service][stop][0]
-    else:
-        return 0
-
-
-def get_previous_stop_dep_time(solution, service, stop, network_dim):
-
-    if stop > network_dim[0]:
-        previous_stop = stop-1
-        while is_empty_stop(solution, service, previous_stop) and previous_stop > network_dim[0]:
-            previous_stop -= 1
-    else:
-        previous_stop = stop
-
-    return previous_stop, get_stop_dep_time(solution, service, previous_stop)
-
-
-def get_first_stop(solution, service):
-    stop = 1
-
-    while stop <= len(solution[service]):
-        if len(solution[service][stop]) != 0:
-            return stop
-        stop += 1
-
-
-def get_last_stop(solution, service):
-    # this function can only be called after the initial schedule is made!
-    stop = 1
-
-    while stop <= len(solution[service]):
-        if len(solution[service][stop]) == 1:
-            return stop
-        stop += 1
-
-
-def get_vehicle_availability(solution, service, network_dim, od_matrix):
-
-    # if the last stops equals the terminal, then it has made a round trip
-    if get_last_stop(solution, service) == network_dim[2]:
-        return solution[service][network_dim[2]][0]
-    else:
-        # here you have to add the time driving back from the city center to the terminal!
-        return solution[service][network_dim[1]][0] + od_matrix[(network_dim[1], network_dim[0])]
-
-
-def get_vehicle_first_departure(solution, key, network_dim):
-    s = network_dim[0]
-    while len(solution[key][s]) == 0:
-        s += 1
-    return solution[key][s][0]
-
-
-def get_services_per_vehicle(solution, vehicle):
-    # returns a list of of services per vehicle
-    return [k for k in solution.keys() if k[0] == vehicle]
-
-
-# FROM HERE ARE NEW FUNCTIONS
-
-
 def get_insertion_possibilities(vehicles_schedule, vehicle, request_group):
     """
     Returns all possible insertions (not checked with capacity yet) for a request group.
@@ -89,6 +13,9 @@ def get_insertion_possibilities(vehicles_schedule, vehicle, request_group):
     if not is_empty_vehicle_schedule(vehicles_schedule, vehicle):
         positions_at_origin = [('insert d after', node) for node in vehicles_schedule[vehicle] if int(node[0]) == o
                                and get_next_occ_of_node(vehicles_schedule, vehicle, node, d) is None]
+        positions_at_origin_as_last_stop = [('insert d after', node) for node in vehicles_schedule[vehicle] if int(node[0]) == o
+                                            and get_next_node(vehicles_schedule, vehicle) is None and
+                                            node not in [tup[1] for tup in positions_at_origin]]
         positions_before_first_stop = [('insert o before', node) for node in vehicles_schedule[vehicle]
                                        if int(node[0]) == d and get_prev_node(vehicles_schedule, vehicle, node) is None]
         positions_on_existing_arc = [('on arc with o: ', node) for node in vehicles_schedule[vehicle]
@@ -97,10 +24,15 @@ def get_insertion_possibilities(vehicles_schedule, vehicle, request_group):
                                  get_next_node(vehicles_schedule, vehicle, node) is not None and
                                  int(get_next_node(vehicles_schedule, vehicle, node)[0]) == d and node not in
                                  [tup[1] for tup in positions_on_existing_arc]]
-        default_positions = ['in front', 'back']
+        default_positions = []
+        if len(positions_at_origin_as_last_stop) == 0:
+            default_positions.append('back')
 
-        insertion_constraints = positions_at_origin + positions_before_dest + positions_before_first_stop + \
-                                positions_on_existing_arc + default_positions
+        if len(positions_before_first_stop) == 0:
+            default_positions.append('in front')
+
+        insertion_constraints = positions_at_origin + positions_at_origin_as_last_stop + positions_before_dest + \
+                                positions_before_first_stop + positions_on_existing_arc + default_positions
 
     else:
         insertion_constraints = ['first entry']
@@ -225,7 +157,7 @@ def room_for_insertion_at_node(vehicles_schedule, vehicle, start_node, end_node=
 
 def count_boarding_pax_until_dest(vehicles_schedule, vehicle, start_node, end_node=None):
     """
-    Function that returns
+    Function that returns the amount of passengers boarding from start node until end node, if specified.
     """
     count = 0
 
@@ -244,8 +176,8 @@ def count_boarding_pax_until_dest(vehicles_schedule, vehicle, start_node, end_no
 
 def count_inveh_pax_over_node(vehicles_schedule, vehicle, start_node):
     """
-    Function that counts the nb of passengers who enter the vehicle before 'start_node',
-    and remain in the vehicle until after 'start_node'.
+    Function that counts the nb of passengers who enter the vehicle before 'node',
+    and remain in the vehicle until after 'node'.
     """
     all_nodes = get_existing_nodes(vehicles_schedule, vehicle)
     index_curr_node = all_nodes.index(start_node)
@@ -253,17 +185,22 @@ def count_inveh_pax_over_node(vehicles_schedule, vehicle, start_node):
 
     inveh_pax = 0
 
-    for start_node in all_previous_nodes:
-        # print(boarding_pass_at_node(vehicles_schedule, vehicle, start_node))
-        if boarding_pass_at_node(vehicles_schedule, vehicle, start_node):
-            for group in vehicles_schedule[vehicle][start_node][1:]:
+    for node in all_previous_nodes:
+        # print(boarding_pass_at_node(vehicles_schedule, vehicle, node))
+        if boarding_pass_at_node(vehicles_schedule, vehicle, node):
+            for group in vehicles_schedule[vehicle][node][1:]:
                 if len(group) != 0:
                     group_origin, group_destination = get_od_from_request_group(group)
-                    destination_node = get_next_occ_of_node(vehicles_schedule, vehicle, all_nodes[0], group_destination)
+                    destination_node = get_next_occ_of_node(vehicles_schedule, vehicle, node, group_destination)
                     if destination_node not in all_previous_nodes:
                         inveh_pax += len(group)
 
     return inveh_pax
+
+
+def count_assigned_request_groups(vehicle_schedule):
+    return sum([len(node[1:]) for vehicle in vehicle_schedule for node in
+                vehicle_schedule[vehicle] if boarding_pass_at_node(vehicle_schedule, vehicle, node)])
 
 
 def locate_request_group_in_schedule(vehicles_schedule, request_group):
@@ -284,10 +221,10 @@ def get_departure_time_at_node(vehicles_schedule, vehicle, node):
     return vehicles_schedule[vehicle][node][0]
 
 
-def get_last_arrival(vehicle_schedule, vehicle):
-    all_nodes = get_existing_nodes(vehicle_schedule, vehicle)
-    return get_departure_time_at_node(vehicle_schedule, vehicle, all_nodes[-1]) \
-        if not is_empty_vehicle_schedule(vehicle_schedule, vehicle) else 0.0
+def get_last_arrival(vehicles_schedule, vehicle):
+    last_node = get_next_node(vehicles_schedule, vehicle)
+    return get_departure_time_at_node(vehicles_schedule, vehicle, last_node) \
+        if not is_empty_vehicle_schedule(vehicles_schedule, vehicle) else 0.0
 
 
 def is_empty_vehicle_schedule(vehicles_schedule, vehicle):

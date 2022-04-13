@@ -1,19 +1,20 @@
 import random
 import numpy as np
 import copy
+import time
 from pdb import set_trace
 
 from requests import count_requests, get_od_from_request_group, get_max_pick_time, \
-    pop_request, remove_from_request_dictionairy
+    pop_request, remove_from_request_dictionairy, add_request_group_to_dict
 
 from static_operators import find_best_position_for_request_group, insert_request_group, \
-    remove_request_group, add_request_group_to_dict, select_random_request_groups, find_random_position_for_request_group
+    remove_request_group, select_random_request_groups, find_random_position_for_request_group, find_first_best_improvement_for_request_group
 
-from vehicle import locate_request_group_in_schedule
+from vehicle import locate_request_group_in_schedule, count_assigned_request_groups
 
 from solution_evaluation import select_most_costly_request_groups, get_objective_function_val
 
-from parameters import cost_matrix, nb_of_required_ser
+from parameters import cost_matrix, nb_of_required_ser, M, disturbance_ratio, shuffle_ratio
 
 
 def init_fill_every_vehicle(request_dict, nb_of_available_veh, seed=True):
@@ -41,29 +42,33 @@ def init_fill_every_vehicle(request_dict, nb_of_available_veh, seed=True):
     return vehicles_schedule
 
 
-def generate_initial_solution(requests_dict, vehicles_schedule=None):
+def generate_initial_solution(requests_dict, vehicles_schedule=None, score_dict=None):
     """
     An alternative version to the initial solution build, which does not
     assume fixed vehicle schedules.
     """
 
+    if score_dict is None:
+        score_dict = dict()
+
     if vehicles_schedule is None:
         vehicles_schedule = init_fill_every_vehicle(requests_dict, nb_of_required_ser)
 
     if count_requests(requests_dict) == 0:
-        return vehicles_schedule
+        return vehicles_schedule, score_dict
     else:
         request_group = pop_request(requests_dict)
 
     candidate_position = find_best_position_for_request_group(vehicles_schedule, request_group)
-    candidate_vehicle, candidate_pos_within_veh = candidate_position[0], candidate_position[1]
+    # print(candidate_position)
+    candidate_vehicle, candidate_node, score = candidate_position
+    score_dict[str(request_group)] = score
 
-    insert_request_group(vehicles_schedule, requests_dict, request_group, candidate_vehicle, candidate_pos_within_veh)
-    return generate_initial_solution(requests_dict, vehicles_schedule)
+    insert_request_group(vehicles_schedule, requests_dict, request_group, candidate_vehicle, candidate_node)
+    return generate_initial_solution(requests_dict, vehicles_schedule, score_dict)
 
 
-def static_optimization(vehicles_schedule, required_requests_per_it=1, nb_of_iterations=1, temp_request_dict=None,
-                        shuffle_intensity=20):
+def static_optimization(vehicles_schedule, original_scores, required_requests_per_it=1, time_limit=5, temp_request_dict=None):
     """
     Performs the static optimization for a number of iterations. The static optimization happens as follows:
     - In every iteration, the 'required_request_per_it' most costly requests are (1) removed from their current position
@@ -71,13 +76,14 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, nb_of_ite
     - Every 'shuffle_threshold' iterations, the solution is shaken in order to escape local optima.
 
     """
+    time_limit *= 60  # convert time limit to seconds
 
-    # should we do the copy do inside the loop, and only make this the incumbent if we achieve an improvement?
     it = 0
-
+    elapsed_time = 0
     new_positions = dict()
 
-    while it < nb_of_iterations:
+    while elapsed_time < time_limit:
+        start_time = time.time()
         temp_schedule = copy.deepcopy(vehicles_schedule)
 
         most_costly_requests = select_most_costly_request_groups(temp_schedule, required_requests_per_it)
@@ -100,15 +106,17 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, nb_of_ite
             print('new improvement found: ', get_objective_function_val(temp_schedule))
             vehicles_schedule = temp_schedule
         else:
-            print('start shuffle...')
-            vehicles_schedule = shuffle_solution(vehicles_schedule, intensity=shuffle_intensity)
+            print('no improvement found, initiate small disturbance...')
+            vehicles_schedule = disturb_solution(vehicles_schedule, original_scores)
 
+        end_time = time.time()
+        elapsed_time += end_time - start_time
         it += 1
 
     return vehicles_schedule, new_positions
 
 
-def shuffle_solution(vehicles_schedule, intensity=50, temp_request_dict=None):
+def disturb_solution(vehicles_schedule, original_scores, temp_request_dict=None):
     """
     Function which shakes a solution schedule. The intensity parameter
     indicates how many requests are lifted and moved elsewhere. The shaking process goes as follows:
@@ -118,7 +126,8 @@ def shuffle_solution(vehicles_schedule, intensity=50, temp_request_dict=None):
     if not temp_request_dict:
         temp_request_dict = dict()
 
-    random_request_groups = select_random_request_groups(vehicles_schedule, intensity)
+    request_groups_to_select = int(round(disturbance_ratio*count_assigned_request_groups(vehicles_schedule)))
+    random_request_groups = select_random_request_groups(vehicles_schedule, request_groups_to_select)
 
     for request_group in random_request_groups:
         remove_request_group(vehicles_schedule, request_group)
@@ -126,9 +135,14 @@ def shuffle_solution(vehicles_schedule, intensity=50, temp_request_dict=None):
 
     while count_requests(temp_request_dict) != 0:
         request_group = pop_request(temp_request_dict, seed=False)
-        candidate_vehicle, candidate_node = find_random_position_for_request_group(vehicles_schedule, request_group)
+        original_score = original_scores[str(request_group)]
+        candidate_vehicle, candidate_node = find_first_best_improvement_for_request_group(vehicles_schedule,
+                                                                                          request_group, original_score)
         insert_request_group(vehicles_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
 
     return vehicles_schedule
 
+
+def large_shuffle(vehicles_schedule, temp_request_dict=None):
+    return None
 
