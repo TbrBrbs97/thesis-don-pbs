@@ -44,7 +44,7 @@ def remove_request_group(vehicles_schedule, request_group):
             update_dep_time_at_node(vehicles_schedule, vehicle, n)
 
 
-def find_first_best_improvement_for_request_group(vehicles_schedule, request_group, original_score, current_vehicle=1,
+def find_first_best_improvement_for_request_group(vehicles_schedule, request_group, original_score=None, current_vehicle=1,
                                                   best_improvement=None, excluded_vehicles=None):
     "Find the first best improving position for a request group, in stead of looking for the best spot"
 
@@ -64,10 +64,16 @@ def find_first_best_improvement_for_request_group(vehicles_schedule, request_gro
     improvement_found = False
     i = 0
     while improvement_found is False or i < len(insertion_constraints):
-        matching_score = find_pos_cost_given_ins_cons(vehicles_schedule, current_vehicle, request_group, insertion_constraints[i])
-        if not best_improvement or matching_score < original_score:
-            best_improvement = current_vehicle, insertion_constraints[i], round(matching_score, 2)
+        current_score = find_pos_cost_given_ins_cons(vehicles_schedule, current_vehicle, request_group, insertion_constraints[i])
+        if not best_improvement:
+            best_improvement = current_vehicle, insertion_constraints[i], round(current_score, 2)
+            i += 1
+        elif current_score < best_improvement[2]:
+            best_improvement = current_vehicle, insertion_constraints[i], round(current_score, 2)
+            improvement_found = True
             return best_improvement
+        else:
+            i += 1
 
     if improvement_found is False:
         current_vehicle += 1

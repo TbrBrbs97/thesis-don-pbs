@@ -27,7 +27,9 @@ from parameters import network, lambdapeak, mupeak, demand_scenario, peak_durati
 total_requests = count_requests(grouped_requests)
 
 initial_solution, scores_dict = generate_initial_solution(grouped_requests)
-print(scores_dict)
+# print(count_assigned_request_groups(initial_solution))
+# print(scores_dict)
+# print(len(scores_dict))
 
 # print('objective func: ', get_objective_function_val(initial_solution, relative=False))
 # for i in initial_solution:
@@ -39,7 +41,6 @@ print(get_objective_function_val(initial_solution))
 optimized_solution, new_positions = static_optimization(initial_solution, scores_dict, required_requests_per_it=5,
                                                         time_limit=opt_time_lim)
 print(get_objective_function_val(optimized_solution))
-# print(new_positions)
 
 
 # cProfiler

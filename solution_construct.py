@@ -62,7 +62,8 @@ def generate_initial_solution(requests_dict, vehicles_schedule=None, score_dict=
     candidate_position = find_best_position_for_request_group(vehicles_schedule, request_group)
     # print(candidate_position)
     candidate_vehicle, candidate_node, score = candidate_position
-    score_dict[str(request_group)] = score
+    score_dict[str(request_group)] = score  # does not take into account that request groups might be split up!
+    # should we maybe take the splitting up already into account in the cost calculation process?
 
     insert_request_group(vehicles_schedule, requests_dict, request_group, candidate_vehicle, candidate_node)
     return generate_initial_solution(requests_dict, vehicles_schedule, score_dict)
@@ -106,7 +107,8 @@ def static_optimization(vehicles_schedule, original_scores, required_requests_pe
             print('new improvement found: ', get_objective_function_val(temp_schedule))
             vehicles_schedule = temp_schedule
         else:
-            print('no improvement found, initiate small disturbance...')
+            print('no improvement found, obj. func: ', get_objective_function_val(temp_schedule),
+                  'initiate small disturbance...')
             vehicles_schedule = disturb_solution(vehicles_schedule, original_scores)
 
         end_time = time.time()
@@ -135,9 +137,9 @@ def disturb_solution(vehicles_schedule, original_scores, temp_request_dict=None)
 
     while count_requests(temp_request_dict) != 0:
         request_group = pop_request(temp_request_dict, seed=False)
-        original_score = original_scores[str(request_group)]
-        candidate_vehicle, candidate_node = find_first_best_improvement_for_request_group(vehicles_schedule,
-                                                                                          request_group, original_score)
+        # original_score = original_scores[str(request_group)]
+        candidate_vehicle, candidate_node, score = find_first_best_improvement_for_request_group(vehicles_schedule,
+                                                                                          request_group)
         insert_request_group(vehicles_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
 
     return vehicles_schedule
