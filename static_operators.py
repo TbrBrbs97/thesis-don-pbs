@@ -9,7 +9,7 @@ from vehicle import locate_request_group_in_schedule, get_departure_time_at_node
 
 from requests import get_od_from_request_group, get_max_pick_time, add_request_group_to_dict
 
-from parameters import cost_matrix, cap_per_veh, nb_of_required_ser, max_vehicle_ride_time, M, stop_addition_penalty
+from parameters import cost_matrix, cap_per_veh, nb_of_available_vehicles, max_vehicle_ride_time, M, stop_addition_penalty
 
 # perhaps create a 'dumpster' in which removed requests are put? Then create a Not-None return for removal functions
 
@@ -48,7 +48,7 @@ def find_first_best_improvement_for_request_group(vehicles_schedule, request_gro
                                                   best_improvement=None):
     "Find the first best improving position for a request group, in stead of looking for the best spot"
 
-    if current_vehicle > nb_of_required_ser:
+    if current_vehicle > nb_of_available_vehicles:
         return best_improvement
 
     insertion_constraints = get_insertion_possibilities(vehicles_schedule, current_vehicle, request_group)
@@ -59,12 +59,14 @@ def find_first_best_improvement_for_request_group(vehicles_schedule, request_gro
         current_score = find_pos_cost_given_ins_cons(vehicles_schedule, current_vehicle, request_group, insertion_constraints[i])
         if not best_improvement:
             best_improvement = current_vehicle, insertion_constraints[i], round(current_score, 2)
+            improvement_found = False
             i += 1
         elif current_score < best_improvement[2]:
             best_improvement = current_vehicle, insertion_constraints[i], round(current_score, 2)
             improvement_found = True
             return best_improvement
         else:
+            improvement_found = False
             i += 1
 
     if improvement_found is False:
@@ -81,7 +83,7 @@ def find_best_position_for_request_group(vehicles_schedule, request_group, curre
     on that position.
     """
 
-    if current_vehicle > nb_of_required_ser:
+    if current_vehicle > nb_of_available_vehicles:
         return best_pos_so_far
 
     if not excluded_vehicles:
@@ -182,12 +184,11 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
 
     elif insertion_constraint[0] == 'on arc with o: ' and \
             room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1],
-                                       get_next_occ_of_node(vehicles_schedule, vehicle, insertion_constraint[1],
-                                                            d)) > 0:
+                                       get_next_occ_of_node(vehicles_schedule, vehicle, insertion_constraint[1], d)) > 0:
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, insertion_constraint[1],
-                                                             last_node)
+                                                                last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, insertion_constraint[1])
-        detour_cost = -stop_addition_penalty
+        detour_cost = -0.5*stop_addition_penalty
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
                               - request_group_max_pt)*(1 + waiting_passengers_mult + inveh_passenger_mult)
 
@@ -196,8 +197,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         x = insertion_constraint[1]
         d = get_next_node(vehicles_schedule, vehicle, x)
 
-        waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, d,
-                                                             last_node)
+        waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, d, last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, d)
 
         detour_cost = (cost_matrix[(int(x[0]), o)] + cost_matrix[(o, int(d[0]))]

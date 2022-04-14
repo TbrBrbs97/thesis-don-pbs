@@ -40,8 +40,7 @@ size_groups = size_request_groups_per_od(grouped_requests)
 
 max_vehicle_ride_time = peak_duration + 2*cost_matrix[(network_dim[0], network_dim[2])] #min.
 cap_per_veh = 20
-max_services_per_vehicle = 2
-nb_of_required_ser = round(len(list_all_requests)/(cap_per_veh*max_services_per_vehicle))
+nb_of_available_vehicles = 16
 
 # OPTIMIZATION
 

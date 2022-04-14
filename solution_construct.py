@@ -14,7 +14,7 @@ from vehicle import locate_request_group_in_schedule, count_assigned_request_gro
 
 from solution_evaluation import select_most_costly_request_groups, get_objective_function_val
 
-from parameters import cost_matrix, nb_of_required_ser, M, disturbance_ratio, shuffle_ratio
+from parameters import cost_matrix, nb_of_available_vehicles, M, disturbance_ratio, shuffle_ratio
 
 
 def init_fill_every_vehicle(request_dict, nb_of_available_veh, seed=True):
@@ -52,7 +52,7 @@ def generate_initial_solution(requests_dict, vehicles_schedule=None, score_dict=
         score_dict = dict()
 
     if vehicles_schedule is None:
-        vehicles_schedule = init_fill_every_vehicle(requests_dict, nb_of_required_ser)
+        vehicles_schedule = init_fill_every_vehicle(requests_dict, nb_of_available_vehicles)
 
     if count_requests(requests_dict) == 0:
         return vehicles_schedule, score_dict
@@ -89,7 +89,7 @@ def static_optimization(vehicles_schedule, original_scores, required_requests_pe
 
         most_costly_requests = select_most_costly_request_groups(temp_schedule, required_requests_per_it)
 
-        print('current iteration: ', it)
+        print('current iteration: ', it, 'obj. func: ', get_objective_function_val(temp_schedule))
         for request_group in most_costly_requests:
             # print(request_group)
             remove_request_group(temp_schedule, request_group)
@@ -109,7 +109,7 @@ def static_optimization(vehicles_schedule, original_scores, required_requests_pe
         else:
             print('no improvement found, obj. func: ', get_objective_function_val(temp_schedule),
                   'initiate small disturbance...')
-            vehicles_schedule = disturb_solution(vehicles_schedule, original_scores)
+            vehicles_schedule = disturb_solution(temp_schedule, original_scores)
 
         end_time = time.time()
         elapsed_time += end_time - start_time

@@ -16,8 +16,8 @@ from solution_evaluation import calc_request_group_waiting_time, calc_request_gr
     get_objective_function_val, generate_waiting_time_dict, generate_in_vehicle_time_dict, generate_total_travel_time_dict, select_most_costly_request_groups
 
 from parameters import network, lambdapeak, mupeak, demand_scenario, peak_duration, \
-    req_max_cluster_time, cap_per_veh, max_services_per_vehicle, \
-    cost_matrix, grouped_requests, nb_of_required_ser, opt_time_lim
+    req_max_cluster_time, cap_per_veh, nb_of_available_vehicles, \
+    cost_matrix, grouped_requests, nb_of_available_vehicles, opt_time_lim
 
 # import cProfile, pstats, io
 # pr = cProfile.Profile()
@@ -31,14 +31,14 @@ initial_solution, scores_dict = generate_initial_solution(grouped_requests)
 # print(scores_dict)
 # print(len(scores_dict))
 
-print('objective func: ', get_objective_function_val(initial_solution, relative=False))
-for i in initial_solution:
-    print('veh ', i, ': ', initial_solution[i])
+# print('objective func: ', get_objective_function_val(initial_solution, relative=False))
+# for i in initial_solution:
+#     print('veh ', i, ': ', initial_solution[i])
 
 # print(count_assigned_request_groups(initial_solution))
 
 print(get_objective_function_val(initial_solution))
-optimized_solution, new_positions = static_optimization(initial_solution, scores_dict, required_requests_per_it=5,
+optimized_solution, new_positions = static_optimization(initial_solution, scores_dict, required_requests_per_it=1,
                                                         time_limit=opt_time_lim)
 print(get_objective_function_val(optimized_solution))
 
