@@ -31,9 +31,9 @@ initial_solution, scores_dict = generate_initial_solution(grouped_requests)
 # print(scores_dict)
 # print(len(scores_dict))
 
-# print('objective func: ', get_objective_function_val(initial_solution, relative=False))
-# for i in initial_solution:
-#     print('veh ', i, ': ', initial_solution[i])
+print('objective func: ', get_objective_function_val(initial_solution, relative=False))
+for i in initial_solution:
+    print('veh ', i, ': ', initial_solution[i])
 
 # print(count_assigned_request_groups(initial_solution))
 

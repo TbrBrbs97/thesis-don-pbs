@@ -139,8 +139,9 @@ def disturb_solution(vehicles_schedule, original_scores, temp_request_dict=None)
         request_group = pop_request(temp_request_dict, seed=False)
         # original_score = original_scores[str(request_group)]
         candidate_vehicle, candidate_node, score = find_first_best_improvement_for_request_group(vehicles_schedule,
-                                                                                          request_group)
-        insert_request_group(vehicles_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
+                                                                                                 request_group)
+        if (candidate_vehicle, candidate_node, score) is not (None, None, None):
+            insert_request_group(vehicles_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
 
     return vehicles_schedule
 

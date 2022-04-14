@@ -9,7 +9,7 @@ from vehicle import locate_request_group_in_schedule, get_departure_time_at_node
 
 from requests import get_od_from_request_group, get_max_pick_time, add_request_group_to_dict
 
-from parameters import cost_matrix, cap_per_veh, nb_of_required_ser, max_vehicle_ride_time, M
+from parameters import cost_matrix, cap_per_veh, nb_of_required_ser, max_vehicle_ride_time, M, stop_addition_penalty
 
 # perhaps create a 'dumpster' in which removed requests are put? Then create a Not-None return for removal functions
 
@@ -45,19 +45,11 @@ def remove_request_group(vehicles_schedule, request_group):
 
 
 def find_first_best_improvement_for_request_group(vehicles_schedule, request_group, original_score=None, current_vehicle=1,
-                                                  best_improvement=None, excluded_vehicles=None):
+                                                  best_improvement=None):
     "Find the first best improving position for a request group, in stead of looking for the best spot"
 
     if current_vehicle > nb_of_required_ser:
         return best_improvement
-
-    if not excluded_vehicles:
-        excluded_vehicles = set()
-
-    if current_vehicle in excluded_vehicles:
-        current_vehicle += 1
-        return find_best_position_for_request_group(vehicles_schedule, request_group,
-                                                    current_vehicle, best_improvement, excluded_vehicles)
 
     insertion_constraints = get_insertion_possibilities(vehicles_schedule, current_vehicle, request_group)
 
@@ -167,7 +159,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, x, last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, x)
         detour_cost = (cost_matrix[(o, d)] + cost_matrix[(d, int(x[0]))] -
-                       cost_matrix[(o, int(x[0]))])*(1 + waiting_passengers_mult)
+                       cost_matrix[(o, int(x[0]))])*(1 + waiting_passengers_mult) + stop_addition_penalty
         dep_time_offset = abs(request_group_max_pt - get_departure_time_at_node(vehicles_schedule, vehicle,
                                                                                 insertion_constraint[1]))*inveh_passenger_mult
 
@@ -183,7 +175,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     # we don't have to check for capacity if it is the first node we're checking
     elif insertion_constraint[0] == 'insert o before':
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle,
-                                                             insertion_constraint[1], last_node)
+                                                                insertion_constraint[1], last_node)
         detour_cost = 0
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
                               - cost_matrix[o, d] - request_group_max_pt)*(1 + waiting_passengers_mult)
@@ -195,7 +187,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, insertion_constraint[1],
                                                              last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, insertion_constraint[1])
-        detour_cost = 0
+        detour_cost = -stop_addition_penalty
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
                               - request_group_max_pt)*(1 + waiting_passengers_mult + inveh_passenger_mult)
 
@@ -221,7 +213,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
 
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, first_node,
                                                                 last_node)
-        detour_cost = 0
+        detour_cost = stop_addition_penalty
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, first_node) -
                               cost_matrix[(d, int(first_node[0]))] -
                               request_group_max_pt + cost_matrix[(o, d)])*(1 + waiting_passengers_mult)

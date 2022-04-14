@@ -24,7 +24,7 @@ import pickle
 import matplotlib.pyplot as plt
 
 import aux_functions
-import solution_generation
+import old_solution_generation
 
 
 # In[7]:
@@ -141,7 +141,7 @@ tocity_requests
 # In[12]:
 
 
-s = solution_generation.create_initial_solution(tocity_requests, 1, 3, 1, 20)
+s = old_solution_generation.create_initial_solution(tocity_requests, 1, 3, 1, 20)
 
 
 # In[14]:
