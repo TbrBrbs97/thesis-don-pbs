@@ -53,25 +53,16 @@ def find_first_best_improvement_for_request_group(vehicles_schedule, request_gro
 
     insertion_constraints = get_insertion_possibilities(vehicles_schedule, current_vehicle, request_group)
 
-    improvement_found = False
-    i = 0
-    while improvement_found is False or i < len(insertion_constraints):
-        current_score = find_pos_cost_given_ins_cons(vehicles_schedule, current_vehicle, request_group, insertion_constraints[i])
+    for ins_cons in insertion_constraints:
+        current_score = find_pos_cost_given_ins_cons(vehicles_schedule, current_vehicle, request_group, ins_cons)
         if not best_improvement:
-            best_improvement = current_vehicle, insertion_constraints[i], round(current_score, 2)
-            improvement_found = False
-            i += 1
+            best_improvement = current_vehicle, ins_cons, round(current_score, 2)
         elif current_score < best_improvement[2]:
-            best_improvement = current_vehicle, insertion_constraints[i], round(current_score, 2)
-            improvement_found = True
+            best_improvement = current_vehicle, ins_cons, round(current_score, 2)
             return best_improvement
-        else:
-            improvement_found = False
-            i += 1
 
-    if improvement_found is False:
-        current_vehicle += 1
-        return find_first_best_improvement_for_request_group(vehicles_schedule, request_group, original_score, current_vehicle)
+    current_vehicle += 1
+    return find_first_best_improvement_for_request_group(vehicles_schedule, request_group, original_score, current_vehicle)
 
 
 def find_best_position_for_request_group(vehicles_schedule, request_group, current_vehicle=1,
@@ -401,6 +392,7 @@ def select_random_request_groups(vehicles_schedule, required_amount=1, random_re
     random_request_group = random.choice(vehicles_schedule[random_vehicle][random_stop][1:])
     if random_request_group not in random_request_groups:
         random_request_groups.append(random_request_group)
+        required_amount -= 1
         return select_random_request_groups(vehicles_schedule, required_amount, random_request_groups)
 
     else:

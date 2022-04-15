@@ -46,6 +46,6 @@ nb_of_available_vehicles = 16
 
 M = 100000.0 # a very large number
 opt_time_lim = 1 # minutes
-disturbance_ratio = 0.05
+disturbance_ratio = 0.1
 shuffle_ratio = 0.5
 stop_addition_penalty = 20

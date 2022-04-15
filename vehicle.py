@@ -181,7 +181,7 @@ def count_inveh_pax_over_node(vehicles_schedule, vehicle, start_node):
     """
     all_nodes = get_existing_nodes(vehicles_schedule, vehicle)
     index_curr_node = all_nodes.index(start_node)
-    all_previous_nodes = all_nodes[:index_curr_node]
+    all_previous_nodes = all_nodes[:index_curr_node+1]
 
     inveh_pax = 0
 

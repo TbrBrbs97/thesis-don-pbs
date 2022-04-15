@@ -66,6 +66,7 @@ def generate_in_vehicle_time_dict(vehicles_schedule, relative=False):
             for node in vehicles_schedule[vehicle]:
                 in_vehicle_time_dict[vehicle][node] = []
                 for request_group in vehicles_schedule[vehicle][node][1:]:
+                    # print(request_group)
                     if boarding_pass_at_node(vehicles_schedule, vehicle, node):
                         in_vehicle_time_dict[vehicle][node].\
                             append(calc_request_group_invehicle_time(vehicles_schedule, request_group, relative))

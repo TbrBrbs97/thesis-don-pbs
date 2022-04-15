@@ -115,10 +115,11 @@ def static_optimization(vehicles_schedule, original_scores, required_requests_pe
         elapsed_time += end_time - start_time
         it += 1
 
+    print(get_objective_function_val(vehicles_schedule))
     return vehicles_schedule, new_positions
 
 
-def disturb_solution(vehicles_schedule, original_scores, temp_request_dict=None):
+def disturb_solution(vehicles_schedule, original_scores=None, temp_request_dict=None):
     """
     Function which shakes a solution schedule. The intensity parameter
     indicates how many requests are lifted and moved elsewhere. The shaking process goes as follows:
@@ -140,8 +141,7 @@ def disturb_solution(vehicles_schedule, original_scores, temp_request_dict=None)
         # original_score = original_scores[str(request_group)]
         candidate_vehicle, candidate_node, score = find_first_best_improvement_for_request_group(vehicles_schedule,
                                                                                                  request_group)
-        if (candidate_vehicle, candidate_node, score) is not (None, None, None):
-            insert_request_group(vehicles_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
+        insert_request_group(vehicles_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
 
     return vehicles_schedule
 
