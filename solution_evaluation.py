@@ -35,9 +35,9 @@ def calc_request_group_invehicle_time(vehicles_schedule, request_group, relative
 
         departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
         arrival_node = get_next_occ_of_node(vehicles_schedule, vehicle, node, d)
-        arrival_time = get_departure_time_at_node(vehicles_schedule, vehicle, arrival_node)
-
-        in_vehicle_time = round((arrival_time - departure_time)*len(request_group)/denominator, 2)
+        if arrival_node:
+            arrival_time = get_departure_time_at_node(vehicles_schedule, vehicle, arrival_node)
+            in_vehicle_time = round((arrival_time - departure_time)*len(request_group)/denominator, 2)
 
     return in_vehicle_time
 
@@ -66,7 +66,6 @@ def generate_in_vehicle_time_dict(vehicles_schedule, relative=False):
             for node in vehicles_schedule[vehicle]:
                 in_vehicle_time_dict[vehicle][node] = []
                 for request_group in vehicles_schedule[vehicle][node][1:]:
-                    # print(request_group)
                     if boarding_pass_at_node(vehicles_schedule, vehicle, node):
                         in_vehicle_time_dict[vehicle][node].\
                             append(calc_request_group_invehicle_time(vehicles_schedule, request_group, relative))
@@ -135,6 +134,9 @@ def select_most_costly_request_groups(vehicles_schedule, required_amount=1, requ
             if boarding_pass_at_node(vehicles_schedule, vehicle, node):
                 for request_group in vehicles_schedule[vehicle][node][1:]:
                     schedule_copy = deepcopy(vehicles_schedule)
+                    # if original_obj_func_val == 8734.63:
+                    #     print(vehicle, node, request_group)
+                    #     print(schedule_copy)
                     remove_request_group(schedule_copy, request_group)
                     opportunity_cost = original_obj_func_val - get_objective_function_val(schedule_copy)
                     if (not most_costly_so_far or opportunity_cost > most_costly_so_far[1]) \

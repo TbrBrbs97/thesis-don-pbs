@@ -218,6 +218,7 @@ def boarding_pass_at_node(vehicles_schedule, vehicle, node):
 
 
 def get_departure_time_at_node(vehicles_schedule, vehicle, node):
+    # print(vehicle, node, vehicles_schedule[vehicle][node])
     return vehicles_schedule[vehicle][node][0]
 
 

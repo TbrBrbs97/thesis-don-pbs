@@ -21,13 +21,13 @@ network_dim = get_network_boundaries(network)
 
 # REQUEST CHARACTERISTICS
 
-req_max_cluster_time = 8 #min.
+req_max_cluster_time = 11 #min.
 
 lambdapeak = get_scenario_mean_demand('city', network_size, scen=demand_scenario, peak=1)
 mupeak = get_scenario_mean_demand('terminal', network_size, scen=demand_scenario, peak=1)
 
 mean_demand = convert_md_todict(lambdapeak, mupeak, demand_scenario)
-requests_per_od = generate_requests(mean_demand, peak_duration, seed=True)
+requests_per_od = generate_requests(mean_demand, peak_duration, seed=False)
 
 list_all_requests = list_all_requests(requests_per_od)
 
@@ -44,8 +44,8 @@ nb_of_available_vehicles = 16
 
 # OPTIMIZATION
 
-M = 100000.0 # a very large number
+M = 1000 # a very large number
 opt_time_lim = 1 # minutes
-disturbance_ratio = 0.1
+disturbance_ratio = 0.05
 shuffle_ratio = 0.5
-stop_addition_penalty = 20
+stop_addition_penalty = 30

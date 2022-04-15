@@ -152,7 +152,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, x, last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, x)
         detour_cost = (cost_matrix[(o, d)] + cost_matrix[(d, int(x[0]))] -
-                       cost_matrix[(o, int(x[0]))])*(1 + waiting_passengers_mult) + stop_addition_penalty
+                       cost_matrix[(o, int(x[0]))])*(1 + waiting_passengers_mult)
         dep_time_offset = abs(request_group_max_pt - get_departure_time_at_node(vehicles_schedule, vehicle,
                                                                                 insertion_constraint[1]))*inveh_passenger_mult
 
@@ -179,7 +179,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, insertion_constraint[1],
                                                                 last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, insertion_constraint[1])
-        detour_cost = -0.5*stop_addition_penalty
+        detour_cost = -stop_addition_penalty
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
                               - request_group_max_pt)*(1 + waiting_passengers_mult + inveh_passenger_mult)
 
@@ -256,18 +256,13 @@ def insert_request_group(vehicles_schedule, requests_dict, request_group, vehicl
     elif position == 'back':
         node_to_insert_pax = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=(o, d))
 
-    if not is_empty_vehicle_schedule(vehicles_schedule, vehicle):
-        occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_group, node_to_insert_pax, end_node)
-        update_dep_time_at_node(vehicles_schedule, vehicle, node_to_insert_pax)
-        # update the departure time of all upcoming nodes
-        for next_node in get_nodes_in_range(vehicles_schedule, vehicle, start_node=node_to_insert_pax):
-            update_dep_time_at_node(vehicles_schedule, vehicle, next_node)
     elif position == 'first entry':
-        o, d = get_od_from_request_group(request_group)
-        pt = get_max_pick_time(request_group)
+        node_to_insert_pax = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=(o, d))
 
-        vehicles_schedule[vehicle][str(o) + ',0'] = [pt, request_group]
-        vehicles_schedule[vehicle][str(d) + ',0'] = [round(pt + cost_matrix[(o, d)], 2)]
+    occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_group, node_to_insert_pax, end_node)
+    update_dep_time_at_node(vehicles_schedule, vehicle, node_to_insert_pax)
+    for next_node in get_nodes_in_range(vehicles_schedule, vehicle, start_node=node_to_insert_pax):
+        update_dep_time_at_node(vehicles_schedule, vehicle, next_node)
 
 
 def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=None):
