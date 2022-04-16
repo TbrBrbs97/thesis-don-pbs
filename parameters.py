@@ -6,7 +6,7 @@ from requests import count_requests, get_od_from_request_group, get_scenario_mea
 # GENERAL
 
 v_mean = 50 # km/h
-demand_scenario = 2
+demand_scenario = 3
 time_of_day = 1 #1 = peak, 0 = off-peak
 peak_duration = 60 #min.
 
@@ -44,8 +44,8 @@ nb_of_available_vehicles = 16
 
 # OPTIMIZATION
 
-M = 1000 # a very large number
-opt_time_lim = 1 # minutes
+M = 1000  # a very large number
+opt_time_lim = 0.3  # minutes
 disturbance_ratio = 0.05
 shuffle_ratio = 0.5
 stop_addition_penalty = 30

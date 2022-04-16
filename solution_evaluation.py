@@ -1,4 +1,5 @@
-from vehicle import locate_request_group_in_schedule, get_departure_time_at_node, get_next_occ_of_node, boarding_pass_at_node, is_empty_vehicle_schedule
+from vehicle import locate_request_group_in_schedule, get_departure_time_at_node, get_next_occ_of_node, \
+    boarding_pass_at_node, is_empty_vehicle_schedule, get_copy_vehicles_schedule
 from requests import get_od_from_request_group, count_requests
 from static_operators import remove_request_group
 from copy import deepcopy
@@ -129,14 +130,11 @@ def select_most_costly_request_groups(vehicles_schedule, required_amount=1, requ
     most_costly_so_far = None
     original_obj_func_val = get_objective_function_val(vehicles_schedule)
 
-    for vehicle in vehicles_schedule:
-        for node in vehicles_schedule[vehicle]:
+    for vehicle in list(vehicles_schedule):
+        for node in list(vehicles_schedule[vehicle]):
             if boarding_pass_at_node(vehicles_schedule, vehicle, node):
                 for request_group in vehicles_schedule[vehicle][node][1:]:
                     schedule_copy = deepcopy(vehicles_schedule)
-                    # if original_obj_func_val == 8734.63:
-                    #     print(vehicle, node, request_group)
-                    #     print(schedule_copy)
                     remove_request_group(schedule_copy, request_group)
                     opportunity_cost = original_obj_func_val - get_objective_function_val(schedule_copy)
                     if (not most_costly_so_far or opportunity_cost > most_costly_so_far[1]) \

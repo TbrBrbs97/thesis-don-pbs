@@ -4,6 +4,7 @@ from copy import deepcopy
 import time
 from pdb import set_trace
 
+
 from requests import count_requests, get_od_from_request_group, get_max_pick_time, \
     pop_request, remove_from_request_dictionairy, add_request_group_to_dict
 
@@ -11,7 +12,7 @@ from static_operators import find_best_position_for_request_group, insert_reques
     remove_request_group, select_random_request_groups, find_random_position_for_request_group, \
     find_first_best_improvement_for_request_group, occupy_available_seats
 
-from vehicle import locate_request_group_in_schedule, count_assigned_request_groups
+from vehicle import locate_request_group_in_schedule, count_assigned_request_groups, get_copy_vehicles_schedule
 
 from solution_evaluation import select_most_costly_request_groups, get_objective_function_val
 
@@ -82,9 +83,6 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
         start_time = time.time()
         temp_schedule = deepcopy(vehicles_schedule)
 
-        # if it == 20:
-        #     set_trace()
-
         most_costly_requests = select_most_costly_request_groups(temp_schedule, required_requests_per_it)
 
         print('current iteration: ', it, 'obj. func: ', get_objective_function_val(temp_schedule))
@@ -103,8 +101,8 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
         if get_objective_function_val(temp_schedule) < get_objective_function_val(vehicles_schedule):
             print('new improvement found: ', get_objective_function_val(temp_schedule))
             vehicles_schedule = temp_schedule
-            if get_objective_function_val(temp_schedule) < 6000:
-                return vehicles_schedule, new_positions
+            # if get_objective_function_val(temp_schedule) < 6000:
+            #     return vehicles_schedule, new_positions
         else:
             print('no improvement found, obj. func: ', get_objective_function_val(temp_schedule),
                   'initiate small disturbance...')

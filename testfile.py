@@ -5,7 +5,7 @@ from pprint import PrettyPrinter, pprint
 from requests import get_od_from_request_group
 
 from vehicle import locate_request_group_in_schedule, is_empty_vehicle_schedule, \
-    count_assigned_request_groups, room_for_insertion_at_node
+    count_assigned_request_groups, room_for_insertion_at_node, get_copy_vehicles_schedule
 
 from requests import count_requests, add_request_group_to_dict
 

@@ -3,6 +3,10 @@ from requests import get_od_from_request_group, get_max_pick_time
 from parameters import cap_per_veh, req_max_cluster_time, cost_matrix, network_dim
 
 
+def get_copy_vehicles_schedule(vehicles_schedule):
+    return {vehicle: vehicles_schedule[vehicle] for vehicle in vehicles_schedule}
+
+
 def get_insertion_possibilities(vehicles_schedule, vehicle, request_group):
     """
     Returns all possible insertions (not checked with capacity yet) for a request group.
