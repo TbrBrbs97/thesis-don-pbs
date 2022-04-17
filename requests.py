@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import random
+from random import choice, randint, seed
 
 
 def get_scenario_mean_demand(direction, size, scen, peak=1): #add size as a parameter later
@@ -53,16 +53,15 @@ def convert_md_todict(df_meandemand_city, df_meandemand_terminal, scen):
     return demand_dict
     
 
-def generate_requests(mean_demand, peak_hour_duration=60, seed=True):
+def generate_static_requests(mean_demand, peak_hour_duration=60, seed=True):
 
-    requests = {}
+    static_requests = {}
 
     for od in mean_demand.keys():
         if mean_demand[od] > 0:
     
-            requests_od = []
-            requests[od] = requests_od
-            requests[od].append(np.float64(0))
+            static_requests[od] = []
+            static_requests[od].append(np.float64(0))
 
             t = 0
 
@@ -76,20 +75,28 @@ def generate_requests(mean_demand, peak_hour_duration=60, seed=True):
                 if t > peak_hour_duration:
                     break
                 else:
-                    requests[od].append(round(t, 2)) #if no request yet is at that time
+                    static_requests[od].append(round(t, 2)) #if no request yet is at that time
 
-    return requests
+    return static_requests
 
 
-def list_all_requests(requests_per_od):
+def list_individual_requests(requests_per_od, peak_hour_duration=60, dod=0):
 
-    lst_small_requests = []
+    all_static_requests, all_dynamic_requests = [], []
 
     for k in requests_per_od.keys():
         for v in requests_per_od[k]:
-            lst_small_requests.append((k, v, 0))
-        
-    return lst_small_requests
+            all_static_requests.append((k, v, 0))
+
+    amount_dynamic_requests = int(dod*len(all_static_requests))
+    for count in range(amount_dynamic_requests):
+        random_request = all_static_requests.pop(randint(0, len(all_static_requests)))
+
+        editable_request = list(random_request)
+        editable_request[2] = randint(0, peak_hour_duration)
+        all_dynamic_requests.append([tuple(editable_request)])
+
+    return all_static_requests, all_dynamic_requests
 
 
 def select_requests(requests, od):
@@ -111,7 +118,7 @@ def group_requests_dt(requests, dep_t_th, od_pairs):
 
     for od in od_pairs:
         grouped_requests[od] = []
-        list_requests_od =select_requests(requests, od)
+        list_requests_od = select_requests(requests, od)
 
         first_dep = list_requests_od[0]
         group = [first_dep]
@@ -178,29 +185,32 @@ def get_od_from_request_group(request_group):
 
 
 def get_max_pick_time(request_group):
-    # returns the latest pickup time from a group of requests
-
     if len(request_group) != 0:
         return max([value[1] for value in request_group])
-    # elif type(request_group[0]) == np.float64:
-    #     return request_group[0]
     else:
         return 0
 
 
-def pop_request(request_dictionairy, seed=True):
+def get_issue_time(request):
+    """
+    Returns the issue time of an individual request.
+    """
+    return request[0][2]
+
+
+def pop_request_group(request_dictionairy, is_seed=True):
     '''
     Function that returns a random request group from the request dictionairy.
     '''
 
-    if seed is True:
-        random.seed(2022)
+    if is_seed is True:
+        seed(2022)
 
-    random_od_pair = random.choice(list(request_dictionairy))
+    random_od_pair = choice(list(request_dictionairy))
     while count_requests(request_dictionairy, random_od_pair) == 0:
-        random_od_pair = random.choice(list(request_dictionairy))
+        random_od_pair = choice(list(request_dictionairy))
 
-    return random.choice(request_dictionairy[random_od_pair])
+    return choice(request_dictionairy[random_od_pair])
 
 
 def remove_from_request_dictionairy(request_dictionairy, request_group):
@@ -225,3 +235,11 @@ def add_request_group_to_dict(request_group, request_dict=None):
     request_dict[(o, d)].append(request_group)
 
     return request_dict
+
+
+def collect_request_until_time(dynamic_requests, time, lead_time=5):
+    """
+    Function that lists the request with an issue time up until 'lead_time' ago.
+    Caution, the returned list might be empty!
+    """
+    return [request for request in dynamic_requests if get_issue_time(request) in range(time-lead_time, time)]

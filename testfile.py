@@ -18,30 +18,30 @@ from solution_evaluation import calc_request_group_waiting_time, calc_request_gr
 
 from parameters import network, lambdapeak, mupeak, demand_scenario, peak_duration, \
     req_max_cluster_time, cap_per_veh, nb_of_available_vehicles, \
-    cost_matrix, grouped_requests, nb_of_available_vehicles, opt_time_lim
+    cost_matrix, grouped_requests, nb_of_available_vehicles, opt_time_lim, all_static_requests, all_dynamic_requests
 
 # import cProfile, pstats, io
 # pr = cProfile.Profile()
 # pr.enable()
 
+# print(all_static_requests, all_dynamic_requests)
+
 total_requests = count_requests(grouped_requests)
 
 initial_solution, scores_dict = generate_initial_solution(grouped_requests)
 
-# for i in initial_solution:
-#     print('veh ', i, ': ', initial_solution[i])
-# print('objective func: ', get_objective_function_val(initial_solution, relative=False))
+for i in initial_solution:
+    print('veh ', i, ': ', initial_solution[i])
+print('objective func: ', get_objective_function_val(initial_solution, relative=False))
 
-# disturbed_solution = disturb_solution(initial_solution)
-# print(get_objective_function_val(disturbed_solution))
 
-print(get_objective_function_val(initial_solution))
-optimized_solution, new_positions = static_optimization(initial_solution, required_requests_per_it=1,
-                                                        time_limit=opt_time_lim)
-for i in optimized_solution:
-    print('veh ', i, ': ', optimized_solution[i])
-print('objective func: ', get_objective_function_val(optimized_solution, relative=False))
-
+# print(get_objective_function_val(initial_solution))
+# optimized_solution, new_positions = static_optimization(initial_solution, required_requests_per_it=2,
+#                                                         time_limit=opt_time_lim)
+# for i in optimized_solution:
+#     print('veh ', i, ': ', optimized_solution[i])
+# print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
+#
 
 # print(count_assigned_request_groups(optimized_solution))
 
