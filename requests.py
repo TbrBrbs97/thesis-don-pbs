@@ -93,7 +93,7 @@ def list_individual_requests(requests_per_od, peak_hour_duration=60, dod=0):
         random_request = all_static_requests.pop(randint(0, len(all_static_requests)))
 
         editable_request = list(random_request)
-        editable_request[2] = randint(0, peak_hour_duration)
+        editable_request[2] = randint(0, int(random_request[1]))
         all_dynamic_requests.append([tuple(editable_request)])
 
     return all_static_requests, all_dynamic_requests

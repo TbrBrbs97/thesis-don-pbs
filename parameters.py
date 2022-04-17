@@ -5,12 +5,12 @@ from requests import count_requests, get_scenario_mean_demand, \
 
 # GENERAL
 
-v_mean = 50 # km/h
+v_mean = 50  # km/h
 demand_scenario = 2
-time_of_day = 1 #1 = peak, 0 = off-peak
-peak_duration = 60 #min.
-degree_of_dynamism = 0.0 # percent
-lead_time = 5 # min.
+time_of_day = 1  # 1 = peak, 0 = off-peak
+peak_duration = 60  # min.
+degree_of_dynamism = 0.05  # percent
+lead_time = 5  # min.
 
 # NETWORK CHARACTERISTICS
 
@@ -40,7 +40,7 @@ size_groups = size_request_groups_per_od(grouped_requests)
 
 # VEHICLE CHARACTERISTICS
 
-max_vehicle_ride_time = peak_duration + 2*cost_matrix[(network_dim[0], network_dim[2])] #min.
+max_vehicle_ride_time = peak_duration + 2*cost_matrix[(network_dim[0], network_dim[2])]  #min.
 cap_per_veh = 20
 nb_of_available_vehicles = 16
 
@@ -50,4 +50,4 @@ M = 1000  # a very large number
 opt_time_lim = 0.3  # minutes
 disturbance_ratio = 0.05
 shuffle_ratio = 0.5
-stop_addition_penalty = 30
+stop_addition_penalty = 30 # penalty added to

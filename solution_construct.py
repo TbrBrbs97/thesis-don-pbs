@@ -170,16 +170,36 @@ def large_shuffle(vehicles_schedule, temp_request_dict=None):
     return vehicles_schedule
 
 
-def dynamic_optimization(vehicles_schedule, dynamic_requests, lead_time, peak_hour_duration):
+def generate_dynamic_solution(vehicles_schedule, dynamic_requests, lead_time, peak_hour_duration, temp_request_dict=None):
     """
-    Lead time should be at least 1! That corresponds to ZLT in this case.
+    Lead time should be at least 1! That corresponds to ZLT in this case. A dynamic optimization is integrated in the
+    algorithm as well.
     """
 
     current_time = 0
 
+    if not temp_request_dict:
+        temp_request_dict = {}
+        for request in dynamic_requests:
+            temp_request_dict = add_request_group_to_dict(request, temp_request_dict)
+
     while current_time < peak_hour_duration:
-        if current_time % lead_time:
+        print('current time: ', current_time)
+        if current_time % lead_time == 0:
             selected_requests = collect_request_until_time(dynamic_requests, current_time, lead_time)
-            for request in selected_requests:
-                candidate_vehicle, candidate_node = find_best_position_for_dynamic_request(vehicles_schedule, request)
-                dynamic_insert(vehicles_schedule, dynamic_requests, request, candidate_vehicle, candidate_node)
+            print('inserting requests: ', selected_requests)
+            if len(selected_requests) != 0:
+                for request in selected_requests:
+                    candidate_vehicle, candidate_node, score = find_best_position_for_dynamic_request(vehicles_schedule,
+                                                                                                      request, current_time)
+                    insert_request_group(vehicles_schedule, temp_request_dict, request, candidate_vehicle, candidate_node)
+        current_time += 1
+
+    return vehicles_schedule
+
+
+def dynamic_optimization(vehicles_schedule, current_time):
+    """
+    An alteration on the static optimization which takes into account the locking point, that is, only that
+    portion of vehicles schedule beyond the 'current_time' can be dealt with.
+    """

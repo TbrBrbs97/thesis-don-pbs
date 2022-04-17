@@ -2,16 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="da9fdea6-face-44e3-9aed-8a24aecdd7dc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/dynamic_operators.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/Main Script-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/Main Script-checkpoint.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/generate_requests-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/generate_requests-checkpoint.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Archive/.ipynb_checkpoints/generate_requests-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/.ipynb_checkpoints/generate_requests-checkpoint.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Archive/generate_requests.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/generate_requests.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Main Script.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/Main Script.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dynamic_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/dynamic_operators.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/parameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requests.py" beforeDir="false" afterPath="$PROJECT_DIR$/requests.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/solution_construct.py" beforeDir="false" afterPath="$PROJECT_DIR$/solution_construct.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_operators.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testfile.py" beforeDir="false" afterPath="$PROJECT_DIR$/testfile.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -25,8 +20,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/testfile.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="28">
-              <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
+            <state relative-caret-position="93">
+              <caret line="42" lean-forward="true" selection-start-line="42" selection-end-line="42" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -37,8 +32,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/parameters.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="52" column="25" lean-forward="true" selection-start-line="52" selection-start-column="25" selection-end-line="52" selection-end-column="25" />
+            <state relative-caret-position="-3">
+              <caret line="41" lean-forward="true" selection-start-line="41" selection-end-line="41" />
               <folding>
                 <element signature="e#0#91#0" expanded="true" />
               </folding>
@@ -46,11 +41,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/solution_construct.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
-              <caret line="182" column="45" lean-forward="true" selection-start-line="182" selection-start-column="45" selection-end-line="182" selection-end-column="45" />
+            <state relative-caret-position="1646">
+              <caret line="191" column="49" lean-forward="true" selection-start-line="191" selection-start-column="49" selection-end-line="191" selection-end-column="49" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -61,8 +56,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/requests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="263">
-              <caret line="230" lean-forward="true" selection-start-line="230" selection-end-line="230" />
+            <state relative-caret-position="352">
+              <caret line="194" column="7" lean-forward="true" selection-start-line="194" selection-start-column="7" selection-end-line="194" selection-end-column="7" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -73,8 +68,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static_operators.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="89">
-              <caret line="67" column="13" selection-start-line="67" selection-start-column="4" selection-end-line="67" selection-end-column="13" />
+            <state relative-caret-position="177">
+              <caret line="146" column="52" lean-forward="true" selection-start-line="146" selection-start-column="36" selection-end-line="146" selection-end-column="52" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -82,11 +77,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/dynamic_operators.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="6" column="54" selection-start-line="6" selection-start-column="54" selection-end-line="6" selection-end-column="54" />
+            <state relative-caret-position="187">
+              <caret line="33" column="45" lean-forward="true" selection-start-line="33" selection-start-column="45" selection-end-line="33" selection-end-column="45" />
+              <folding>
+                <element signature="e#0#74#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -94,7 +92,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vehicle.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
+            <state relative-caret-position="17">
               <caret line="2" selection-start-line="2" selection-end-line="2" />
             </state>
           </provider>
@@ -103,7 +101,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/solution_evaluation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="258">
+            <state relative-caret-position="360">
               <caret line="137" selection-start-line="137" selection-end-line="137" />
             </state>
           </provider>
@@ -120,12 +118,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>M</find>
-      <find>select_random</find>
-      <find>room</find>
-      <find>find</find>
-      <find>108</find>
-      <find>select_most</find>
       <find>select</find>
       <find>insert_re</find>
       <find>calc</find>
@@ -133,8 +125,6 @@
       <find>init_f</find>
       <find>occupy</find>
       <find>insert_request_group</find>
-      <find>insert</find>
-      <find>insert_req</find>
       <find>find_rano</find>
       <find>'1,5'</find>
       <find>print</find>
@@ -149,7 +139,15 @@
       <find>count_request</find>
       <find>count_requests</find>
       <find>peak</find>
+      <find>stop</find>
+      <find>stop_addi</find>
+      <find>pos_cost</find>
+      <find>find_</find>
+      <find>find_best_</find>
       <find>find_best</find>
+      <find>insert</find>
+      <find>insert_</find>
+      <find>insert_req</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -178,14 +176,14 @@
         <option value="$PROJECT_DIR$/static_optimization.py" />
         <option value="$PROJECT_DIR$/network_generation.py" />
         <option value="$PROJECT_DIR$/function_archive.py" />
-        <option value="$PROJECT_DIR$/static_operators.py" />
         <option value="$PROJECT_DIR$/vehicle.py" />
         <option value="$PROJECT_DIR$/solution_evaluation.py" />
-        <option value="$PROJECT_DIR$/testfile.py" />
         <option value="$PROJECT_DIR$/requests.py" />
         <option value="$PROJECT_DIR$/parameters.py" />
-        <option value="$PROJECT_DIR$/dynamic_operators.py" />
+        <option value="$PROJECT_DIR$/testfile.py" />
         <option value="$PROJECT_DIR$/solution_construct.py" />
+        <option value="$PROJECT_DIR$/static_operators.py" />
+        <option value="$PROJECT_DIR$/dynamic_operators.py" />
       </list>
     </option>
   </component>
@@ -203,7 +201,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -215,6 +212,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -284,12 +282,12 @@
     <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18005952" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.18005952" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4985119" weight="0.32411674" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.63318455" weight="0.4654378" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.63318455" weight="0.3533026" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49776787" weight="0.5560676" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -308,15 +306,15 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4985119" weight="0.32411674" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4955357" visible="true" weight="0.5714286" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49776787" weight="0.5560676" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.63318455" weight="0.48694316" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.49776787" visible="true" weight="0.5560676" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32872504" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32872504" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.47158217" />
-      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50446427" side_tool="true" weight="0.44854072" />
-      <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.49758744" weight="0.31182796" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5037202" side_tool="true" weight="0.31182796" />
+      <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.49627978" weight="0.31182796" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -488,13 +486,6 @@
     <entry file="file://$PROJECT_DIR$/static_optimization.py" />
     <entry file="file://$PROJECT_DIR$/testfile_optimization.py" />
     <entry file="file://$PROJECT_DIR$/insertion_function.py" />
-    <entry file="file://C:/Anaconda/envs/thesisenv/Lib/random.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="77">
-          <caret line="254" selection-start-line="254" selection-end-line="254" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Anaconda/envs/thesisenv/Lib/copy.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="95">
@@ -536,34 +527,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/solution_evaluation.py">
+    <entry file="file://C:/Anaconda/envs/thesisenv/Lib/random.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="258">
-          <caret line="137" selection-start-line="137" selection-end-line="137" />
+        <state relative-caret-position="100">
+          <caret line="220" selection-start-line="220" selection-end-line="220" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/vehicle.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
+        <state relative-caret-position="17">
           <caret line="2" selection-start-line="2" selection-end-line="2" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/parameters.py">
+    <entry file="file://$PROJECT_DIR$/solution_evaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="52" column="25" lean-forward="true" selection-start-line="52" selection-start-column="25" selection-end-line="52" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#91#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="360">
+          <caret line="137" selection-start-line="137" selection-end-line="137" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static_operators.py">
+    <entry file="file://$PROJECT_DIR$/requests.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="89">
-          <caret line="67" column="13" selection-start-line="67" selection-start-column="4" selection-end-line="67" selection-end-column="13" />
+        <state relative-caret-position="352">
+          <caret line="194" column="7" lean-forward="true" selection-start-line="194" selection-start-column="7" selection-end-line="194" selection-end-column="7" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -572,37 +560,50 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/testfile.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="28">
-          <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
+        <state relative-caret-position="93">
+          <caret line="42" lean-forward="true" selection-start-line="42" selection-end-line="42" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dynamic_operators.py">
+    <entry file="file://$PROJECT_DIR$/parameters.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="54" selection-start-line="6" selection-start-column="54" selection-end-line="6" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requests.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="263">
-          <caret line="230" lean-forward="true" selection-start-line="230" selection-end-line="230" />
+        <state relative-caret-position="-3">
+          <caret line="41" lean-forward="true" selection-start-line="41" selection-end-line="41" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#0#91#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/solution_construct.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="182" column="45" lean-forward="true" selection-start-line="182" selection-start-column="45" selection-end-line="182" selection-end-column="45" />
+        <state relative-caret-position="1646">
+          <caret line="191" column="49" lean-forward="true" selection-start-line="191" selection-start-column="49" selection-end-line="191" selection-end-column="49" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static_operators.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="177">
+          <caret line="146" column="52" lean-forward="true" selection-start-line="146" selection-start-column="36" selection-end-line="146" selection-end-column="52" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynamic_operators.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="33" column="45" lean-forward="true" selection-start-line="33" selection-start-column="45" selection-end-line="33" selection-end-column="45" />
+          <folding>
+            <element signature="e#0#74#0" expanded="true" />
           </folding>
         </state>
       </provider>

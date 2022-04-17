@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 import random
+from copy import deepcopy
 
 from vehicle import locate_request_group_in_schedule, get_departure_time_at_node, is_empty_vehicle_schedule, \
     is_empty_stop, get_next_occ_of_node, get_pick_up_nodes_dest, get_nodes_in_range, \
@@ -322,6 +323,7 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
 
 def occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_group, start_node, end_node=None):
     """
+    Positions the available capacity within the vehicle. Part of the request group that can be added
     Positions the available capacity within the vehicle. Part of the request group that can be added
     into the schedule is added and that same part is removed from the request dictionairy.
     The remaining part is kept in the request dictionairy.
