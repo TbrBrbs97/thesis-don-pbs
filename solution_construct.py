@@ -12,7 +12,7 @@ from static_operators import find_best_position_for_request_group, insert_reques
     remove_request_group, select_random_request_groups, find_random_position_for_request_group, \
     find_first_best_improvement_for_request_group, occupy_available_seats
 
-from dynamic_operators import collect_request_until_time, dynamic_insert, find_best_position_for_dynamic_request
+from dynamic_operators import collect_request_until_time, find_best_position_for_dynamic_request
 
 from vehicle import locate_request_group_in_schedule, count_assigned_request_groups, get_copy_vehicles_schedule
 
@@ -81,7 +81,13 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
     elapsed_time = 0
     new_positions = dict()
 
+    best_schedule_so_far = None
+
     while elapsed_time < time_limit:
+
+        if not best_schedule_so_far or get_objective_function_val(best_schedule_so_far) > get_objective_function_val(vehicles_schedule):
+            best_schedule_so_far = vehicles_schedule
+
         start_time = time.time()
         temp_schedule = deepcopy(vehicles_schedule)
 
@@ -95,29 +101,33 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
         new_positions[it] = []
 
         while count_requests(temp_request_dict) != 0:
-            request_group = pop_request_group(temp_request_dict, is_seed=False)
+            request_group = pop_request_group(temp_request_dict, set_seed=False)
             candidate_vehicle, candidate_node, score = find_best_position_for_request_group(temp_schedule, request_group)
             new_positions[it].append((request_group, candidate_vehicle, candidate_node))
             insert_request_group(temp_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
 
         difference = get_objective_function_val(temp_schedule) - get_objective_function_val(vehicles_schedule)
+
         if difference < 0:
             print('new improvement found: ', get_objective_function_val(temp_schedule))
             vehicles_schedule = temp_schedule
+        # elif difference <= 0.1:
+        #     return best_schedule_so_far, new_positions
         else:
+            # disturbance_rate = max(abs(difference / 100), 0.05)
+            disturbance_rate = max(disturbance_ratio - 0.005*it, abs(difference / 1000), 0.01)
+
             print('no improvement found, obj. func: ', get_objective_function_val(temp_schedule),
-                  'initiate small disturbance...')
-            # disturbance_rate = max(abs(difference/100), 0.05)
-            disturbance_rate = max(disturbance_ratio - 0.005*it, 0.01)
-            disturbed_solution = disturb_solution(temp_schedule, disturbance=disturbance_rate)
-            vehicles_schedule = disturbed_solution
+                  'disturb with rate: ', disturbance_rate)
+            disturbed_schedule = disturb_solution(temp_schedule, disturbance=disturbance_rate)
+            vehicles_schedule = disturbed_schedule
 
         end_time = time.time()
         elapsed_time += end_time - start_time
         it += 1
 
     # print(get_objective_function_val(vehicles_schedule))
-    return vehicles_schedule, new_positions
+    return best_schedule_so_far, new_positions
 
 
 def disturb_solution(vehicles_schedule, temp_request_dict=None, disturbance=disturbance_ratio):
@@ -138,7 +148,7 @@ def disturb_solution(vehicles_schedule, temp_request_dict=None, disturbance=dist
         temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
 
     while count_requests(temp_request_dict) != 0:
-        request_group = pop_request_group(temp_request_dict, is_seed=False)
+        request_group = pop_request_group(temp_request_dict, set_seed=False)
         # original_score = original_scores[str(request_group)]
         candidate_vehicle, candidate_node, score = find_best_position_for_request_group(vehicles_schedule,
                                                                                         request_group)
@@ -163,7 +173,7 @@ def large_shuffle(vehicles_schedule, temp_request_dict=None):
         temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
 
     while count_requests(temp_request_dict) != 0:
-        request_group = pop_request_group(temp_request_dict, is_seed=False)
+        request_group = pop_request_group(temp_request_dict, set_seed=False)
         candidate_vehicle, candidate_node = find_random_position_for_request_group(vehicles_schedule, request_group)
         insert_request_group(vehicles_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
 

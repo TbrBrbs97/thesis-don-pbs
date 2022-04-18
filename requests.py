@@ -80,7 +80,7 @@ def generate_static_requests(mean_demand, peak_hour_duration=60, seed=True):
     return static_requests
 
 
-def list_individual_requests(requests_per_od, peak_hour_duration=60, dod=0):
+def list_individual_requests(requests_per_od, dod=0, set_seed=True):
 
     all_static_requests, all_dynamic_requests = [], []
 
@@ -89,7 +89,12 @@ def list_individual_requests(requests_per_od, peak_hour_duration=60, dod=0):
             all_static_requests.append((k, v, 0))
 
     amount_dynamic_requests = int(dod*len(all_static_requests))
+
+    if set_seed is True:
+        seed(0)
+
     for count in range(amount_dynamic_requests):
+
         random_request = all_static_requests.pop(randint(0, len(all_static_requests)))
 
         editable_request = list(random_request)
@@ -198,12 +203,12 @@ def get_issue_time(request):
     return request[0][2]
 
 
-def pop_request_group(request_dictionairy, is_seed=True):
+def pop_request_group(request_dictionairy, set_seed=True):
     '''
     Function that returns a random request group from the request dictionairy.
     '''
 
-    if is_seed is True:
+    if set_seed is True:
         seed(2022)
 
     random_od_pair = choice(list(request_dictionairy))

@@ -27,18 +27,18 @@ from parameters import network, lambdapeak, mupeak, demand_scenario, peak_durati
 # pr = cProfile.Profile()
 # pr.enable()
 
-print(all_dynamic_requests)
+# print(all_dynamic_requests)
 
 total_requests = count_requests(grouped_requests)
 
 initial_solution, scores_dict = generate_initial_solution(grouped_requests)
 print('objective func: ', get_objective_function_val(initial_solution, relative=False))
 
-# print(get_objective_function_val(initial_solution))
-# optimized_solution, new_positions = static_optimization(initial_solution, required_requests_per_it=2,
+# optimized_solution, new_positions = static_optimization(initial_solution, required_requests_per_it=1,
 #                                                         time_limit=opt_time_lim)
 # for i in optimized_solution:
 #     print('veh ', i, ': ', optimized_solution[i])
+# print('overal objective function: ', get_objective_function_val(optimized_solution, relative=False))
 # print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
 
 dynamic_initial_solution = generate_dynamic_solution(initial_solution, all_dynamic_requests,
@@ -47,9 +47,7 @@ for i in dynamic_initial_solution:
     print('veh ', i, ': ', dynamic_initial_solution[i])
 print('objective func: ', get_objective_function_val(dynamic_initial_solution, relative=False))
 
-
 # print(count_assigned_request_groups(optimized_solution))
-
 
 # cProfiler
 
