@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from random import choice, randint, seed
-from parameters import lead_time
 
 
 def get_scenario_mean_demand(direction, size, scen, peak=1): #add size as a parameter later
@@ -42,6 +41,8 @@ def get_scenario_mean_demand(direction, size, scen, peak=1): #add size as a para
 
 def convert_md_todict(df_meandemand_city, df_meandemand_terminal, scen):
     n = len(df_meandemand_city.iloc[0])
+    # create a list of the to terminal nodes and call it 'm'
+    m = list(range(n, 2*n))
     demand_dict = {}
     
     for i in range(1, n+1):
@@ -49,7 +50,7 @@ def convert_md_todict(df_meandemand_city, df_meandemand_terminal, scen):
             if i < j:
                 demand_dict[(i, j)] = df_meandemand_city.loc[(scen, i), j]
             else:
-                demand_dict[(i, j)] = df_meandemand_terminal.loc[(scen, i + 2*(n-i)**i), j + 2*(n-j)**j]
+                demand_dict[(i, j)] = df_meandemand_terminal.loc[(scen, m[-i]), m[-j]]
 
     return demand_dict
     
@@ -81,7 +82,7 @@ def generate_static_requests(mean_demand, peak_hour_duration=60, set_seed=True):
     return static_requests
 
 
-def list_individual_requests(requests_per_od, dod=0, set_seed=True):
+def list_individual_requests(requests_per_od, dod=0, lead_time=1, set_seed=True):
 
     all_static_requests, all_dynamic_requests = [], []
 

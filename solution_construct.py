@@ -78,6 +78,8 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
     time_limit *= 60  # convert time limit to seconds
 
     it = 0
+    dis = 0 # counter which keeps track of the amount of disturbances
+
     elapsed_time = 0
     new_positions = dict()
 
@@ -111,16 +113,16 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
         if difference < 0:
             print('new improvement found: ', get_objective_function_val(temp_schedule))
             vehicles_schedule = temp_schedule
-        # elif difference <= 0.1:
-        #     return best_schedule_so_far, new_positions
         else:
             # disturbance_rate = max(abs(difference / 100), 0.05)
-            disturbance_rate = max(disturbance_ratio - 0.005*it, abs(difference / 1000), 0.01)
+            disturbance_rate = disturbance_ratio + 0.005 * dis
+            # disturbance_rate = max(disturbance_ratio + 0.005*it, abs(difference / 1000), 0.01)
 
             print('no improvement found, obj. func: ', get_objective_function_val(temp_schedule),
                   'disturb with rate: ', disturbance_rate)
             disturbed_schedule = disturb_solution(temp_schedule, disturbance=disturbance_rate)
             vehicles_schedule = disturbed_schedule
+            dis += 1
 
         end_time = time.time()
         elapsed_time += end_time - start_time

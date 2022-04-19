@@ -8,7 +8,7 @@ v_mean = 50  # km/h
 demand_scenario = 1
 time_of_day = 1  # 1 = peak, 0 = off-peak
 peak_duration = 60  # min.
-degree_of_dynamism = 0.1  # percent
+degree_of_dynamism = 0.0  # percent
 lead_time = 1  # min.
 
 # NETWORK CHARACTERISTICS
@@ -30,7 +30,7 @@ mupeak = get_scenario_mean_demand('terminal', network_size, scen=demand_scenario
 mean_demand = convert_md_todict(lambdapeak, mupeak, demand_scenario)
 requests_per_od = generate_static_requests(mean_demand, peak_duration, set_seed=True)
 
-all_static_requests, all_dynamic_requests = list_individual_requests(requests_per_od, dod=degree_of_dynamism)
+all_static_requests, all_dynamic_requests = list_individual_requests(requests_per_od, dod=degree_of_dynamism, lead_time=lead_time)
 
 grouped_requests = group_requests_dt(all_static_requests, req_max_cluster_time, requests_per_od.keys())
 count_total_requests = count_requests(grouped_requests)
@@ -39,14 +39,14 @@ size_groups = size_request_groups_per_od(grouped_requests)
 
 # VEHICLE CHARACTERISTICS
 
-max_vehicle_ride_time = peak_duration + 2*cost_matrix[(network_dim[0], network_dim[2])]  #min.
+max_vehicle_ride_time = peak_duration + cost_matrix[(network_dim[0], network_dim[2])]  #min.
 cap_per_veh = 20
 nb_of_available_vehicles = 16
 
 # OPTIMIZATION
 
 M = 1000  # a very large number
-opt_time_lim = 1  # minutes
+opt_time_lim = 5  # minutes
 disturbance_ratio = 0.1
 shuffle_ratio = 0.5
 stop_addition_penalty = 50 # penalty added to
