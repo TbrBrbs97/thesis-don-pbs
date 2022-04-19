@@ -8,7 +8,7 @@ v_mean = 50  # km/h
 demand_scenario = 1
 time_of_day = 1  # 1 = peak, 0 = off-peak
 peak_duration = 60  # min.
-degree_of_dynamism = 0.6  # percent
+degree_of_dynamism = 0.1  # percent
 lead_time = 1  # min.
 
 # NETWORK CHARACTERISTICS
@@ -28,7 +28,7 @@ lambdapeak = get_scenario_mean_demand('city', network_size, scen=demand_scenario
 mupeak = get_scenario_mean_demand('terminal', network_size, scen=demand_scenario, peak=1)
 
 mean_demand = convert_md_todict(lambdapeak, mupeak, demand_scenario)
-requests_per_od = generate_static_requests(mean_demand, peak_duration, seed=True)
+requests_per_od = generate_static_requests(mean_demand, peak_duration, set_seed=True)
 
 all_static_requests, all_dynamic_requests = list_individual_requests(requests_per_od, dod=degree_of_dynamism)
 

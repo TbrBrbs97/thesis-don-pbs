@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from random import choice, randint, seed
+from parameters import lead_time
 
 
 def get_scenario_mean_demand(direction, size, scen, peak=1): #add size as a parameter later
@@ -53,7 +54,7 @@ def convert_md_todict(df_meandemand_city, df_meandemand_terminal, scen):
     return demand_dict
     
 
-def generate_static_requests(mean_demand, peak_hour_duration=60, seed=True):
+def generate_static_requests(mean_demand, peak_hour_duration=60, set_seed=True):
 
     static_requests = {}
 
@@ -66,7 +67,7 @@ def generate_static_requests(mean_demand, peak_hour_duration=60, seed=True):
             t = 0
 
             while t < peak_hour_duration:
-                if seed is True:
+                if set_seed is True:
                     np.random.seed(0)
 
                 delta_t = np.random.exponential(1/mean_demand[od], 1)[0]  #the time before the next passenger arrives is sampled from an exponential distr.                              
@@ -98,7 +99,7 @@ def list_individual_requests(requests_per_od, dod=0, set_seed=True):
         random_request = all_static_requests.pop(randint(0, len(all_static_requests)))
 
         editable_request = list(random_request)
-        editable_request[2] = randint(0, int(random_request[1]))
+        editable_request[2] = randint(0, int(random_request[1])-lead_time)
         all_dynamic_requests.append([tuple(editable_request)])
 
     return all_static_requests, all_dynamic_requests
