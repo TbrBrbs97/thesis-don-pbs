@@ -30,15 +30,16 @@ from parameters import network, lambdapeak, mupeak, demand_scenario, peak_durati
 # print(all_dynamic_requests)
 
 total_requests = count_requests(grouped_requests)
+print(cost_matrix)
 # print(grouped_requests)
 # print(total_requests)
 
-initial_solution, scores_dict = generate_initial_solution(grouped_requests)
-print('objective func: ', get_objective_function_val(initial_solution, relative=False))
-
-for i in initial_solution:
-    print('veh ', i, ': ', initial_solution[i])
-print('objective func: ', get_objective_function_val(initial_solution, relative=False))
+# initial_solution, scores_dict = generate_initial_solution(grouped_requests)
+# print('objective func: ', get_objective_function_val(initial_solution, relative=False))
+#
+# for i in initial_solution:
+#     print('veh ', i, ': ', initial_solution[i])
+# print('objective func: ', get_objective_function_val(initial_solution, relative=False))
 
 # optimized_solution, new_positions = static_optimization(initial_solution, required_requests_per_it=5,
 #                                                         time_limit=opt_time_lim)

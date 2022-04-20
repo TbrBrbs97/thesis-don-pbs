@@ -22,14 +22,6 @@ def import_network(size, interstop_distance):
     return df
 
 
-def add_duplicate_stops(network):
-    n = len(network)
-    for i in range(1, n):
-        network[n+i] = network[n-i]
-        
-    return network
-
-
 def calculate_euclidean_dist(x1, y1, x2, y2):
     result = math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
     return result
@@ -44,7 +36,7 @@ def generate_cost_matrix(network, v_mean):
         for j in network.keys():
             x_b, y_b = network[j]['x-coord'], network[j]['y-coord']
             distance = calculate_euclidean_dist(x_a, y_a, x_b, y_b)
-            travel_time = (distance / v_mean)*60 # to get the travel time in minutes
+            travel_time = (distance / v_mean)*60  # to get the travel time in minutes
             
             cost_matrix[(i, j)] = round(travel_time, 2)
             

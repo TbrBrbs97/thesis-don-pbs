@@ -5,7 +5,7 @@ from requests import count_requests, get_scenario_mean_demand, \
 
 # GENERAL
 v_mean = 50  # km/h
-demand_scenario = 1
+demand_scenario = 2
 time_of_day = 1  # 1 = peak, 0 = off-peak
 peak_duration = 60  # min.
 degree_of_dynamism = 0.0  # percent
@@ -13,7 +13,7 @@ lead_time = 1  # min.
 
 # NETWORK CHARACTERISTICS
 
-network_size = 'small'
+network_size = 'medium'
 interstop_distance = 'half'
 
 network = import_network(network_size, interstop_distance)
