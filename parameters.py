@@ -13,7 +13,7 @@ lead_time = 1  # min.
 
 # NETWORK CHARACTERISTICS
 
-network_size = 'medium'
+network_size = 'small'
 interstop_distance = 'half'
 
 network = import_network(network_size, interstop_distance)
@@ -22,7 +22,7 @@ network_dim = get_network_boundaries(network)
 
 # REQUEST CHARACTERISTICS
 
-req_max_cluster_time = 11 #min.
+req_max_cluster_time = 5 #min.
 
 lambdapeak = get_scenario_mean_demand('city', network_size, scen=demand_scenario, peak=1)
 mupeak = get_scenario_mean_demand('terminal', network_size, scen=demand_scenario, peak=1)

@@ -30,23 +30,23 @@ from parameters import network, lambdapeak, mupeak, demand_scenario, peak_durati
 # print(all_dynamic_requests)
 
 total_requests = count_requests(grouped_requests)
-print(cost_matrix)
+# print(cost_matrix)
 # print(grouped_requests)
 # print(total_requests)
 
-# initial_solution, scores_dict = generate_initial_solution(grouped_requests)
-# print('objective func: ', get_objective_function_val(initial_solution, relative=False))
-#
+initial_solution, scores_dict = generate_initial_solution(grouped_requests)
+print('objective func: ', get_objective_function_val(initial_solution, relative=False))
+
 # for i in initial_solution:
 #     print('veh ', i, ': ', initial_solution[i])
 # print('objective func: ', get_objective_function_val(initial_solution, relative=False))
 
-# optimized_solution, new_positions = static_optimization(initial_solution, required_requests_per_it=5,
-#                                                         time_limit=opt_time_lim)
-# for i in optimized_solution:
-#     print('veh ', i, ': ', optimized_solution[i])
-# print('overal objective function: ', get_objective_function_val(optimized_solution, relative=False))
-# print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
+optimized_solution, new_positions = static_optimization(initial_solution, required_requests_per_it=1,
+                                                        time_limit=opt_time_lim)
+for i in optimized_solution:
+    print('veh ', i, ': ', optimized_solution[i])
+print('overal objective function: ', get_objective_function_val(optimized_solution, relative=False))
+print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
 
 # dynamic_initial_solution = generate_dynamic_solution(initial_solution, all_dynamic_requests,
 #                                                      lead_time=lead_time, peak_hour_duration=peak_duration)

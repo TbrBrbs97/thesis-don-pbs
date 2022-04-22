@@ -154,8 +154,9 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, x)
         detour_cost = (cost_matrix[(o, d)] + cost_matrix[(d, int(x[0]))] -
                        cost_matrix[(o, int(x[0]))])*(1 + waiting_passengers_mult)
-        dep_time_offset = abs(request_group_max_pt - get_departure_time_at_node(vehicles_schedule, vehicle,
-                                                                                insertion_constraint[1]))*inveh_passenger_mult
+        dep_time_offset = abs(request_group_max_pt -
+                              get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1]))*\
+                          (1 + inveh_passenger_mult + waiting_passengers_mult)
 
     # we don't affect other passenger by inserting a destination node after the existing schedule
     elif insertion_constraint[0] == 'insert d after' and \
@@ -193,7 +194,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, d)
 
         detour_cost = (cost_matrix[(int(x[0]), o)] + cost_matrix[(o, int(d[0]))]
-                       - cost_matrix[(int(x[0]), int(d[0]))])*(waiting_passengers_mult + inveh_passenger_mult)
+                       - cost_matrix[(int(x[0]), int(d[0]))])*(1 + waiting_passengers_mult + inveh_passenger_mult)
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
                               + cost_matrix[int(x[0]), o] - request_group_max_pt)*(1 + (waiting_passengers_mult + inveh_passenger_mult))
 
@@ -208,7 +209,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         detour_cost = stop_addition_penalty
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, first_node) -
                               cost_matrix[(d, int(first_node[0]))] -
-                              request_group_max_pt + cost_matrix[(o, d)])*(1 + waiting_passengers_mult)
+                              request_group_max_pt - cost_matrix[(o, d)])*(1 + waiting_passengers_mult)
 
     elif insertion_constraint == 'back':
         last_node = get_next_node(vehicles_schedule, vehicle)

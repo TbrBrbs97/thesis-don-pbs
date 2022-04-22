@@ -58,10 +58,9 @@ def generate_initial_solution(requests_dict, vehicles_schedule=None, score_dict=
         request_group = pop_request_group(requests_dict)
 
     candidate_position = find_best_position_for_request_group(vehicles_schedule, request_group)
-    # print(candidate_position)
     candidate_vehicle, candidate_node, score = candidate_position
     score_dict[str(request_group)] = score  # does not take into account that request groups might be split up!
-    # should we maybe take the splitting up already into account in the cost calculation process?
+    # TODO: should we maybe take the splitting up already into account in the cost calculation process?
 
     insert_request_group(vehicles_schedule, requests_dict, request_group, candidate_vehicle, candidate_node)
     return generate_initial_solution(requests_dict, vehicles_schedule, score_dict)
