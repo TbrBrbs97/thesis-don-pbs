@@ -15,8 +15,6 @@ def filter_dynamic_insertion_possibilities(vehicles_schedule, vehicle, request, 
     1: {'1,0': [0.0, [...]], '3,1': [5.0, [...]], ... '3,10', [25.0: [...]], '3,9', [37.0, [...]], ...
 
     Then, the request can only be inserted after node '3,9'.
-
-    For now, we only allow to add these request, since they are singular, on existing arcs.
     """
     filtered_insertion_constraints = []
     o, d = get_od_from_request_group(request)

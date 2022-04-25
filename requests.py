@@ -3,7 +3,7 @@ import pandas as pd
 from random import choice, randint, seed
 
 
-def get_scenario_mean_demand(direction, size, scen, peak=1): #add size as a parameter later
+def get_scenario_mean_demand(direction, size, scen, peak=1):
 
     if size == 'small':
         size_name = 'Small3'
@@ -55,7 +55,7 @@ def convert_md_todict(df_meandemand_city, df_meandemand_terminal, scen):
     return demand_dict
     
 
-def generate_static_requests(mean_demand, peak_hour_duration=60, set_seed=True):
+def generate_static_requests(mean_demand, peak_hour_duration=60, set_seed=None):
 
     static_requests = {}
 
@@ -68,8 +68,8 @@ def generate_static_requests(mean_demand, peak_hour_duration=60, set_seed=True):
             t = 0
 
             while t < peak_hour_duration:
-                if set_seed is True:
-                    np.random.seed(0)
+                if set_seed:
+                    np.random.seed(set_seed)
 
                 delta_t = np.random.exponential(1/mean_demand[od], 1)[0]  #the time before the next passenger arrives is sampled from an exponential distr.                              
                 t += round(delta_t, 2)
@@ -82,7 +82,7 @@ def generate_static_requests(mean_demand, peak_hour_duration=60, set_seed=True):
     return static_requests
 
 
-def list_individual_requests(requests_per_od, dod=0, lead_time=1, set_seed=True):
+def list_individual_requests(requests_per_od, dod=0, lead_time=1, set_seed=None):
 
     all_static_requests, all_dynamic_requests = [], []
 
@@ -92,15 +92,18 @@ def list_individual_requests(requests_per_od, dod=0, lead_time=1, set_seed=True)
 
     amount_dynamic_requests = int(dod*len(all_static_requests))
 
-    if set_seed is True:
-        seed(0)
+    if set_seed:
+        seed(set_seed)
 
     for count in range(amount_dynamic_requests):
 
         random_request = all_static_requests.pop(randint(0, len(all_static_requests)))
 
         editable_request = list(random_request)
-        editable_request[2] = randint(0, int(random_request[1])-lead_time)
+        if random_request[1] < 1:
+            editable_request[2] = randint(0, lead_time)
+        else:
+            editable_request[2] = randint(0, int(random_request[1])-lead_time)
         all_dynamic_requests.append([tuple(editable_request)])
 
     return all_static_requests, all_dynamic_requests
@@ -127,20 +130,21 @@ def group_requests_dt(requests, dep_t_th, od_pairs):
         grouped_requests[od] = []
         list_requests_od = select_requests(requests, od)
 
-        first_dep = list_requests_od[0]
-        group = [first_dep]
-        grouped_requests[od].append(group)
-        r = 1
+        if len(list_requests_od) != 0:
+            first_dep = list_requests_od[0]
+            group = [first_dep]
+            grouped_requests[od].append(group)
+            r = 1
 
-        while r < len(list_requests_od):
-            if list_requests_od[r][1] > first_dep[1] + dep_t_th:
-                first_dep = list_requests_od[r]
-                group = [first_dep]
-                grouped_requests[od].append(group)
-            else:
-                group.append(list_requests_od[r])
+            while r < len(list_requests_od):
+                if list_requests_od[r][1] > first_dep[1] + dep_t_th:
+                    first_dep = list_requests_od[r]
+                    group = [first_dep]
+                    grouped_requests[od].append(group)
+                else:
+                    group.append(list_requests_od[r])
 
-            r += 1
+                r += 1
 
     return grouped_requests
 

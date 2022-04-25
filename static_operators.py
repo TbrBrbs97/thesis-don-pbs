@@ -12,8 +12,6 @@ from requests import get_od_from_request_group, get_max_pick_time, add_request_g
 
 from parameters import cost_matrix, cap_per_veh, nb_of_available_vehicles, max_vehicle_ride_time, M, stop_addition_penalty
 
-# perhaps create a 'dumpster' in which removed requests are put? Then create a Not-None return for removal functions
-
 
 def remove_request_group(vehicles_schedule, request_group):
     vehicle, node = locate_request_group_in_schedule(vehicles_schedule, request_group)
@@ -155,8 +153,8 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         detour_cost = (cost_matrix[(o, d)] + cost_matrix[(d, int(x[0]))] -
                        cost_matrix[(o, int(x[0]))])*(1 + waiting_passengers_mult)
         dep_time_offset = abs(request_group_max_pt -
-                              get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1]))*\
-                          (1 + inveh_passenger_mult + waiting_passengers_mult)
+                              get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])) \
+                           *(1 + inveh_passenger_mult + waiting_passengers_mult)
 
     # we don't affect other passenger by inserting a destination node after the existing schedule
     elif insertion_constraint[0] == 'insert d after' and \

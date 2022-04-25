@@ -5,7 +5,7 @@ from pprint import PrettyPrinter, pprint
 from requests import get_od_from_request_group
 
 from vehicle import locate_request_group_in_schedule, is_empty_vehicle_schedule, \
-    count_assigned_request_groups, room_for_insertion_at_node, get_insertion_possibilities
+    count_assigned_request_groups, count_total_assigned_requests, room_for_insertion_at_node, get_insertion_possibilities
 
 from requests import count_requests, add_request_group_to_dict
 
@@ -21,40 +21,39 @@ from solution_evaluation import calc_request_group_waiting_time, calc_request_gr
 
 from parameters import network, lambdapeak, mupeak, demand_scenario, peak_duration, \
     req_max_cluster_time, cap_per_veh, nb_of_available_vehicles, \
-    cost_matrix, grouped_requests, nb_of_available_vehicles, opt_time_lim, all_static_requests, all_dynamic_requests, lead_time
+    cost_matrix, grouped_requests, nb_of_available_vehicles, opt_time_lim, all_static_requests, \
+    all_dynamic_requests, lead_time, steep_descent_intensity
+
 
 # import cProfile, pstats, io
 # pr = cProfile.Profile()
 # pr.enable()
 
-# print(all_dynamic_requests)
 
 total_requests = count_requests(grouped_requests)
-# print(cost_matrix)
-# print(grouped_requests)
-# print(total_requests)
+print(total_requests)
 
 initial_solution, scores_dict = generate_initial_solution(grouped_requests)
 print('objective func: ', get_objective_function_val(initial_solution, relative=False))
+print(count_total_assigned_requests(initial_solution))
 
-# for i in initial_solution:
-#     print('veh ', i, ': ', initial_solution[i])
-# print('objective func: ', get_objective_function_val(initial_solution, relative=False))
+for i in initial_solution:
+    print('veh ', i, ': ', initial_solution[i])
 
-optimized_solution, new_positions = static_optimization(initial_solution, required_requests_per_it=1,
-                                                        time_limit=opt_time_lim)
+
+optimized_solution = static_optimization(initial_solution, required_requests_per_it=steep_descent_intensity,
+                                         time_limit=opt_time_lim)
 for i in optimized_solution:
     print('veh ', i, ': ', optimized_solution[i])
 print('overal objective function: ', get_objective_function_val(optimized_solution, relative=False))
 print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
 
-# dynamic_initial_solution = generate_dynamic_solution(initial_solution, all_dynamic_requests,
+# dynamic_initial_solution = generate_dynamic_solution(optimized_solution, all_dynamic_requests,
 #                                                      lead_time=lead_time, peak_hour_duration=peak_duration)
 # for i in dynamic_initial_solution:
 #     print('veh ', i, ': ', dynamic_initial_solution[i])
 # print('objective func: ', get_objective_function_val(dynamic_initial_solution, relative=False))
 
-# print(count_assigned_request_groups(optimized_solution))
 
 # cProfiler
 

@@ -10,6 +10,7 @@ time_of_day = 1  # 1 = peak, 0 = off-peak
 peak_duration = 60  # min.
 degree_of_dynamism = 0.0  # percent
 lead_time = 1  # min.
+random_seed = 1
 
 # NETWORK CHARACTERISTICS
 
@@ -28,9 +29,10 @@ lambdapeak = get_scenario_mean_demand('city', network_size, scen=demand_scenario
 mupeak = get_scenario_mean_demand('terminal', network_size, scen=demand_scenario, peak=1)
 
 mean_demand = convert_md_todict(lambdapeak, mupeak, demand_scenario)
-requests_per_od = generate_static_requests(mean_demand, peak_duration, set_seed=True)
+requests_per_od = generate_static_requests(mean_demand, peak_duration, set_seed=random_seed)
 
-all_static_requests, all_dynamic_requests = list_individual_requests(requests_per_od, dod=degree_of_dynamism, lead_time=lead_time)
+all_static_requests, all_dynamic_requests = list_individual_requests(requests_per_od, dod=degree_of_dynamism,
+                                                                     lead_time=lead_time, set_seed=random_seed)
 
 grouped_requests = group_requests_dt(all_static_requests, req_max_cluster_time, requests_per_od.keys())
 count_total_requests = count_requests(grouped_requests)
@@ -46,7 +48,8 @@ nb_of_available_vehicles = 16
 # OPTIMIZATION
 
 M = 1000  # a very large number
-opt_time_lim = 5  # minutes
+opt_time_lim = 1  # minutes
 disturbance_ratio = 0.1
 shuffle_ratio = 0.5
+steep_descent_intensity = 1
 stop_addition_penalty = 50 # penalty added to

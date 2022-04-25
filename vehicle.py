@@ -207,6 +207,11 @@ def count_assigned_request_groups(vehicle_schedule):
                 vehicle_schedule[vehicle] if boarding_pass_at_node(vehicle_schedule, vehicle, node)])
 
 
+def count_total_assigned_requests(vehicle_schedule):
+    return sum([len(group) for vehicle in vehicle_schedule for node in vehicle_schedule[vehicle] for group in node[1:]
+                if boarding_pass_at_node(vehicle_schedule, vehicle, node)])
+
+
 def locate_request_group_in_schedule(vehicles_schedule, request_group):
     """
     Function that returns the vehicle and the node at which a request group is located in the vehicle schedule.
