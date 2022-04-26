@@ -18,7 +18,7 @@ from vehicle import locate_request_group_in_schedule, count_assigned_request_gro
 
 from solution_evaluation import select_most_costly_request_groups, get_objective_function_val
 
-from parameters import cost_matrix, nb_of_available_vehicles, M, disturbance_ratio, shuffle_ratio
+from parameters import cost_matrix, nb_of_available_vehicles, M, disturbance_ratio, shuffle_ratio, delta
 
 
 def init_fill_every_vehicle(request_dict, nb_of_available_veh, seed=True):
@@ -200,7 +200,7 @@ def generate_dynamic_solution(vehicles_schedule, dynamic_requests, lead_time, pe
                     candidate_vehicle, candidate_node, score = find_best_position_for_dynamic_request(vehicles_schedule,
                                                                                                       request, current_time)
                     insert_request_group(vehicles_schedule, temp_request_dict, request, candidate_vehicle, candidate_node)
-        if current_time % 15 == 0:
+        if current_time % delta == 0:
             print('initiate dynamic optimization...')
             vehicles_schedule = dynamic_optimization(vehicles_schedule, current_time)
 
