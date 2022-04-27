@@ -97,8 +97,8 @@ def generate_static_requests_2(mean_demand, peak_hour_duration=60, set_seed=None
             interarrival_times = list(np.random.exponential(1 / mean_demand[od], int(mean_demand[od]*peak_hour_duration)))
             t = 0
             for delta_t in interarrival_times:
-                static_requests[od].append(round(t, 2))
                 t += delta_t
+                static_requests[od].append(round(t, 2))
                 if t > peak_hour_duration:
                     break
 

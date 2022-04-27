@@ -57,6 +57,9 @@ def generate_initial_solution(requests_dict, vehicles_schedule=None, score_dict=
     else:
         request_group = pop_request_group(requests_dict)
 
+    if request_group == [((9, 8), 0.0, 0)]: # [((9, 1), 0.0, 0)], [((9, 2), 0.0, 0)]]
+        print('found')
+
     candidate_position = find_best_position_for_request_group(vehicles_schedule, request_group)
     candidate_vehicle, candidate_node, score = candidate_position
     score_dict[str(request_group)] = score  # does not take into account that request groups might be split up!

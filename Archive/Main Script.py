@@ -18,14 +18,9 @@
 # In[6]:
 
 
-import numpy as np
-import pandas as pd
 import pickle
-import matplotlib.pyplot as plt
 
-import aux_functions
-import old_solution_generation
-
+from Archive import old_solution_generation
 
 # In[7]:
 

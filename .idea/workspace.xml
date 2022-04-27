@@ -3,11 +3,16 @@
   <component name="ChangeListManager">
     <list default="true" id="da9fdea6-face-44e3-9aed-8a24aecdd7dc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Archive/Main Script.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/Main Script.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main Script.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/Main Script.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/function_archive.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/function_archive.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_solution_generation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/old_solution_generation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/parameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requests.py" beforeDir="false" afterPath="$PROJECT_DIR$/requests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/solution_construct.py" beforeDir="false" afterPath="$PROJECT_DIR$/solution_construct.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/solution_visualisation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/solution_visualisation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_operators.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testfile.py" beforeDir="false" afterPath="$PROJECT_DIR$/testfile.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vehicle.py" beforeDir="false" afterPath="$PROJECT_DIR$/vehicle.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,6 +139,11 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\thesis-don-pbs\Archive" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="testfile" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="thesis-don-pbs" />
@@ -248,6 +258,17 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="LAST_COMMIT_MESSAGE" value="" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/solution_construct.py</url>
+          <line>60</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">

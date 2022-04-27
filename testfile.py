@@ -22,7 +22,7 @@ from solution_evaluation import calc_request_group_waiting_time, calc_request_gr
 from parameters import network, lambdapeak, mupeak, demand_scenario, peak_duration, \
     req_max_cluster_time, cap_per_veh, nb_of_available_vehicles, \
     cost_matrix, grouped_requests, nb_of_available_vehicles, opt_time_lim, all_static_requests, \
-    all_dynamic_requests, lead_time, steep_descent_intensity, degree_of_dynamism
+    all_dynamic_requests, lead_time, steep_descent_intensity, degree_of_dynamism, network_dim
 
 
 # import cProfile, pstats, io
@@ -50,16 +50,16 @@ for i in optimized_solution:
     print('veh ', i, ': ', optimized_solution[i])
 print('overal objective function: ', get_objective_function_val(optimized_solution, relative=False))
 print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
-
-## DYNAMIC SOLUTION
-
-if degree_of_dynamism > 0.0:
-    dynamic_initial_solution = generate_dynamic_solution(optimized_solution, all_dynamic_requests,
-                                                         lead_time=lead_time, peak_hour_duration=peak_duration)
-    for i in dynamic_initial_solution:
-        print('veh ', i, ': ', dynamic_initial_solution[i])
-    print('objective func: ', get_objective_function_val(dynamic_initial_solution, relative=False))
-    print('avg. travel time per passenger: ', get_objective_function_val(dynamic_initial_solution, relative=True))
+#
+# ## DYNAMIC SOLUTION
+#
+# if degree_of_dynamism > 0.0:
+#     dynamic_initial_solution = generate_dynamic_solution(optimized_solution, all_dynamic_requests,
+#                                                          lead_time=lead_time, peak_hour_duration=peak_duration)
+#     for i in dynamic_initial_solution:
+#         print('veh ', i, ': ', dynamic_initial_solution[i])
+#     print('objective func: ', get_objective_function_val(dynamic_initial_solution, relative=False))
+#     print('avg. travel time per passenger: ', get_objective_function_val(dynamic_initial_solution, relative=True))
 
 
 # cProfiler

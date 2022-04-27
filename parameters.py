@@ -5,12 +5,12 @@ from requests import count_requests, get_scenario_mean_demand, \
 
 # GENERAL
 v_mean = 50  # km/h
-demand_scenario = 1
+demand_scenario = 3
 time_of_day = 1  # 1 = peak, 0 = off-peak
 peak_duration = 60  # min.
 degree_of_dynamism = 0.0 # percent
-lead_time = 1 # min.
-random_seed = 4
+lead_time = 5 # min.
+random_seed = 3
 
 # NETWORK CHARACTERISTICS
 
@@ -50,7 +50,7 @@ size_groups = size_request_groups_per_od(grouped_requests)
 M = 1000  # a very large number
 opt_time_lim = 0.5  # minutes
 disturbance_ratio = 0.1
-shuffle_ratio = 0.5 # not really used
+shuffle_ratio = 0.4 # not really used
 steep_descent_intensity = 1
 stop_addition_penalty = 0 # node addition penalty
 delta = int(peak_duration / 4)  # min.

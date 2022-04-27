@@ -10,7 +10,8 @@ from vehicle import locate_request_group_in_schedule, get_departure_time_at_node
 
 from requests import get_od_from_request_group, get_max_pick_time, add_request_group_to_dict
 
-from parameters import cost_matrix, cap_per_veh, nb_of_available_vehicles, max_vehicle_ride_time, M, stop_addition_penalty
+from parameters import cost_matrix, cap_per_veh, nb_of_available_vehicles, \
+    max_vehicle_ride_time, M, stop_addition_penalty, network_dim
 
 
 def remove_request_group(vehicles_schedule, request_group):
@@ -175,7 +176,8 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
                                                                 insertion_constraint[1], last_node)
         detour_cost = 0
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
-                              - cost_matrix[o, d] - request_group_max_pt)*(1 + waiting_passengers_mult)
+                              - cost_matrix[o, d] - request_group_max_pt - cost_matrix[network_dim[1],o]
+                              )*(1 + waiting_passengers_mult)
 
     elif insertion_constraint[0] == 'on arc with o: ' and \
             room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1],
@@ -203,15 +205,12 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     # we don't need to check for capacity in the following two cases
     elif insertion_constraint == 'in front':
         first_node = get_prev_node(vehicles_schedule, vehicle)
-        # here you add a penalty for adding requests in front, because it is often too cheap
-        # detour_cost = chaining_penalty * (len(get_nodes_in_range(vehicles_schedule, vehicle)) - penalty_threshold)
-
-        waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, first_node,
-                                                                last_node)
+        waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, first_node, last_node)
         detour_cost = stop_addition_penalty
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, first_node) -
                               cost_matrix[(d, int(first_node[0]))] -
-                              request_group_max_pt - cost_matrix[(o, d)])*(1 + waiting_passengers_mult)
+                              request_group_max_pt - cost_matrix[(o, d)] -
+                              cost_matrix[(network_dim[1],o)])*(1 + waiting_passengers_mult)
 
     elif insertion_constraint == 'back':
         last_node = get_next_node(vehicles_schedule, vehicle)
@@ -272,8 +271,8 @@ def insert_request_group(vehicles_schedule, requests_dict, request_group, vehicl
 def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=None):
     """
     Function that adds a new stop in the vehicle, in front of the 'next_stop' parameter. By default, if the node_type doesn't
-    occur in the schedule already, the node is inserted as a key 'node_type, 0'. But if node_type already occurs, then this second
-    element of the key is increased by 1. The value or content of the stop is initiated as an empty list.
+    occur in the schedule already, the node is inserted as a key 'node_type, 0'. But if node_type already occurs,
+    then this second element of the key is increased by 1. The value or content of the stop is initiated as an empty list.
 
     see: https://stackoverflow.com/questions/44390818/how-to-insert-key-value-pair-into-dictionary-at-a-specified-position
     """
@@ -295,17 +294,19 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
                 max_occ = max([int(t[-1]) for t in all_occ_of_node_type])
                 occ[n] = max_occ + 1
 
+    # if the next stop is the first node
     if next_stop and next_stop != 'first stop':
         insert_before = list(vehicle_schedule[vehicle]).index(next_stop)
         new_stop = str(node_type) + ',' + str(curr_occ)
-        items.insert(insert_before, (new_stop, [0.0]))
+        items.insert(insert_before, (new_stop, [float(cost_matrix[(network_dim[1], node_type)])]))
         vehicle_schedule[vehicle] = dict(items)
 
     elif next_stop == 'first stop':
         insert_before = list(vehicle_schedule[vehicle].keys()).index(get_prev_node(vehicle_schedule, vehicle))
-        items.insert(insert_before, (str(node_type[1]) + ',' + str(occ[node_type[1]]), [0.0]))
+        items.insert(insert_before, (str(node_type[1]) + ',' + str(occ[node_type[1]]),
+                                     [0.0]))
         new_stop = str(node_type[0]) + ',' + str(occ[node_type[0]])
-        items.insert(insert_before, (new_stop, [0.0]))
+        items.insert(insert_before, (new_stop, [float(cost_matrix[(network_dim[1], node_type[0])])]))
         vehicle_schedule[vehicle] = dict(items)
 
     elif not next_stop and type(node_type) == int:
@@ -317,7 +318,7 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
     else:
         items = list(vehicle_schedule[vehicle].items())
         new_stop = str(node_type[0]) + ',' + str(occ[node_type[0]])
-        items.append((new_stop, [0.0]))
+        items.append((new_stop, [float(cost_matrix[(network_dim[1], node_type[0])])]))
         items.append((str(node_type[1]) + ',' + str(occ[node_type[1]]), [0.0]))
         vehicle_schedule[vehicle] = dict(items)
 
@@ -340,7 +341,8 @@ def occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_gr
 
     # add portion to the schedule
     if not boarding_pass_at_node(vehicles_schedule, vehicle, start_node):
-        vehicles_schedule[vehicle][start_node][0] = round(get_max_pick_time(portion_to_add), 2)
+        vehicles_schedule[vehicle][start_node][0] = max(round(get_max_pick_time(portion_to_add), 2),
+                                                        vehicles_schedule[vehicle][start_node][0])
     vehicles_schedule[vehicle][start_node].append(portion_to_add)
 
     # remove it from request dictionairy
@@ -368,7 +370,9 @@ def update_dep_time_at_node(vehicles_schedule, vehicle, node):
     else:
         imposed_dep_time_by_prev_stop = np.float64()
 
-    vehicles_schedule[vehicle][node][0] = round(max(imposed_dep_time_by_prev_stop, imposed_dep_time_by_req_pt), 2)
+    vehicles_schedule[vehicle][node][0] = round(max(imposed_dep_time_by_prev_stop,
+                                                    imposed_dep_time_by_req_pt,
+                                                    vehicles_schedule[vehicle][node][0]), 2)
 
 
 def select_random_request_groups(vehicles_schedule, required_amount=1, random_request_groups=None):
