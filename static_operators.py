@@ -21,6 +21,10 @@ def remove_request_group(vehicles_schedule, request_group):
     old_departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
 
     destination_node = get_next_occ_of_node(vehicles_schedule, vehicle, node, d)
+    if destination_node is None:
+        print(request_group)
+        print(vehicle)
+        print(node, d)
 
     remaining_request_groups = [element for element in vehicles_schedule[vehicle][node][1:]
                                 if all([x != y for x in element for y in request_group])]

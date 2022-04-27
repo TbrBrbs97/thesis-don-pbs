@@ -1,16 +1,16 @@
 from network_generation import import_network, generate_cost_matrix, get_network_boundaries
 from requests import count_requests, get_scenario_mean_demand, \
-    list_individual_requests, convert_md_todict, generate_static_requests, count_requests_per_od, \
-    size_request_groups_per_od, group_requests_dt
+    list_individual_requests, convert_md_todict, generate_static_requests, \
+    generate_static_requests_2, count_requests_per_od, size_request_groups_per_od, group_requests_dt
 
 # GENERAL
 v_mean = 50  # km/h
-demand_scenario = 2
+demand_scenario = 1
 time_of_day = 1  # 1 = peak, 0 = off-peak
 peak_duration = 60  # min.
-degree_of_dynamism = 0.0  # percent
-lead_time = 1  # min.
-random_seed = 1
+degree_of_dynamism = 0.0 # percent
+lead_time = 1 # min.
+random_seed = 4
 
 # NETWORK CHARACTERISTICS
 
@@ -21,15 +21,21 @@ network = import_network(network_size, interstop_distance)
 cost_matrix = generate_cost_matrix(network, v_mean)
 network_dim = get_network_boundaries(network)
 
+# VEHICLE CHARACTERISTICS
+
+max_vehicle_ride_time = peak_duration + cost_matrix[(network_dim[0], network_dim[2])]  #min.
+cap_per_veh = 20
+nb_of_available_vehicles = 16
+
 # REQUEST CHARACTERISTICS
 
-req_max_cluster_time = 5 #min.
+req_max_cluster_time = cap_per_veh / 2 #min.
 
 lambdapeak = get_scenario_mean_demand('city', network_size, scen=demand_scenario, peak=1)
 mupeak = get_scenario_mean_demand('terminal', network_size, scen=demand_scenario, peak=1)
 
 mean_demand = convert_md_todict(lambdapeak, mupeak, demand_scenario)
-requests_per_od = generate_static_requests(mean_demand, peak_duration, set_seed=random_seed)
+requests_per_od = generate_static_requests_2(mean_demand, peak_duration, set_seed=random_seed)
 
 all_static_requests, all_dynamic_requests = list_individual_requests(requests_per_od, dod=degree_of_dynamism,
                                                                      lead_time=lead_time, set_seed=random_seed)
@@ -39,18 +45,12 @@ count_total_requests = count_requests(grouped_requests)
 count_groups = count_requests_per_od(grouped_requests)
 size_groups = size_request_groups_per_od(grouped_requests)
 
-# VEHICLE CHARACTERISTICS
-
-max_vehicle_ride_time = peak_duration + cost_matrix[(network_dim[0], network_dim[2])]  #min.
-cap_per_veh = 20
-nb_of_available_vehicles = 16
-
 # OPTIMIZATION
 
 M = 1000  # a very large number
-opt_time_lim = 1  # minutes
+opt_time_lim = 0.5  # minutes
 disturbance_ratio = 0.1
 shuffle_ratio = 0.5 # not really used
 steep_descent_intensity = 1
-stop_addition_penalty = 50 # node addition penalty
+stop_addition_penalty = 0 # node addition penalty
 delta = int(peak_duration / 4)  # min.

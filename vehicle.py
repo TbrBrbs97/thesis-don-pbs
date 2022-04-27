@@ -243,6 +243,9 @@ def is_empty_vehicle_schedule(vehicles_schedule, vehicle):
 
 
 def is_empty_stop(vehicles_schedule, vehicle, node):
+    if node is None:
+        print(vehicle)
+        print(vehicles_schedule[vehicle])
     return True if len(vehicles_schedule[vehicle][node]) <= 1 else False
 
 

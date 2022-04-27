@@ -82,6 +82,29 @@ def generate_static_requests(mean_demand, peak_hour_duration=60, set_seed=None):
     return static_requests
 
 
+def generate_static_requests_2(mean_demand, peak_hour_duration=60, set_seed=None):
+    static_requests = {}
+
+    for od in mean_demand.keys():
+        if mean_demand[od] > 0:
+
+            static_requests[od] = []
+            static_requests[od].append(np.float64(0))
+
+            if set_seed:
+                np.random.seed(set_seed)
+
+            interarrival_times = list(np.random.exponential(1 / mean_demand[od], int(mean_demand[od]*peak_hour_duration)))
+            t = 0
+            for delta_t in interarrival_times:
+                static_requests[od].append(round(t, 2))
+                t += delta_t
+                if t > peak_hour_duration:
+                    break
+
+    return static_requests
+
+
 def list_individual_requests(requests_per_od, dod=0, lead_time=1, set_seed=None):
 
     all_static_requests, all_dynamic_requests = [], []
