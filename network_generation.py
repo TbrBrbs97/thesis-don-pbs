@@ -43,6 +43,29 @@ def generate_cost_matrix(network, v_mean):
     return cost_matrix
 
 
+def generate_distance_matrix(network):
+
+    distance_matrix = {}
+
+    for i in network.keys():
+        x_a, y_a = network[i]['x-coord'], network[i]['y-coord']
+        for j in network.keys():
+            x_b, y_b = network[j]['x-coord'], network[j]['y-coord']
+            distance = calculate_euclidean_dist(x_a, y_a, x_b, y_b)
+            distance_matrix[(i, j)] = round(distance, 2)
+
+    return distance_matrix
+
+
+def calc_average_interstop_distance(network):
+    distance_matrix = generate_distance_matrix(network)
+    distance_list = []
+    for i, j in distance_matrix:
+        if i != j:
+            distance_list.append(distance_matrix[i, j])
+    return round(sum(distance_list)/len(distance_list), 2)
+
+
 def get_network_boundaries(network):
     all_stops = set(network.keys())
 

@@ -100,6 +100,31 @@ def find_best_position_for_request_group(vehicles_schedule, request_group, curre
     return find_best_position_for_request_group(vehicles_schedule, request_group, current_vehicle, best_pos_so_far)
 
 
+def iter_find_best_position_for_request_group(vehicles_schedule, request_group):
+    """
+    Function that returns the best possible position in the schedule for insertion,
+    taking into account capacity constraints. In a recursive way, it tries to compare for every vehicle the respecitvely
+    best costs for insertion. For whichever vehicle this representative cost is lowest, it is inserted in that vehicle,
+    on that position.
+    """
+
+    current_vehicle = 1
+    best_pos_so_far = None
+
+    while current_vehicle <= nb_of_available_vehicles:
+
+        insertion_constraints = get_insertion_possibilities(vehicles_schedule, current_vehicle, request_group)
+
+        for ins_con in insertion_constraints:
+            matching_score = find_pos_cost_given_ins_cons(vehicles_schedule, current_vehicle, request_group, ins_con)
+            if not best_pos_so_far or min(best_pos_so_far[2], matching_score) == matching_score:
+                best_pos_so_far = current_vehicle, ins_con, round(matching_score, 2)
+
+        current_vehicle += 1
+
+    return best_pos_so_far
+
+
 def find_random_position_for_request_group(vehicles_schedule, request_group, current_vehicle=1):
     """
     Function that returns a feasible (that is, respecting the capacity constraint) position for a request group.
@@ -130,9 +155,8 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     - 'insert o after', x: then, the destination is within the schedule, and so the arc might be fitted RIGHT BEFORE d,
     and after a node x
     """
-
-    request_group_max_pt = get_max_pick_time(request_group)
     o, d = get_od_from_request_group(request_group)
+    request_group_max_pt = get_max_pick_time(request_group)
     # initialize at a very high cost
     detour_cost = M
     dep_time_offset = M
@@ -145,6 +169,12 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     if insertion_constraint == 'first entry':
         detour_cost = 0.0
         dep_time_offset = 0.0
+
+    if type(insertion_constraint) == tuple:
+        available_cap = room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
+        feasible_portion = request_group[:min(len(request_group), available_cap)]
+        # print(request_group_max_pt, get_max_pick_time(feasible_portion))
+        request_group_max_pt = min(request_group_max_pt, get_max_pick_time(feasible_portion))
 
     # two subcases for 'insert d after', o : (1) the selected o is not the last node, (2) o is the last node
     elif insertion_constraint[0] == 'insert d after' and \
@@ -210,7 +240,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, first_node) -
                               cost_matrix[(d, int(first_node[0]))] -
                               request_group_max_pt - cost_matrix[(o, d)] -
-                              cost_matrix[(network_dim[1],o)])*(1 + waiting_passengers_mult)
+                              cost_matrix[(network_dim[1], o)])*(1 + waiting_passengers_mult)
 
     elif insertion_constraint == 'back':
         last_node = get_next_node(vehicles_schedule, vehicle)

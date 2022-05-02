@@ -2,14 +2,12 @@ import random
 import numpy as np
 from copy import deepcopy
 import time
-from pdb import set_trace
-
 
 from requests import count_requests, get_od_from_request_group, get_max_pick_time, \
     pop_request_group, remove_from_request_dictionairy, add_request_group_to_dict
 
-from static_operators import find_best_position_for_request_group, insert_request_group, \
-    remove_request_group, select_random_request_groups, find_random_position_for_request_group, \
+from static_operators import find_best_position_for_request_group, iter_find_best_position_for_request_group,\
+    insert_request_group, remove_request_group, select_random_request_groups, find_random_position_for_request_group, \
     find_first_best_improvement_for_request_group, occupy_available_seats
 
 from dynamic_operators import collect_request_until_time, find_best_position_for_dynamic_request
@@ -18,7 +16,7 @@ from vehicle import locate_request_group_in_schedule, count_assigned_request_gro
 
 from solution_evaluation import select_most_costly_request_groups, get_objective_function_val
 
-from parameters import cost_matrix, nb_of_available_vehicles, M, disturbance_ratio, shuffle_ratio, delta
+from parameters import cost_matrix, nb_of_available_vehicles, M, disturbance_ratio, shuffle_ratio, delta, network_size
 
 
 def init_fill_every_vehicle(request_dict, nb_of_available_veh, seed=True):
@@ -57,16 +55,36 @@ def generate_initial_solution(requests_dict, vehicles_schedule=None, score_dict=
     else:
         request_group = pop_request_group(requests_dict)
 
-    if request_group == [((9, 8), 0.0, 0)]: # [((9, 1), 0.0, 0)], [((9, 2), 0.0, 0)]]
-        print('found')
-
     candidate_position = find_best_position_for_request_group(vehicles_schedule, request_group)
     candidate_vehicle, candidate_node, score = candidate_position
-    score_dict[str(request_group)] = score  # does not take into account that request groups might be split up!
-    # TODO: should we maybe take the splitting up already into account in the cost calculation process?
-
+    score_dict[str(request_group)] = score
     insert_request_group(vehicles_schedule, requests_dict, request_group, candidate_vehicle, candidate_node)
     return generate_initial_solution(requests_dict, vehicles_schedule, score_dict)
+
+
+def iter_generate_initial_solution(requests_dict, vehicles_schedule=None):
+    """
+    An iterative version of the initial solution generator for the 'real sized' network.
+    """
+
+    if vehicles_schedule is None:
+        vehicles_schedule = init_fill_every_vehicle(requests_dict, nb_of_available_vehicles)
+
+    iteration = 0
+    while count_requests(requests_dict) != 0:
+        print(iteration)
+
+        request_group = pop_request_group(requests_dict)
+        print(request_group)
+        candidate_position = iter_find_best_position_for_request_group(vehicles_schedule, request_group)
+        if request_group == [((9, 15), 27.63, 0)]:
+            print(candidate_position)
+        candidate_vehicle, candidate_node, score = candidate_position
+
+        insert_request_group(vehicles_schedule, requests_dict, request_group, candidate_vehicle, candidate_node)
+        iteration += 1
+
+    return vehicles_schedule
 
 
 def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limit=5, temp_request_dict=None):

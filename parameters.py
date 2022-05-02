@@ -1,4 +1,5 @@
-from network_generation import import_network, generate_cost_matrix, get_network_boundaries
+from network_generation import import_network, generate_cost_matrix, \
+    get_network_boundaries, generate_distance_matrix, calc_average_interstop_distance
 from requests import count_requests, get_scenario_mean_demand, \
     list_individual_requests, convert_md_todict, generate_static_requests, \
     generate_static_requests_2, count_requests_per_od, size_request_groups_per_od, group_requests_dt
@@ -14,12 +15,15 @@ random_seed = 3
 
 # NETWORK CHARACTERISTICS
 
-network_size = 'small'
+network_size = 'real'
 interstop_distance = 'half'
 
 network = import_network(network_size, interstop_distance)
 cost_matrix = generate_cost_matrix(network, v_mean)
+distance_matrix = generate_distance_matrix(network)
 network_dim = get_network_boundaries(network)
+
+average_interstop_distance = calc_average_interstop_distance(network)
 
 # VEHICLE CHARACTERISTICS
 

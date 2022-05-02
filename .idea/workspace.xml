@@ -3,14 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="da9fdea6-face-44e3-9aed-8a24aecdd7dc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Archive/Main Script.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/Main Script.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Main Script.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/Main Script.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/function_archive.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/function_archive.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/old_solution_generation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/old_solution_generation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Benchmark Lines/realeucmore.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Benchmark Lines/realeucmore.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/network_generation.py" beforeDir="false" afterPath="$PROJECT_DIR$/network_generation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/parameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requests.py" beforeDir="false" afterPath="$PROJECT_DIR$/requests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/solution_construct.py" beforeDir="false" afterPath="$PROJECT_DIR$/solution_construct.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/solution_visualisation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/solution_visualisation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_operators.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testfile.py" beforeDir="false" afterPath="$PROJECT_DIR$/testfile.py" afterDir="false" />
     </list>
@@ -231,6 +229,17 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout-to-restore>
   </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+        <option value="Space.CommitStatus" />
+      </list>
+    </option>
+  </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
@@ -264,8 +273,13 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/solution_construct.py</url>
-          <line>60</line>
-          <option name="timeStamp" value="4" />
+          <line>80</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/testfile.py</url>
+          <line>47</line>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
