@@ -44,16 +44,26 @@ total_requests = count_requests(grouped_requests)
 
 ## INITIAL SOLUTION
 
-if network_size != 'real':
-    initial_solution, scores_dict = generate_initial_solution(grouped_requests)
-else:
-    initial_solution, scores_dict = generate_initial_solution(grouped_requests)
-
-print('objective func: ', get_objective_function_val(initial_solution, relative=True))
+initial_solution = generate_initial_solution(grouped_requests)
+print('objective func: ', get_objective_function_val(initial_solution, relative=False))
 print(count_total_assigned_requests(initial_solution))
 
 for i in initial_solution:
     print('veh ', i, ': ', initial_solution[i])
+
+request_group_test = [((8, 15), 34.96, 0), ((8, 15), 35.55, 0), ((8, 15), 38.8, 0)]
+print('the cost of this request group: ', calc_request_group_invehicle_time(initial_solution, request_group_test)+
+      calc_request_group_waiting_time(initial_solution, request_group_test))
+
+
+# test evaluation
+# mcr = select_most_costly_request_groups(initial_solution, required_amount=steep_descent_intensity)
+# print('the cost of this request group: ', calc_request_group_invehicle_time(initial_solution, mcr[0])+
+#       calc_request_group_waiting_time(initial_solution, mcr[0]))
+# remove_request_group(initial_solution, mcr[0])
+# print(mcr)
+# print('objective func: ', get_objective_function_val(initial_solution))
+
 
 ## OPTIMIZED STATIC SOLUTION
 

@@ -26,10 +26,10 @@ def remove_request_group(vehicles_schedule, request_group):
     old_departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
 
     destination_node = get_next_occ_of_node(vehicles_schedule, vehicle, node, d)
-    if destination_node is None:
-        print(request_group)
-        print(vehicle)
-        print(node, d)
+    # if destination_node is None:
+    #     print(request_group)
+    #     print(vehicle)
+    #     print(node, d)
 
     remaining_request_groups = [element for element in vehicles_schedule[vehicle][node][1:]
                                 if all([x != y for x in element for y in request_group])]
@@ -52,7 +52,7 @@ def remove_request_group(vehicles_schedule, request_group):
             update_dep_time_at_node(vehicles_schedule, vehicle, n)
 
 
-def find_first_best_improvement_for_request_group(vehicles_schedule, request_group, original_score=None, current_vehicle=1,
+def find_first_best_improvement_for_request_group(vehicles_schedule, request_group, original_score=M, current_vehicle=1,
                                                   best_improvement=None):
     "Find the first best improving position for a request group, in stead of looking for the best spot"
 
@@ -64,13 +64,14 @@ def find_first_best_improvement_for_request_group(vehicles_schedule, request_gro
     for ins_cons in insertion_constraints:
         current_score = find_pos_cost_given_ins_cons(vehicles_schedule, current_vehicle, request_group, ins_cons)
         if not best_improvement:
-            best_improvement = current_vehicle, ins_cons, round(current_score, 2)
+            best_improvement = current_vehicle, 'current pos', round(original_score, 2)
         elif current_score < best_improvement[2]:
             best_improvement = current_vehicle, ins_cons, round(current_score, 2)
             return best_improvement
 
     current_vehicle += 1
-    return find_first_best_improvement_for_request_group(vehicles_schedule, request_group, original_score, current_vehicle)
+    return find_first_best_improvement_for_request_group(vehicles_schedule, request_group,
+                                                         original_score, current_vehicle, best_improvement)
 
 
 def find_best_position_for_request_group(vehicles_schedule, request_group, current_vehicle=1,
