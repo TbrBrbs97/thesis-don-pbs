@@ -11,7 +11,7 @@ time_of_day = 1  # 1 = peak, 0 = off-peak
 peak_duration = 60  # min.
 degree_of_dynamism = 0.0 # percent
 lead_time = 5 # min.
-random_seed = 3
+random_seed = 2
 
 # NETWORK CHARACTERISTICS
 
@@ -52,7 +52,7 @@ size_groups = size_request_groups_per_od(grouped_requests)
 # OPTIMIZATION
 
 M = 1000  # a very large number
-opt_time_lim = 0.5  # minutes
+opt_time_lim = 2  # minutes
 disturbance_ratio = 0.1
 shuffle_ratio = 0.4 # not really used
 steep_descent_intensity = 1

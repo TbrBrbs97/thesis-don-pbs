@@ -1,6 +1,7 @@
 from requests import collect_request_until_time, get_od_from_request_group
 from vehicle import get_insertion_possibilities, get_departure_time_at_node, \
     room_for_insertion_at_node, get_prev_node, get_next_node
+from network_generation import cv
 from parameters import nb_of_available_vehicles, cost_matrix
 from static_operators import find_pos_cost_given_ins_cons
 
@@ -35,12 +36,13 @@ def filter_dynamic_insertion_possibilities(vehicles_schedule, vehicle, request, 
         elif ins_cons == 'in front':
             first_node = get_prev_node(vehicles_schedule, vehicle)
             time_constraint = get_departure_time_at_node(vehicles_schedule, vehicle, first_node) \
-                              - cost_matrix[(o, d)] - cost_matrix[(int(first_node[0]), d)]
+                              - cost_matrix[(o, d)] - cost_matrix[(cv(first_node), d)]
             if time_constraint > current_time:
                 filtered_insertion_constraints.append(ins_cons)
         elif ins_cons == 'back':
             last_node = get_next_node(vehicles_schedule, vehicle)
-            time_constraint = get_departure_time_at_node(vehicles_schedule, vehicle, last_node) + cost_matrix[(int(last_node[0]),o)]
+            time_constraint = get_departure_time_at_node(vehicles_schedule, vehicle, last_node) \
+                              + cost_matrix[(cv(last_node), o)]
             if time_constraint > current_time:
                 filtered_insertion_constraints.append(ins_cons)
 

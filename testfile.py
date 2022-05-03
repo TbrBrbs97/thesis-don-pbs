@@ -38,7 +38,7 @@ total_requests = count_requests(grouped_requests)
 # print(count_groups)
 # print(total_requests)
 # print(cost_matrix)
-print(network)
+# print(network)
 # print(average_interstop_distance)
 
 
@@ -47,7 +47,7 @@ print(network)
 if network_size != 'real':
     initial_solution, scores_dict = generate_initial_solution(grouped_requests)
 else:
-    initial_solution, scores_dict = iter_generate_initial_solution(grouped_requests)
+    initial_solution, scores_dict = generate_initial_solution(grouped_requests)
 
 print('objective func: ', get_objective_function_val(initial_solution, relative=True))
 print(count_total_assigned_requests(initial_solution))
@@ -57,12 +57,12 @@ for i in initial_solution:
 
 ## OPTIMIZED STATIC SOLUTION
 
-# optimized_solution = static_optimization(initial_solution, required_requests_per_it=steep_descent_intensity,
-#                                          time_limit=opt_time_lim)
-# for i in optimized_solution:
-#     print('veh ', i, ': ', optimized_solution[i])
-# print('overal objective function: ', get_objective_function_val(optimized_solution, relative=False))
-# print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
+optimized_solution = static_optimization(initial_solution, required_requests_per_it=steep_descent_intensity,
+                                         time_limit=opt_time_lim)
+for i in optimized_solution:
+    print('veh ', i, ': ', optimized_solution[i])
+print('overal objective function: ', get_objective_function_val(optimized_solution, relative=False))
+print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
 
 # ## DYNAMIC SOLUTION
 #

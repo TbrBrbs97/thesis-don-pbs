@@ -8,7 +8,9 @@ from network_generation import cv
 from vehicle import locate_request_group_in_schedule, get_departure_time_at_node, is_empty_vehicle_schedule, \
     is_empty_stop, get_next_occ_of_node, get_pick_up_nodes_dest, get_nodes_in_range, \
     get_insertion_possibilities, room_for_insertion_at_node, get_next_node, get_prev_node, \
-    get_last_arrival, get_all_occurrences_of_node, boarding_pass_at_node, count_boarding_pax_until_dest, count_inveh_pax_over_node
+    get_last_arrival, get_all_occurrences_of_node, boarding_pass_at_node, count_boarding_pax_until_dest, \
+    count_inveh_pax_over_node, get_occ
+
 
 from requests import get_od_from_request_group, get_max_pick_time, add_request_group_to_dict
 
@@ -208,7 +210,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
                                                                 insertion_constraint[1], last_node)
         detour_cost = 0
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
-                              - cost_matrix[o, d] - request_group_max_pt - cost_matrix[network_dim[1],o]
+                              - cost_matrix[o, d] - request_group_max_pt - cost_matrix[network_dim[0],o]
                               )*(1 + waiting_passengers_mult)
 
     elif insertion_constraint[0] == 'on arc with o: ' and \
@@ -242,7 +244,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, first_node) -
                               cost_matrix[(d, cv(first_node))] -
                               request_group_max_pt - cost_matrix[(o, d)] -
-                              cost_matrix[(network_dim[1], o)])*(1 + waiting_passengers_mult)
+                              cost_matrix[(network_dim[0], o)])*(1 + waiting_passengers_mult)
 
     elif insertion_constraint == 'back':
         last_node = get_next_node(vehicles_schedule, vehicle)
@@ -316,21 +318,21 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
     if type(node_type) is int:
         all_occ_of_node_type = get_all_occurrences_of_node(vehicle_schedule, vehicle, node_type)
         if len(all_occ_of_node_type) > 0:
-            max_occ = max([int(t[-1]) for t in all_occ_of_node_type])
+            max_occ = max([get_occ(t) for t in all_occ_of_node_type])
             curr_occ = max_occ + 1
     elif len(node_type) == 2:
         for n in node_type:
             all_occ_of_node_type = get_all_occurrences_of_node(vehicle_schedule, vehicle, n)
             occ[n] = 0
             if len(all_occ_of_node_type) > 0:
-                max_occ = max([int(t[-1]) for t in all_occ_of_node_type])
+                max_occ = max([get_occ(t) for t in all_occ_of_node_type])
                 occ[n] = max_occ + 1
 
     # if the next stop is the first node
     if next_stop and next_stop != 'first stop':
         insert_before = list(vehicle_schedule[vehicle]).index(next_stop)
         new_stop = str(node_type) + ',' + str(curr_occ)
-        items.insert(insert_before, (new_stop, [float(cost_matrix[(network_dim[1], node_type)])]))
+        items.insert(insert_before, (new_stop, [float(cost_matrix[(network_dim[0], node_type)])]))
         vehicle_schedule[vehicle] = dict(items)
 
     elif next_stop == 'first stop':
@@ -338,7 +340,7 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
         items.insert(insert_before, (str(node_type[1]) + ',' + str(occ[node_type[1]]),
                                      [0.0]))
         new_stop = str(node_type[0]) + ',' + str(occ[node_type[0]])
-        items.insert(insert_before, (new_stop, [float(cost_matrix[(network_dim[1], node_type[0])])]))
+        items.insert(insert_before, (new_stop, [float(cost_matrix[(network_dim[0], node_type[0])])]))
         vehicle_schedule[vehicle] = dict(items)
 
     elif not next_stop and type(node_type) == int:
@@ -351,9 +353,9 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
     else:
         items = list(vehicle_schedule[vehicle].items())
         new_stop = str(node_type[0]) + ',' + str(occ[node_type[0]])
-        items.append((new_stop, [float(cost_matrix[(network_dim[1], node_type[0])])]))
+        items.append((new_stop, [float(cost_matrix[(network_dim[0], node_type[0])])]))
         items.append((str(node_type[1]) + ',' + str(occ[node_type[1]]),
-                      [float(cost_matrix[(network_dim[1], node_type[0])] + cost_matrix[(node_type[0], node_type[1])])]))
+                      [float(cost_matrix[(network_dim[0], node_type[0])] + cost_matrix[(node_type[0], node_type[1])])]))
         vehicle_schedule[vehicle] = dict(items)
 
     return new_stop
@@ -400,7 +402,7 @@ def update_dep_time_at_node(vehicles_schedule, vehicle, node):
     previous_node = get_prev_node(vehicles_schedule, vehicle, node)
     if previous_node:
         previous_node_dep_time = get_departure_time_at_node(vehicles_schedule, vehicle, previous_node)
-        imposed_dep_time_by_prev_stop = previous_node_dep_time + cost_matrix[(int(previous_node[0]), int(node[0]))]
+        imposed_dep_time_by_prev_stop = previous_node_dep_time + cost_matrix[cv(previous_node), cv(node)]
     else:
         imposed_dep_time_by_prev_stop = np.float64()
 

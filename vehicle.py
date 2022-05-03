@@ -1,5 +1,5 @@
 from requests import get_od_from_request_group, get_max_pick_time
-
+from network_generation import cv
 from parameters import cap_per_veh, req_max_cluster_time, cost_matrix, network_dim
 
 
@@ -15,18 +15,18 @@ def get_insertion_possibilities(vehicles_schedule, vehicle, request_group):
     o, d = get_od_from_request_group(request_group)
 
     if not is_empty_vehicle_schedule(vehicles_schedule, vehicle):
-        positions_at_origin = [('insert d after', node) for node in vehicles_schedule[vehicle] if int(node[0]) == o
+        positions_at_origin = [('insert d after', node) for node in vehicles_schedule[vehicle] if cv(node) == o
                                and get_next_occ_of_node(vehicles_schedule, vehicle, node, d) is None]
-        positions_at_origin_as_last_stop = [('insert d after', node) for node in vehicles_schedule[vehicle] if int(node[0]) == o
+        positions_at_origin_as_last_stop = [('insert d after', node) for node in vehicles_schedule[vehicle] if cv(node) == o
                                             and get_next_node(vehicles_schedule, vehicle) is None and
                                             node not in [tup[1] for tup in positions_at_origin]]
         positions_before_first_stop = [('insert o before', node) for node in vehicles_schedule[vehicle]
-                                       if int(node[0]) == d and get_prev_node(vehicles_schedule, vehicle, node) is None]
+                                       if cv(node) == d and get_prev_node(vehicles_schedule, vehicle, node) is None]
         positions_on_existing_arc = [('on arc with o: ', node) for node in vehicles_schedule[vehicle]
-                                     if int(node[0]) == o and get_next_occ_of_node(vehicles_schedule, vehicle, node, d) is not None]
+                                     if cv(node) == o and get_next_occ_of_node(vehicles_schedule, vehicle, node, d) is not None]
         positions_before_dest = [('insert o after', node) for node in vehicles_schedule[vehicle] if
                                  get_next_node(vehicles_schedule, vehicle, node) is not None and
-                                 int(get_next_node(vehicles_schedule, vehicle, node)[0]) == d and node not in
+                                 cv(get_next_node(vehicles_schedule, vehicle, node)) == d and node not in
                                  [tup[1] for tup in positions_on_existing_arc]]
         default_positions = []
         if len(positions_at_origin_as_last_stop) == 0:
@@ -123,7 +123,7 @@ def get_existing_nodes(vehicles_schedule, vehicle, node_type=None):
     if not node_type:
         return [node for node in vehicles_schedule[vehicle]]
     else:
-        return [node for node in vehicles_schedule[vehicle] if int(node[0]) == node_type]
+        return [node for node in vehicles_schedule[vehicle] if cv(node) == node_type]
 
 
 def get_all_occurrences_of_node(vehicles_schedule, vehicle, node_type):
@@ -132,7 +132,7 @@ def get_all_occurrences_of_node(vehicles_schedule, vehicle, node_type):
     in the schedule of a vehicle. We only need to know if either the origin or the destination is within the vehicle.
     """
 
-    return [n for n in vehicles_schedule[vehicle] if int(n[0]) == node_type]
+    return [n for n in vehicles_schedule[vehicle] if cv(n) == node_type]
 
 
 def get_next_occ_of_node(vehicles_schedule, vehicle, start_node, target_node):
@@ -140,7 +140,7 @@ def get_next_occ_of_node(vehicles_schedule, vehicle, start_node, target_node):
     idx_start_node = all_nodes.index(start_node)
 
     for idx in range(idx_start_node+1, len(all_nodes)):
-        if int(all_nodes[idx][0]) == target_node:
+        if cv(all_nodes[idx]) == target_node:
             return all_nodes[idx]
 
 
