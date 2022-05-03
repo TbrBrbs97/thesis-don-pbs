@@ -36,7 +36,9 @@ total_requests = count_requests(grouped_requests)
 # print(grouped_requests)
 # print(mean_demand)
 # print(count_groups)
-print(total_requests)
+# print(total_requests)
+# print(cost_matrix)
+print(network)
 # print(average_interstop_distance)
 
 

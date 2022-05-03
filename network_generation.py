@@ -74,3 +74,13 @@ def get_network_boundaries(network):
     city = round(terminal_end/2) + 1
 
     return terminal, city, terminal_end
+
+
+def cv(node):
+    """
+    Converts a node of the form 'node, occ' to 'node', which can be understood by the distance/cost matrix
+    """
+    if node[:2].isdigit():
+        return int(node[:2])
+    else:
+        return int(node[:1])

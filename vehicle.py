@@ -260,3 +260,13 @@ def get_pick_up_nodes_dest(vehicles_schedule, vehicle, node):
                 pick_up_nodes.append(n)
 
     return set(pick_up_nodes)
+
+
+def get_occ(node):
+    """
+    Returns the integer occurence of a node
+    """
+    if node[-2:].isdigit():
+        return int(node[-2:])
+    else:
+        return int(node[-1])

@@ -3,6 +3,8 @@ import copy
 import random
 from copy import deepcopy
 
+from network_generation import cv
+
 from vehicle import locate_request_group_in_schedule, get_departure_time_at_node, is_empty_vehicle_schedule, \
     is_empty_stop, get_next_occ_of_node, get_pick_up_nodes_dest, get_nodes_in_range, \
     get_insertion_possibilities, room_for_insertion_at_node, get_next_node, get_prev_node, \
@@ -185,8 +187,8 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
 
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, x, last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, x)
-        detour_cost = (cost_matrix[(o, d)] + cost_matrix[(d, int(x[0]))] -
-                       cost_matrix[(o, int(x[0]))])*(1 + waiting_passengers_mult)
+        detour_cost = (cost_matrix[(o, d)] + cost_matrix[(d, cv(x))] -
+                       cost_matrix[(o, cv(x))])*(1 + waiting_passengers_mult)
         dep_time_offset = abs(request_group_max_pt -
                               get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])) \
                            *(1 + inveh_passenger_mult + waiting_passengers_mult)
@@ -227,10 +229,10 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, d, last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, d)
 
-        detour_cost = (cost_matrix[(int(x[0]), o)] + cost_matrix[(o, int(d[0]))]
-                       - cost_matrix[(int(x[0]), int(d[0]))])*(1 + waiting_passengers_mult + inveh_passenger_mult)
+        detour_cost = (cost_matrix[(cv(x), o)] + cost_matrix[(o, cv(d))]
+                       - cost_matrix[(cv(x), cv(d))])*(1 + waiting_passengers_mult + inveh_passenger_mult)
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
-                              + cost_matrix[int(x[0]), o] - request_group_max_pt)*(1 + (waiting_passengers_mult + inveh_passenger_mult))
+                              + cost_matrix[(cv(x), o)] - request_group_max_pt)*(1 + (waiting_passengers_mult + inveh_passenger_mult))
 
     # we don't need to check for capacity in the following two cases
     elif insertion_constraint == 'in front':
@@ -238,13 +240,13 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, first_node, last_node)
         detour_cost = stop_addition_penalty
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, first_node) -
-                              cost_matrix[(d, int(first_node[0]))] -
+                              cost_matrix[(d, cv(first_node))] -
                               request_group_max_pt - cost_matrix[(o, d)] -
                               cost_matrix[(network_dim[1], o)])*(1 + waiting_passengers_mult)
 
     elif insertion_constraint == 'back':
         last_node = get_next_node(vehicles_schedule, vehicle)
-        detour_cost = cost_matrix[(int(last_node[0]), o)]
+        detour_cost = cost_matrix[(cv(last_node), o)]
         dep_time_offset = abs(
             request_group_max_pt - get_departure_time_at_node(vehicles_schedule, vehicle, last_node))
 
@@ -345,11 +347,13 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
         items.append((new_stop, [0.0]))
         vehicle_schedule[vehicle] = dict(items)
 
+    # if not next_stop and type(node_type) == tuple
     else:
         items = list(vehicle_schedule[vehicle].items())
         new_stop = str(node_type[0]) + ',' + str(occ[node_type[0]])
         items.append((new_stop, [float(cost_matrix[(network_dim[1], node_type[0])])]))
-        items.append((str(node_type[1]) + ',' + str(occ[node_type[1]]), [0.0]))
+        items.append((str(node_type[1]) + ',' + str(occ[node_type[1]]),
+                      [float(cost_matrix[(network_dim[1], node_type[0])] + cost_matrix[(node_type[0], node_type[1])])]))
         vehicle_schedule[vehicle] = dict(items)
 
     return new_stop
