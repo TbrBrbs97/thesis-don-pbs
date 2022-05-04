@@ -11,7 +11,6 @@ from vehicle import locate_request_group_in_schedule, get_departure_time_at_node
     get_last_arrival, get_all_occurrences_of_node, boarding_pass_at_node, count_boarding_pax_until_dest, \
     count_inveh_pax_over_node, get_occ
 
-
 from requests import get_od_from_request_group, get_max_pick_time, add_request_group_to_dict
 
 from parameters import cost_matrix, cap_per_veh, nb_of_available_vehicles, \
@@ -337,6 +336,8 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
         vehicle_schedule[vehicle] = dict(items)
 
     elif next_stop == 'first stop':
+        if is_empty_vehicle_schedule(vehicle_schedule, vehicle):
+            print(vehicle, vehicle_schedule[vehicle])
         insert_before = list(vehicle_schedule[vehicle].keys()).index(get_prev_node(vehicle_schedule, vehicle))
         items.insert(insert_before, (str(node_type[1]) + ',' + str(occ[node_type[1]]),
                                      [0.0]))

@@ -5,6 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/parameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/solution_construct.py" beforeDir="false" afterPath="$PROJECT_DIR$/solution_construct.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/solution_evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/solution_evaluation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_operators.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testfile.py" beforeDir="false" afterPath="$PROJECT_DIR$/testfile.py" afterDir="false" />
     </list>
@@ -263,17 +264,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="LAST_COMMIT_MESSAGE" value="" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/solution_construct.py</url>
-          <line>140</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">

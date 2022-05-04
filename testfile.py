@@ -5,7 +5,7 @@ from pprint import PrettyPrinter, pprint
 from requests import get_od_from_request_group
 
 from vehicle import locate_request_group_in_schedule, is_empty_vehicle_schedule, \
-    count_assigned_request_groups, count_total_assigned_requests, room_for_insertion_at_node, get_insertion_possibilities
+    count_assigned_request_groups, room_for_insertion_at_node, get_insertion_possibilities, count_total_assigned_requests
 
 from requests import count_requests, add_request_group_to_dict
 
@@ -36,7 +36,7 @@ total_requests = count_requests(grouped_requests)
 # print(grouped_requests)
 # print(mean_demand)
 # print(count_groups)
-# print(total_requests)
+print(total_requests)
 # print(cost_matrix)
 # print(network)
 # print(average_interstop_distance)
@@ -51,20 +51,6 @@ print(count_total_assigned_requests(initial_solution))
 for i in initial_solution:
     print('veh ', i, ': ', initial_solution[i])
 
-request_group_test = [((8, 15), 34.96, 0), ((8, 15), 35.55, 0), ((8, 15), 38.8, 0)]
-print('the cost of this request group: ', calc_request_group_invehicle_time(initial_solution, request_group_test)+
-      calc_request_group_waiting_time(initial_solution, request_group_test))
-
-
-# test evaluation
-# mcr = select_most_costly_request_groups(initial_solution, required_amount=steep_descent_intensity)
-# print('the cost of this request group: ', calc_request_group_invehicle_time(initial_solution, mcr[0])+
-#       calc_request_group_waiting_time(initial_solution, mcr[0]))
-# remove_request_group(initial_solution, mcr[0])
-# print(mcr)
-# print('objective func: ', get_objective_function_val(initial_solution))
-
-
 ## OPTIMIZED STATIC SOLUTION
 
 optimized_solution = static_optimization(initial_solution, required_requests_per_it=steep_descent_intensity,
@@ -73,6 +59,7 @@ for i in optimized_solution:
     print('veh ', i, ': ', optimized_solution[i])
 print('overal objective function: ', get_objective_function_val(optimized_solution, relative=False))
 print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
+print(count_total_assigned_requests(optimized_solution) == count_total_assigned_requests(initial_solution))
 
 # ## DYNAMIC SOLUTION
 #
