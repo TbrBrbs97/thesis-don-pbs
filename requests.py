@@ -97,9 +97,10 @@ def generate_static_requests_2(mean_demand, peak_hour_duration=60, set_seed=None
             t = 0
             for delta_t in interarrival_times:
                 t += delta_t
-                static_requests[od].append(round(t, 2))
                 if t > peak_hour_duration:
                     break
+                else:
+                    static_requests[od].append(round(t, 2))
 
     return static_requests
 

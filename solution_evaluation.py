@@ -22,6 +22,18 @@ def calc_request_group_waiting_time(vehicles_schedule, request_group, relative=F
     return waiting_time
 
 
+def calc_request_group_opportunity_cost(vehicles_schedule, request_group):
+    """
+    Returns the opportunity cost of a request group; or the drop in objective function
+    value due to removing a request group.
+    """
+    original_obj_func_val = get_objective_function_val(vehicles_schedule)
+    schedule_copy = deepcopy(vehicles_schedule)
+    remove_request_group(schedule_copy, request_group)
+    opportunity_cost = original_obj_func_val - get_objective_function_val(schedule_copy)
+    return opportunity_cost
+
+
 def calc_request_group_invehicle_time(vehicles_schedule, request_group, relative=False):
     if relative:
         denominator = len(request_group)
@@ -117,16 +129,6 @@ def get_objective_function_val(vehicles_schedule, relative=False):
         return round(sum_total_travel_time(total_travel_time, 'total'), 2)
 
 
-def calc_request_group_opportunity_cost(vehicles_schedule, request_group):
-    """
-    Returns the opportunity cost of a request group; or the drop in objective function
-    value due to removing a request group.
-    """
-    original_obj_func_val = get_objective_function_val(vehicles_schedule)
-    schedule_copy = deepcopy(vehicles_schedule)
-    remove_request_group(schedule_copy, request_group)
-    opportunity_cost = original_obj_func_val - get_objective_function_val(schedule_copy)
-    return opportunity_cost
 
 
 def select_most_costly_request_groups(vehicles_schedule, required_amount=1, request_groups=None, current_time=None):

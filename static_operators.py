@@ -51,26 +51,7 @@ def remove_request_group(vehicles_schedule, request_group):
             update_dep_time_at_node(vehicles_schedule, vehicle, n)
 
 
-def find_first_best_improvement_for_request_group(vehicles_schedule, request_group, original_score=M, current_vehicle=1,
-                                                  best_improvement=None):
-    "Find the first best improving position for a request group, in stead of looking for the best spot"
 
-    if current_vehicle > nb_of_available_vehicles:
-        return best_improvement
-
-    insertion_constraints = get_insertion_possibilities(vehicles_schedule, current_vehicle, request_group)
-
-    for ins_cons in insertion_constraints:
-        current_score = find_pos_cost_given_ins_cons(vehicles_schedule, current_vehicle, request_group, ins_cons)
-        if not best_improvement:
-            best_improvement = current_vehicle, 'current pos', round(original_score, 2)
-        elif current_score < best_improvement[2]:
-            best_improvement = current_vehicle, ins_cons, round(current_score, 2)
-            return best_improvement
-
-    current_vehicle += 1
-    return find_first_best_improvement_for_request_group(vehicles_schedule, request_group,
-                                                         original_score, current_vehicle, best_improvement)
 
 
 def find_best_position_for_request_group(vehicles_schedule, request_group, current_vehicle=1,
@@ -174,9 +155,11 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         detour_cost = 0.0
         dep_time_offset = 0.0
 
+    default_multiplier = len(request_group)
     if type(insertion_constraint) == tuple:
         available_cap = room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
         feasible_portion = request_group[:min(len(request_group), available_cap)]
+        default_multiplier = len(feasible_portion)
         # print(request_group_max_pt, get_max_pick_time(feasible_portion))
         request_group_max_pt = min(request_group_max_pt, get_max_pick_time(feasible_portion))
 
@@ -190,10 +173,10 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, x, last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, x)
         detour_cost = (cost_matrix[(o, d)] + cost_matrix[(d, cv(x))] -
-                       cost_matrix[(o, cv(x))])*(1 + waiting_passengers_mult)
+                       cost_matrix[(o, cv(x))])*(default_multiplier + waiting_passengers_mult)
         dep_time_offset = abs(request_group_max_pt -
                               get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])) \
-                           *(1 + inveh_passenger_mult + waiting_passengers_mult)
+                           *(default_multiplier + inveh_passenger_mult + waiting_passengers_mult)
 
     # we don't affect other passenger by inserting a destination node after the existing schedule
     elif insertion_constraint[0] == 'insert d after' and \
@@ -211,7 +194,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         detour_cost = 0
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
                               - cost_matrix[o, d] - request_group_max_pt - cost_matrix[network_dim[0],o]
-                              )*(1 + waiting_passengers_mult)
+                              )*(default_multiplier + waiting_passengers_mult)
 
     elif insertion_constraint[0] == 'on arc with o: ' and \
             room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1],
@@ -219,9 +202,9 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, insertion_constraint[1],
                                                                 last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, insertion_constraint[1])
-        detour_cost = -stop_addition_penalty
+        detour_cost = -1000
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
-                              - request_group_max_pt)*(1 + waiting_passengers_mult + inveh_passenger_mult)
+                              - request_group_max_pt)*(default_multiplier + waiting_passengers_mult + inveh_passenger_mult)
 
     elif insertion_constraint[0] == 'insert o after' and \
             room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1]) > 0:
@@ -232,9 +215,9 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, d)
 
         detour_cost = (cost_matrix[(cv(x), o)] + cost_matrix[(o, cv(d))]
-                       - cost_matrix[(cv(x), cv(d))])*(1 + waiting_passengers_mult + inveh_passenger_mult)
+                       - cost_matrix[(cv(x), cv(d))])*(default_multiplier + waiting_passengers_mult + inveh_passenger_mult)
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
-                              + cost_matrix[(cv(x), o)] - request_group_max_pt)*(1 + (waiting_passengers_mult + inveh_passenger_mult))
+                              + cost_matrix[(cv(x), o)] - request_group_max_pt)*(default_multiplier + (waiting_passengers_mult + inveh_passenger_mult))
 
     # we don't need to check for capacity in the following two cases
     elif insertion_constraint == 'in front':
@@ -244,7 +227,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, first_node) -
                               cost_matrix[(d, cv(first_node))] -
                               request_group_max_pt - cost_matrix[(o, d)] -
-                              cost_matrix[(network_dim[0], o)])*(1 + waiting_passengers_mult)
+                              cost_matrix[(network_dim[0], o)])*(default_multiplier + waiting_passengers_mult)
 
     elif insertion_constraint == 'back':
         last_node = get_next_node(vehicles_schedule, vehicle)

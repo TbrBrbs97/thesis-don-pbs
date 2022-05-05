@@ -15,7 +15,7 @@ random_seed = 7
 
 # NETWORK CHARACTERISTICS
 
-network_size = 'medium'
+network_size = 'real'
 interstop_distance = 'half'
 
 network = import_network(network_size, interstop_distance)
@@ -33,7 +33,7 @@ nb_of_available_vehicles = 16
 
 # REQUEST CHARACTERISTICS
 
-req_max_cluster_time = cap_per_veh / 2 #min.
+req_max_cluster_time = cap_per_veh #min.
 
 lambdapeak = get_scenario_mean_demand('city', network_size, scen=demand_scenario, peak=1)
 mupeak = get_scenario_mean_demand('terminal', network_size, scen=demand_scenario, peak=1)
@@ -52,8 +52,8 @@ size_groups = size_request_groups_per_od(grouped_requests)
 # OPTIMIZATION
 
 M = 1000  # a very large number
-opt_time_lim = 10  # minutes
-disturbance_ratio = 0.1
+opt_time_lim = 1  # minutes
+disturbance_ratio = 0.01
 shuffle_ratio = 0.5 # not really used
 steep_descent_intensity = 1
 stop_addition_penalty = 0 # node addition penalty

@@ -9,7 +9,7 @@ from vehicle import locate_request_group_in_schedule, is_empty_vehicle_schedule,
 
 from requests import count_requests, add_request_group_to_dict
 
-from static_operators import remove_request_group, find_best_position_for_request_group, select_random_request_groups
+from static_operators import find_best_position_for_request_group, select_random_request_groups
 
 from dynamic_operators import filter_dynamic_insertion_possibilities
 
@@ -37,6 +37,8 @@ total_requests = count_requests(grouped_requests)
 # print(mean_demand)
 # print(count_groups)
 print(total_requests)
+# print(requests_per_od)
+
 # print(cost_matrix)
 # print(network)
 # print(average_interstop_distance)

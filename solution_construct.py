@@ -9,7 +9,9 @@ from requests import count_requests, get_od_from_request_group, get_max_pick_tim
 
 from static_operators import find_best_position_for_request_group, iter_find_best_position_for_request_group, \
     insert_request_group, remove_request_group, select_random_request_groups, find_random_position_for_request_group, \
-    find_first_best_improvement_for_request_group, occupy_available_seats
+    occupy_available_seats
+
+from find_position import find_first_best_improvement_for_request_group_2, find_first_best_improvement_for_request_group
 
 from dynamic_operators import collect_request_until_time, find_best_position_for_dynamic_request
 
@@ -17,8 +19,8 @@ from vehicle import locate_request_group_in_schedule, count_assigned_request_gro
     get_copy_vehicles_schedule, count_total_assigned_requests
 
 from solution_evaluation import select_most_costly_request_groups, \
-    get_objective_function_val, calc_request_group_waiting_time, calc_request_group_invehicle_time, \
-    calc_request_group_opportunity_cost
+    get_objective_function_val, calc_request_group_waiting_time, \
+    calc_request_group_invehicle_time, calc_request_group_opportunity_cost
 
 from parameters import cost_matrix, nb_of_available_vehicles, M, disturbance_ratio, shuffle_ratio, delta, network_size
 
@@ -142,10 +144,11 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
 
         if get_objective_function_val(vehicles_schedule) >= \
                 get_objective_function_val(best_schedule_so_far) and it % 5 == 0 and it != 0:
-            # shuffle_rate = min(shuffle_ratio + shf*0.05, 0.8)
+            # shuffle_rate = min(shuffle_ratio + shf*0.01, 0.8)
             shuffle_rate = shuffle_ratio
             print('performing large shuffle with rate: ', shuffle_rate)
             vehicles_schedule = large_shuffle(vehicles_schedule, shuffle_rate=shuffle_rate)
+            shf += 1
 
         end_time = time.time()
         elapsed_time += end_time - start_time
@@ -229,15 +232,46 @@ def large_shuffle(vehicles_schedule, temp_request_dict=None, shuffle_rate=shuffl
 
     for request_group in random_request_groups:
         original_obj_func_value = get_objective_function_val(vehicles_schedule)
+        original_score = calc_request_group_opportunity_cost(vehicles_schedule, request_group)
+
         temp_schedule = copy.deepcopy(vehicles_schedule)
         # print(count_total_assigned_requests(vehicles_schedule))
 
         remove_request_group(temp_schedule, request_group)
         temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
-        candidate_vehicle, candidate_node, score = find_first_best_improvement_for_request_group(temp_schedule,
-                                                                                                 request_group)
+        # candidate_vehicle, candidate_node, score = find_first_best_improvement_for_request_group(temp_schedule,
+        #                                                                                          request_group, original_score=M/4)
+        candidate_vehicle, candidate_node, score = find_first_best_improvement_for_request_group_2(temp_schedule,
+                                                                                                 request_group, original_score=original_score)
 
         if candidate_node != 'current pos' and get_objective_function_val(temp_schedule) < original_obj_func_value:
+            remove_request_group(vehicles_schedule, request_group)
+            insert_request_group(vehicles_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
+
+    return vehicles_schedule
+
+
+def large_shuffle_2(vehicles_schedule, temp_request_dict=None, shuffle_rate=shuffle_ratio):
+    """
+    Function which shakes a solution schedule by a large amount. The shaking process goes as follows:
+    """
+
+    if not temp_request_dict:
+        temp_request_dict = dict()
+
+    request_groups_to_select = int(round(shuffle_rate * count_assigned_request_groups(vehicles_schedule)))
+    random_request_groups = select_random_request_groups(vehicles_schedule, request_groups_to_select)
+
+    for request_group in random_request_groups:
+        original_obj_func_value = get_objective_function_val(vehicles_schedule)
+        temp_schedule = copy.deepcopy(vehicles_schedule)
+        # print(count_total_assigned_requests(vehicles_schedule))
+
+        remove_request_group(temp_schedule, request_group)
+        temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
+        candidate_vehicle, candidate_node, score = find_best_position_for_request_group(temp_schedule, request_group)
+
+        if get_objective_function_val(temp_schedule) < original_obj_func_value:
             remove_request_group(vehicles_schedule, request_group)
             insert_request_group(vehicles_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
 
