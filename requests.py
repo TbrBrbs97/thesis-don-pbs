@@ -211,7 +211,7 @@ def count_requests(request_dict, od=None):
 
 
 def get_od_from_request_group(request_group):
-    # print(request_group)
+    # print(portion)
     o = request_group[0][0][0]
     d = request_group[0][0][1]
 
@@ -258,7 +258,7 @@ def remove_from_request_dictionairy(request_dictionairy, request_group):
 
 def add_request_group_to_dict(request_group, request_dict=None):
     """
-    Adds a request_group to a (temporary) request dictionairy.
+    Adds a portion to a (temporary) request dictionairy.
     """
     if not request_dict:
         request_dict = dict()

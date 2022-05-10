@@ -26,7 +26,7 @@ def remove_request_group(vehicles_schedule, request_group):
 
     destination_node = get_next_occ_of_node(vehicles_schedule, vehicle, node, d)
     # if destination_node is None:
-    #     print(request_group)
+    #     print(portion)
     #     print(vehicle)
     #     print(node, d)
 
@@ -134,7 +134,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     On this level, the best possible position is returned given a SINGLE 'insertion_constraint', which is given as an input.
     This constraint can either be:
     - 'first entry': if the vehicle schedule is empty so far
-    - 'insert d after', o: then, the request_group has to be inserted AFTER a node which fits the origin
+    - 'insert d after', o: then, the portion has to be inserted AFTER a node which fits the origin
     - 'insert o before', x': then, the origin is inserted in the schedule before a node x
     - 'on arc with o', o: then, the arc exists within the schedule and it might be inserted on this arc, starting at origin o
     - 'insert o after', x: then, the destination is within the schedule, and so the arc might be fitted RIGHT BEFORE d,
@@ -245,17 +245,20 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     return position_cost
 
 
-def insert_request_group(vehicles_schedule, requests_dict, request_group, vehicle, position):
+def insert_request_group(vehicles_schedule, requests_dict, request_group, vehicle, position, return_added_portion=False):
     """
     Inserts a request group in the specified vehicle and position within that vehicle (=start node and end node).
     The function calls an auxiliary function 'insert_stop_in_vehicle' whenever it is needed to insert a new stop.
     In all cases, the departure times at stops are corrected.
     """
 
+    if position == 'current pos':
+        return
+
     o, d = get_od_from_request_group(request_group)
-    get_max_pick_time(request_group)
     node_to_insert_pax = None
     end_node = None
+    added_portion = None
 
     if position[0] == 'insert d after':
         insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=d,
@@ -279,10 +282,18 @@ def insert_request_group(vehicles_schedule, requests_dict, request_group, vehicl
     elif position == 'first entry':
         node_to_insert_pax = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=(o, d))
 
-    occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_group, node_to_insert_pax, end_node)
+    if return_added_portion:
+        added_portion = occupy_available_seats(vehicles_schedule, vehicle, requests_dict,
+                                               request_group, node_to_insert_pax, end_node, return_added_portion)
+    else:
+        occupy_available_seats(vehicles_schedule, vehicle, requests_dict,
+                               request_group, node_to_insert_pax, end_node, return_added_portion)
     update_dep_time_at_node(vehicles_schedule, vehicle, node_to_insert_pax)
     for next_node in get_nodes_in_range(vehicles_schedule, vehicle, start_node=node_to_insert_pax):
         update_dep_time_at_node(vehicles_schedule, vehicle, next_node)
+
+    if return_added_portion:
+        return added_portion
 
 
 def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=None):
@@ -346,7 +357,8 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
     return new_stop
 
 
-def occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_group, start_node, end_node=None):
+def occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_group, start_node,
+                           end_node=None, return_added_portion=False):
     """
     Positions the available capacity within the vehicle. Part of the request group that can be added
     Positions the available capacity within the vehicle. Part of the request group that can be added
@@ -373,6 +385,9 @@ def occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_gr
         requests_dict[(o, d)][idx_rq] = request_group[min(available_seats, len(request_group)):]
     else:
         requests_dict[(o, d)].remove(requests_dict[(o, d)][idx_rq])
+
+    if return_added_portion:
+        return portion_to_add
 
 
 def update_dep_time_at_node(vehicles_schedule, vehicle, node):

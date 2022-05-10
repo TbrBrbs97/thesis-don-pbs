@@ -194,7 +194,7 @@ def find_first_available_best_insertion(solution, request_group, excluded_insert
     '''
     od = rg.get_od_from_request_group(request_group)
     # Running the function below hardly makes sense if it is already removed from the schedule
-    #curr_pos = sg.get_request_group_position(solution, request_group)[0]
+    #curr_pos = sg.get_request_group_position(solution, portion)[0]
 
     best_insertion_so_far = find_best_insertion(solution, request_group, excluded_insertions, start)
     candidate_service = best_insertion_so_far[0][0]
