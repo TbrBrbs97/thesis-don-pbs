@@ -34,7 +34,7 @@ def find_first_best_improvement_for_request_group(vehicles_schedule, request_gro
 def find_first_best_improvement_for_request_group_2(vehicles_schedule, portion, original_score=M,
                                                     current_vehicle=1, best_improvement=None):
     """Find the first best improving position for a request group portion, instead of looking for the best spot."""
-    if portion == [((13, 15), 6.77, 0), ((13, 15), 12.06, 0), ((13, 15), 20.08, 0), ((13, 15), 20.24, 0), ((13, 15), 21.54, 0)]:
+    if portion == [((12, 15), 6.08, 0), ((12, 15), 10.07, 0), ((12, 15), 19.39, 0)]:
         print(True)
 
     if current_vehicle > nb_of_available_vehicles:

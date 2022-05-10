@@ -245,7 +245,8 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     return position_cost
 
 
-def insert_request_group(vehicles_schedule, requests_dict, request_group, vehicle, position, return_added_portion=False):
+def insert_request_group(vehicles_schedule, requests_dict, request_group, vehicle, position,
+                         return_added_portion=False, ignore_request_dict=False):
     """
     Inserts a request group in the specified vehicle and position within that vehicle (=start node and end node).
     The function calls an auxiliary function 'insert_stop_in_vehicle' whenever it is needed to insert a new stop.
@@ -284,10 +285,10 @@ def insert_request_group(vehicles_schedule, requests_dict, request_group, vehicl
 
     if return_added_portion:
         added_portion = occupy_available_seats(vehicles_schedule, vehicle, requests_dict,
-                                               request_group, node_to_insert_pax, end_node, return_added_portion)
+                                               request_group, node_to_insert_pax, end_node, return_added_portion, ignore_request_dict)
     else:
         occupy_available_seats(vehicles_schedule, vehicle, requests_dict,
-                               request_group, node_to_insert_pax, end_node, return_added_portion)
+                               request_group, node_to_insert_pax, end_node, return_added_portion, ignore_request_dict)
     update_dep_time_at_node(vehicles_schedule, vehicle, node_to_insert_pax)
     for next_node in get_nodes_in_range(vehicles_schedule, vehicle, start_node=node_to_insert_pax):
         update_dep_time_at_node(vehicles_schedule, vehicle, next_node)
@@ -358,7 +359,7 @@ def insert_stop_in_vehicle(vehicle_schedule, vehicle, node_type=None, next_stop=
 
 
 def occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_group, start_node,
-                           end_node=None, return_added_portion=False):
+                           end_node=None, return_added_portion=False, ignore_request_dict=False):
     """
     Positions the available capacity within the vehicle. Part of the request group that can be added
     Positions the available capacity within the vehicle. Part of the request group that can be added
@@ -379,12 +380,13 @@ def occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_gr
     vehicles_schedule[vehicle][start_node].append(portion_to_add)
 
     # remove it from request dictionairy
-    o, d = get_od_from_request_group(request_group)
-    idx_rq = requests_dict[(o, d)].index(request_group)
-    if len(request_group[min(available_seats, len(request_group)):]) > 0:
-        requests_dict[(o, d)][idx_rq] = request_group[min(available_seats, len(request_group)):]
-    else:
-        requests_dict[(o, d)].remove(requests_dict[(o, d)][idx_rq])
+    if ignore_request_dict is False:
+        o, d = get_od_from_request_group(request_group)
+        idx_rq = requests_dict[(o, d)].index(request_group)
+        if len(request_group[min(available_seats, len(request_group)):]) > 0:
+            requests_dict[(o, d)][idx_rq] = request_group[min(available_seats, len(request_group)):]
+        else:
+            requests_dict[(o, d)].remove(requests_dict[(o, d)][idx_rq])
 
     if return_added_portion:
         return portion_to_add

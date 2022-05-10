@@ -307,6 +307,8 @@ def large_shuffle_3(vehicles_schedule, temp_request_dict=None, shuffle_rate=shuf
         while len(assigned_so_far) != len(request_group):
             portion = pop_request_group(request_dict_copy)
             print(portion)
+            if portion == [((12, 15), 6.08, 0), ((12, 15), 10.07, 0), ((12, 15), 19.39, 0)]:
+                print(True)
 
             candidate_vehicle, candidate_node, score, added_portion = find_first_best_improvement_for_request_group_2(
                                                                 temp_schedule, portion, original_score=original_score)
@@ -321,7 +323,7 @@ def large_shuffle_3(vehicles_schedule, temp_request_dict=None, shuffle_rate=shuf
             remove_request_group(vehicles_schedule, request_group)
             for (added_portion, candidate_vehicle, candidate_node, score) in positions:
                 insert_request_group(vehicles_schedule, temp_request_dict, added_portion,
-                                     candidate_vehicle, candidate_node)
+                                     candidate_vehicle, candidate_node, ignore_request_dict=True)
         else:
             temp_request_dict[(o, d)].remove(request_group)
 
