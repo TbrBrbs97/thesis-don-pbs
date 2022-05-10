@@ -34,7 +34,7 @@ def find_first_best_improvement_for_request_group(vehicles_schedule, request_gro
 def find_first_best_improvement_for_request_group_2(vehicles_schedule, portion, original_score=M,
                                                     current_vehicle=1, best_improvement=None):
     """Find the first best improving position for a request group portion, instead of looking for the best spot."""
-    if portion == [((13, 15), 15.74, 0), ((13, 15), 21.7, 0), ((13, 15), 24.49, 0), ((13, 15), 25.21, 0), ((13, 15), 27.22, 0)]:
+    if portion == [((13, 15), 6.77, 0), ((13, 15), 12.06, 0), ((13, 15), 20.08, 0), ((13, 15), 20.24, 0), ((13, 15), 21.54, 0)]:
         print(True)
 
     if current_vehicle > nb_of_available_vehicles:
@@ -54,7 +54,10 @@ def find_first_best_improvement_for_request_group_2(vehicles_schedule, portion, 
         portion = pop_request_group(temp_request_dict)
         added_portion = insert_request_group(temp_schedule, temp_request_dict, portion,
                                              current_vehicle, ins_cons, return_added_portion=True)
-        current_score = calc_request_group_opportunity_cost(temp_schedule, added_portion)
+        if len(added_portion) > 0:
+            current_score = calc_request_group_opportunity_cost(temp_schedule, added_portion)
+        else:
+            current_score = 5*M
 
         if current_score < best_improvement[2]:
             best_improvement = current_vehicle, ins_cons, round(current_score, 2), added_portion

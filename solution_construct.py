@@ -143,7 +143,7 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
             dis += 1
 
         if get_objective_function_val(vehicles_schedule) >= \
-                get_objective_function_val(best_schedule_so_far) and it % 5 == 0 and it != 0:
+                get_objective_function_val(best_schedule_so_far) and it % 10 == 0 and it != 0:
             # shuffle_rate = min(shuffle_ratio + shf*0.01, 0.8)
             shuffle_rate = shuffle_ratio
             print('performing large shuffle with rate: ', shuffle_rate)
