@@ -277,3 +277,10 @@ def collect_request_until_time(dynamic_requests, time, lead_time=5):
     Caution, the returned list might be empty!
     """
     return [request for request in dynamic_requests if get_issue_time(request) in range(time-lead_time, time)]
+
+
+def is_portion_in_request_group(portion, request_group):
+    """
+    Returns true if the given portion also appears in the request group.
+    """
+    return any([p == r for p in portion for r in request_group])
