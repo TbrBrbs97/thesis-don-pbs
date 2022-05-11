@@ -25,7 +25,8 @@ from parameters import network, lambdapeak, mupeak, demand_scenario, peak_durati
     req_max_cluster_time, cap_per_veh, nb_of_available_vehicles, \
     cost_matrix, grouped_requests, nb_of_available_vehicles, opt_time_lim, all_static_requests, \
     all_dynamic_requests, lead_time, steep_descent_intensity, degree_of_dynamism, \
-    network_dim, distance_matrix, average_interstop_distance, requests_per_od, mean_demand, count_groups, network_size
+    network_dim, distance_matrix, average_interstop_distance, requests_per_od, mean_demand, \
+    count_groups, network_size, shuffle_threshold
 
 
 # import cProfile, pstats, io

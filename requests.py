@@ -6,11 +6,13 @@ from random import choice, randint, seed
 def get_scenario_mean_demand(direction, size, scen, peak=1):
 
     if size == 'small':
-        size_name = 'Small3'
+        size_name = 'SmallD2'
     elif size == 'medium':
-        size_name = 'Medium3'
+        size_name = 'MediumD2'
+    elif size == 'large':
+        size_name = 'LargeD2'
     else:
-        size_name = 'Real3'
+        size_name = 'Real'
 
     if peak == 1:
         sheet_lambda = 0
@@ -100,7 +102,7 @@ def generate_static_requests_2(mean_demand, peak_hour_duration=60, set_seed=None
                 if t > peak_hour_duration:
                     break
                 else:
-                    static_requests[od].append(round(t, 2))
+                    static_requests[od].append(round(t, 3))
 
     return static_requests
 
@@ -211,16 +213,19 @@ def count_requests(request_dict, od=None):
 
 
 def get_od_from_request_group(request_group):
-    # print(portion)
+    # print(request_group)
     o = request_group[0][0][0]
     d = request_group[0][0][1]
 
     return o, d
 
 
-def get_max_pick_time(request_group):
+def get_rep_pick_up_time(request_group, method='max'):
     if len(request_group) != 0:
-        return max([value[1] for value in request_group])
+        if method == 'max':
+            return max([value[1] for value in request_group])
+        elif method == 'avg':
+            return np.mean([value[1] for value in request_group])
     else:
         return 0
 
@@ -258,7 +263,7 @@ def remove_from_request_dictionairy(request_dictionairy, request_group):
 
 def add_request_group_to_dict(request_group, request_dict=None):
     """
-    Adds a portion to a (temporary) request dictionairy.
+    Adds a request_group to a (temporary) request dictionairy.
     """
     if not request_dict:
         request_dict = dict()
@@ -281,6 +286,6 @@ def collect_request_until_time(dynamic_requests, time, lead_time=5):
 
 def is_portion_in_request_group(portion, request_group):
     """
-    Returns true if the given portion also appears in the request group.
+    Returns true if the given request_group also appears in the request group.
     """
     return any([p == r for p in portion for r in request_group])

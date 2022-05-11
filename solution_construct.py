@@ -4,14 +4,15 @@ import numpy as np
 from copy import deepcopy
 import time
 
-from requests import count_requests, get_od_from_request_group, get_max_pick_time, \
+from requests import count_requests, get_od_from_request_group, get_rep_pick_up_time, \
     pop_request_group, remove_from_request_dictionairy, add_request_group_to_dict
 
 from static_operators import find_best_position_for_request_group, iter_find_best_position_for_request_group, \
     insert_request_group, remove_request_group, select_random_request_groups, find_random_position_for_request_group, \
     occupy_available_seats
 
-from find_position import find_first_best_improvement_for_request_group_2, find_first_best_improvement_for_request_group
+from find_position import find_first_best_improvement_for_request_group_2, \
+    find_first_best_improvement_for_request_group, find_best_improvement_for_request_group
 
 from dynamic_operators import collect_request_until_time, find_best_position_for_dynamic_request
 
@@ -22,7 +23,8 @@ from solution_evaluation import select_most_costly_request_groups, \
     get_objective_function_val, calc_request_group_waiting_time, \
     calc_request_group_invehicle_time, calc_request_group_opportunity_cost
 
-from parameters import cost_matrix, nb_of_available_vehicles, M, disturbance_ratio, shuffle_ratio, delta, network_size
+from parameters import cost_matrix, nb_of_available_vehicles, M, disturbance_ratio, \
+    shuffle_ratio, shuffle_threshold, delta, network_size
 
 
 def init_fill_every_vehicle(request_dict, nb_of_available_veh, seed=True):
@@ -60,7 +62,7 @@ def generate_initial_solution(requests_dict, vehicles_schedule=None):
 
     candidate_position = find_best_position_for_request_group(vehicles_schedule, request_group)
     candidate_vehicle, candidate_node, score = candidate_position
-    # print(portion, candidate_position)
+    # print(request_group, candidate_position)
     insert_request_group(vehicles_schedule, requests_dict, request_group, candidate_vehicle, candidate_node)
     return generate_initial_solution(requests_dict, vehicles_schedule)
 
@@ -79,7 +81,7 @@ def iter_generate_initial_solution(requests_dict, vehicles_schedule=None):
         # print(iteration)
 
         request_group = pop_request_group(requests_dict)
-        # print(portion)
+        # print(request_group)
         candidate_position = iter_find_best_position_for_request_group(vehicles_schedule, request_group)
         candidate_vehicle, candidate_node, score = candidate_position
 
@@ -107,9 +109,13 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
     best_schedule_so_far = None
 
     while elapsed_time < time_limit:
-        if not best_schedule_so_far or get_objective_function_val(best_schedule_so_far) > get_objective_function_val(
-                vehicles_schedule):
-            best_schedule_so_far = vehicles_schedule
+        if it == 2:
+            print(True)
+
+        if not best_schedule_so_far or get_objective_function_val(
+                vehicles_schedule) < get_objective_function_val(best_schedule_so_far):
+            print('NEW BEST SOLUTION', get_objective_function_val(vehicles_schedule))
+            best_schedule_so_far = deepcopy(vehicles_schedule)
 
         start_time = time.time()
         temp_schedule = deepcopy(vehicles_schedule)
@@ -118,18 +124,11 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
 
         print('current iteration: ', it, 'obj. func: ', get_objective_function_val(temp_schedule))
         for request_group in most_costly_requests:
-            remove_request_group(temp_schedule, request_group)
-            temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
-
-        while count_requests(temp_request_dict) != 0:
-            request_group = pop_request_group(temp_request_dict, set_seed=False)
-            candidate_vehicle, candidate_node, score = find_best_position_for_request_group(temp_schedule,
-                                                                                            request_group)
-            insert_request_group(temp_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
+            temp_schedule = steepest_descent(temp_schedule, request_group)
 
         difference = get_objective_function_val(temp_schedule) - get_objective_function_val(vehicles_schedule)
 
-        if difference < 0:
+        if difference < 0.0:
             print('new improvement found: ', get_objective_function_val(temp_schedule))
             vehicles_schedule = temp_schedule
         else:
@@ -138,12 +137,11 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
 
             print('no improvement found, obj. func: ', get_objective_function_val(temp_schedule),
                   'disturb with rate: ', disturbance_rate)
-            disturbed_schedule = disturb_solution_2(temp_schedule, disturbance=disturbance_rate)
-            vehicles_schedule = disturbed_schedule
+            vehicles_schedule = large_shuffle_3(vehicles_schedule, shuffle_rate=disturbance_rate)
             dis += 1
 
         if get_objective_function_val(vehicles_schedule) >= \
-                get_objective_function_val(best_schedule_so_far) and it % 10 == 0 and it != 0:
+                get_objective_function_val(best_schedule_so_far) and it % shuffle_threshold == 0 and it != 0:
             # shuffle_rate = min(shuffle_ratio + shf*0.01, 0.8)
             shuffle_rate = shuffle_ratio
             print('performing large shuffle with rate: ', shuffle_rate)
@@ -155,6 +153,60 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
         it += 1
 
     return best_schedule_so_far
+
+
+def steepest_descent(vehicles_schedule, request_group, temp_request_dict=None):
+    """
+    Function that removes a request group from the vehicle schedule and reinserts it in the best possible spot.
+    This is the spot that is best suited according to 'find_best_post_cost'
+    """
+    if not temp_request_dict:
+        temp_request_dict = dict()
+
+    temp_schedule = deepcopy(vehicles_schedule)
+
+    remove_request_group(temp_schedule, request_group)
+    temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
+
+    while count_requests(temp_request_dict) != 0:
+        request_group = pop_request_group(temp_request_dict, set_seed=False)
+        candidate_vehicle, candidate_node, score = find_best_position_for_request_group(temp_schedule,
+                                                                                        request_group)
+        insert_request_group(temp_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
+
+    return temp_schedule
+
+
+def steepest_descent_2(vehicles_schedule, request_group):
+    """
+    Function that removes a request group from the vehicle schedule and reinserts it in the best possible spot.
+    This is the spot that yields the best improving opportunity cost.
+    """
+
+    original_score = round(calc_request_group_opportunity_cost(vehicles_schedule, request_group), 2)
+    temp_schedule = deepcopy(vehicles_schedule)
+    remove_request_group(temp_schedule, request_group)
+    temp_request_dict = dict()
+
+    positions = []
+    assigned_so_far = []
+    while len(assigned_so_far) != len(request_group):
+
+        portion_to_add = [r for r in request_group if r not in assigned_so_far]
+        candidate_vehicle, candidate_node, score, added_portion = find_best_improvement_for_request_group(
+            temp_schedule, portion_to_add, original_score)
+        insert_request_group(temp_schedule, temp_request_dict, portion_to_add,
+                             candidate_vehicle, candidate_node, ignore_request_dict=True)
+
+        positions.append((added_portion, candidate_vehicle, candidate_node, score))
+        assigned_so_far += added_portion
+        if candidate_node != 'current pos':
+            original_score -= calc_request_group_opportunity_cost(temp_schedule, added_portion)
+
+    if all([candidate[2] != 'current pos' for candidate in positions]):
+        vehicles_schedule = temp_schedule
+
+    return vehicles_schedule
 
 
 def disturb_solution(vehicles_schedule, temp_request_dict=None, disturbance=disturbance_ratio):
@@ -206,7 +258,7 @@ def disturb_solution_2(vehicles_schedule, temp_request_dict=None, disturbance=di
         temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
 
         # candidate_vehicle, candidate_node, score = \
-        #     find_first_best_improvement_for_request_group(vehicles_schedule, portion, original_score)
+        #     find_first_best_improvement_for_request_group(vehicles_schedule, request_group, original_score)
 
         candidate_vehicle, candidate_node, score = find_best_position_for_request_group(temp_schedule,
                                                                                         request_group)
@@ -240,7 +292,7 @@ def large_shuffle(vehicles_schedule, temp_request_dict=None, shuffle_rate=shuffl
         remove_request_group(temp_schedule, request_group)
         temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
         # candidate_vehicle, candidate_node, score = find_first_best_improvement_for_request_group(temp_schedule,
-        #                                                                                          portion, original_score=M/4)
+        #                                                                                          request_group, original_score=M/4)
         candidate_vehicle, candidate_node, score = find_first_best_improvement_for_request_group_2(temp_schedule,
                                                                                                  request_group, original_score=original_score)
 
@@ -295,37 +347,40 @@ def large_shuffle_3(vehicles_schedule, temp_request_dict=None, shuffle_rate=shuf
     for request_group in random_request_groups:
         o, d = get_od_from_request_group(request_group)
         original_score = round(calc_request_group_opportunity_cost(vehicles_schedule, request_group), 2)
-
         temp_schedule = copy.deepcopy(vehicles_schedule)
-
         remove_request_group(temp_schedule, request_group)
-        temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
-        request_dict_copy = deepcopy(temp_request_dict)
+        # temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
+        # request_dict_copy = deepcopy(temp_request_dict)
 
         positions = []
         assigned_so_far = []
         while len(assigned_so_far) != len(request_group):
-            portion = pop_request_group(request_dict_copy)
-            print(portion)
-            if portion == [((12, 15), 6.08, 0), ((12, 15), 10.07, 0), ((12, 15), 19.39, 0)]:
-                print(True)
+            # request_group = pop_request_group(request_dict_copy)
+            # print(request_group)
+            # if request_group == [((12, 15), 1.21, 0), ((12, 15), 2.89, 0), ((12, 15), 6.08, 0), ((12, 15), 10.07, 0), ((12, 15), 19.39, 0)]:
+            #     print(True)
 
+            portion_to_add = [r for r in request_group if r not in assigned_so_far]
             candidate_vehicle, candidate_node, score, added_portion = find_first_best_improvement_for_request_group_2(
-                                                                temp_schedule, portion, original_score=original_score)
-            insert_request_group(temp_schedule, request_dict_copy, portion,
-                                 candidate_vehicle, candidate_node)
+                                                                temp_schedule, portion_to_add, original_score=original_score)
+            # insert_request_group(temp_schedule, request_dict_copy, request_group,
+            #                      candidate_vehicle, candidate_node)
+            insert_request_group(temp_schedule, temp_request_dict, portion_to_add,
+                                 candidate_vehicle, candidate_node, ignore_request_dict=True)
             positions.append((added_portion, candidate_vehicle, candidate_node, score))
             assigned_so_far += added_portion
             if candidate_node != 'current pos':
                 original_score -= calc_request_group_opportunity_cost(temp_schedule, added_portion)
 
         if all([candidate[2] != 'current pos' for candidate in positions]):
-            remove_request_group(vehicles_schedule, request_group)
-            for (added_portion, candidate_vehicle, candidate_node, score) in positions:
-                insert_request_group(vehicles_schedule, temp_request_dict, added_portion,
-                                     candidate_vehicle, candidate_node, ignore_request_dict=True)
-        else:
-            temp_request_dict[(o, d)].remove(request_group)
+            vehicles_schedule = temp_schedule
+
+        #     remove_request_group(vehicles_schedule, request_group)
+        #     for (added_portion, candidate_vehicle, candidate_node, score) in positions:
+        #         insert_request_group(vehicles_schedule, temp_request_dict, added_portion,
+        #                              candidate_vehicle, candidate_node, ignore_request_dict=True)
+        # # else:
+        #     temp_request_dict[(o, d)].remove(request_group)
 
     return vehicles_schedule
 
@@ -369,7 +424,7 @@ def dynamic_optimization(vehicles_schedule, current_time, required_requests_per_
                          temp_request_dict=None):
     """
     An alteration on the static optimization which takes into account the locking point, that is, only that
-    portion of vehicles schedule beyond the 'current_time' can be dealt with. That is:
+    request_group of vehicles schedule beyond the 'current_time' can be dealt with. That is:
     - Only requests at a stop with departure time beyond 'current_time' can be removed
     - And they can only be reinserted in spots with a departure time beyond 'current_time'
     """

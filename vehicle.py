@@ -1,4 +1,4 @@
-from requests import get_od_from_request_group, get_max_pick_time
+from requests import get_od_from_request_group, get_rep_pick_up_time
 from network_generation import cv
 from parameters import cap_per_veh, req_max_cluster_time, cost_matrix, network_dim
 
@@ -266,10 +266,7 @@ def get_occ(node):
     """
     Returns the integer occurence of a node
     """
-    if node[-2:].isdigit():
-        return int(node[-2:])
-    else:
-        return int(node[-1])
-
+    sep = node.index(',')
+    return int(node[sep+1:])
 
 

@@ -13,7 +13,7 @@ from parameters import cost_matrix, network_dim, cap_per_veh
 
 def occupy_available_capacity(request_dict, index_rg, rg, vehicles_dict, curr_veh, max_capacity,
                               round_trip, od):
-    # given the available capacity on a vehicle, add (at most, can be less!) that portion of passengers
+    # given the available capacity on a vehicle, add (at most, can be less!) that request_group of passengers
     # from the request group and add the rest to the next request group from the same OD!
 
     # this function should encompass: available_capacity, add_pax_to_veh, update requests!
@@ -106,7 +106,7 @@ def add_pax_to_veh(vehicles_dict, curr_veh, od, portion_rg, round_trip=None):
 
     for s in range(1, last_stop+1):
 
-        # add the portion of request group if s is within the range of OD & adjust the departure time
+        # add the request_group of request group if s is within the range of OD & adjust the departure time
 
         if s in range(od[0], od[1]):
             # if no departure time is there yet, just add a dummy dep. time
@@ -128,7 +128,7 @@ def add_pax_to_veh(vehicles_dict, curr_veh, od, portion_rg, round_trip=None):
 def calc_dep_time(solution, service, stop):
     # this is the desired pickup time of the last passenger in a group of requests
 
-    imposed_dep_time_by_req_pt = max([rg.get_max_pick_time(group) for group in solution[service][stop][1:]])
+    imposed_dep_time_by_req_pt = max([rg.get_rep_pick_up_time(group) for group in solution[service][stop][1:]])
 
     previous_stop, dep_time = vg.get_previous_stop_dep_time(solution, service, stop, network_dim)
     if (previous_stop, dep_time) != (1, 0):

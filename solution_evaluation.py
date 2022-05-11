@@ -129,8 +129,6 @@ def get_objective_function_val(vehicles_schedule, relative=False):
         return round(sum_total_travel_time(total_travel_time, 'total'), 2)
 
 
-
-
 def select_most_costly_request_groups(vehicles_schedule, required_amount=1, request_groups=None, current_time=None):
     """
     Returns a list of length 'required_amount' with the most costly request_groups.

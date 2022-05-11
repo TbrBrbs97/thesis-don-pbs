@@ -12,7 +12,7 @@ def insert_request_group(solution, service, request_group):
     # TODO: sorting does not work!
     for s in range(first_ins, end_ins):
         # re-sort the requests according to pickup time
-        solution[service][s][1:].sort(key=lambda x: rg.get_max_pick_time(x))
+        solution[service][s][1:].sort(key=lambda x: rg.get_rep_pick_up_time(x))
 
     # correct the departure times of other services of the same vehicle
     dep_time_diff = vg.get_vehicle_availability(solution, service, network_dim, od_matrix) - original_arrival
@@ -28,7 +28,7 @@ def update_dep_times(vehicles_schedule, vehicle, od):
     else:
         curr_stop = od[0]
 
-    candidate_dep_time = max([rg.get_max_pick_time(group) for group in vehicles_schedule[vehicle][curr_stop][1:]])
+    candidate_dep_time = max([rg.get_rep_pick_up_time(group) for group in vehicles_schedule[vehicle][curr_stop][1:]])
 
     # you have to look at the previous non-empty (and thus visited stop!)
 
@@ -56,7 +56,7 @@ def update_dep_times(vehicles_schedule, vehicle, od):
             max_imposed_dep_time = vg.get_stop_dep_time(vehicles_schedule, vehicle, stop)
             vehicles_schedule[vehicle][stop][0] = max_imposed_dep_time + dep_time_diff
         else:
-            max_imposed_dep_time = max([rg.get_max_pick_time(group) for group in vehicles_schedule[vehicle][stop][1:]])
+            max_imposed_dep_time = max([rg.get_rep_pick_up_time(group) for group in vehicles_schedule[vehicle][stop][1:]])
             # The future departure times are diminished, ONLY in the case that they are not constrained by
             # the departure times
             vehicles_schedule[vehicle][stop][0] = max(vehicles_schedule[vehicle][stop][0] + dep_time_diff, max_imposed_dep_time)
@@ -70,7 +70,7 @@ def update_dep_times(vehicles_schedule, vehicle, od):
 def update_dep_times_next_services(solution, service, dep_time_diff):
     for ser in vg.get_services_per_vehicle(solution, service)[service[1]:]:
         for stop in solution[ser]:
-            max_imposed_dep_time = max([rg.get_max_pick_time(group) for group in solution[service][stop][1:]])
+            max_imposed_dep_time = max([rg.get_rep_pick_up_time(group) for group in solution[service][stop][1:]])
             # The future departure times are diminished, ONLY in the case that they are not constrained by
             # the departure times
             solution[service][stop][0] = max(solution[service][stop][0] + dep_time_diff, max_imposed_dep_time)
@@ -161,7 +161,7 @@ def find_best_insertion(solution, request_group, excluded_insertion=None, start=
 
     '''
 
-    reference_pickup_time = rg.get_max_pick_time(request_group)
+    reference_pickup_time = rg.get_rep_pick_up_time(request_group)
     pickup_node = rg.get_od_from_request_group(request_group)[0]
 
     closest_match_so_far = None
@@ -194,7 +194,7 @@ def find_first_available_best_insertion(solution, request_group, excluded_insert
     '''
     od = rg.get_od_from_request_group(request_group)
     # Running the function below hardly makes sense if it is already removed from the schedule
-    #curr_pos = sg.get_request_group_position(solution, portion)[0]
+    #curr_pos = sg.get_request_group_position(solution, request_group)[0]
 
     best_insertion_so_far = find_best_insertion(solution, request_group, excluded_insertions, start)
     candidate_service = best_insertion_so_far[0][0]

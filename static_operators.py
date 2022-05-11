@@ -11,7 +11,7 @@ from vehicle import locate_request_group_in_schedule, get_departure_time_at_node
     get_last_arrival, get_all_occurrences_of_node, boarding_pass_at_node, count_boarding_pax_until_dest, \
     count_inveh_pax_over_node, get_occ
 
-from requests import get_od_from_request_group, get_max_pick_time, add_request_group_to_dict
+from requests import get_od_from_request_group, get_rep_pick_up_time, add_request_group_to_dict
 
 from parameters import cost_matrix, cap_per_veh, nb_of_available_vehicles, \
     max_vehicle_ride_time, M, stop_addition_penalty, network_dim
@@ -21,15 +21,10 @@ def remove_request_group(vehicles_schedule, request_group):
     vehicle, node = locate_request_group_in_schedule(vehicles_schedule, request_group)
     o, d = get_od_from_request_group(request_group)
 
-    max_pt = get_max_pick_time(request_group)
+    max_pt = get_rep_pick_up_time(request_group)
     old_departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
 
     destination_node = get_next_occ_of_node(vehicles_schedule, vehicle, node, d)
-    # if destination_node is None:
-    #     print(portion)
-    #     print(vehicle)
-    #     print(node, d)
-
     remaining_request_groups = [element for element in vehicles_schedule[vehicle][node][1:]
                                 if all([x != y for x in element for y in request_group])]
     if len(remaining_request_groups) == 0:
@@ -41,6 +36,11 @@ def remove_request_group(vehicles_schedule, request_group):
             len(get_pick_up_nodes_dest(vehicles_schedule, vehicle, node)) == 0:
         del vehicles_schedule[vehicle][node]
 
+    # if destination_node is None:
+    #     print(vehicles_schedule)
+    #     print(vehicle, node)
+    #     print(request_group)
+
     if is_empty_stop(vehicles_schedule, vehicle, destination_node) and \
             len(get_pick_up_nodes_dest(vehicles_schedule, vehicle, destination_node)) == 0:
         del vehicles_schedule[vehicle][destination_node]
@@ -49,9 +49,6 @@ def remove_request_group(vehicles_schedule, request_group):
     if max_pt == old_departure_time and not is_empty_vehicle_schedule(vehicles_schedule, vehicle):
         for n in get_nodes_in_range(vehicles_schedule, vehicle):
             update_dep_time_at_node(vehicles_schedule, vehicle, n)
-
-
-
 
 
 def find_best_position_for_request_group(vehicles_schedule, request_group, current_vehicle=1,
@@ -134,14 +131,14 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     On this level, the best possible position is returned given a SINGLE 'insertion_constraint', which is given as an input.
     This constraint can either be:
     - 'first entry': if the vehicle schedule is empty so far
-    - 'insert d after', o: then, the portion has to be inserted AFTER a node which fits the origin
+    - 'insert d after', o: then, the request_group has to be inserted AFTER a node which fits the origin
     - 'insert o before', x': then, the origin is inserted in the schedule before a node x
     - 'on arc with o', o: then, the arc exists within the schedule and it might be inserted on this arc, starting at origin o
     - 'insert o after', x: then, the destination is within the schedule, and so the arc might be fitted RIGHT BEFORE d,
     and after a node x
     """
     o, d = get_od_from_request_group(request_group)
-    request_group_max_pt = get_max_pick_time(request_group)
+    request_group_rep_pt = get_rep_pick_up_time(request_group, method='max')
     # initialize at a very high cost
     detour_cost = M
     dep_time_offset = M
@@ -160,8 +157,8 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         available_cap = room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
         feasible_portion = request_group[:min(len(request_group), available_cap)]
         default_multiplier = len(feasible_portion)
-        # print(request_group_max_pt, get_max_pick_time(feasible_portion))
-        request_group_max_pt = min(request_group_max_pt, get_max_pick_time(feasible_portion))
+        # print(request_group_rep_pt, get_rep_pick_up_time(feasible_portion))
+        request_group_rep_pt = min(request_group_rep_pt, get_rep_pick_up_time(feasible_portion, method='max'))
 
     # two subcases for 'insert d after', o : (1) the selected o is not the last node, (2) o is the last node
     elif insertion_constraint[0] == 'insert d after' and \
@@ -174,7 +171,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, x)
         detour_cost = (cost_matrix[(o, d)] + cost_matrix[(d, cv(x))] -
                        cost_matrix[(o, cv(x))])*(default_multiplier + waiting_passengers_mult)
-        dep_time_offset = abs(request_group_max_pt -
+        dep_time_offset = abs(request_group_rep_pt -
                               get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])) \
                            *(default_multiplier + inveh_passenger_mult + waiting_passengers_mult)
 
@@ -184,7 +181,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
             not get_next_node(vehicles_schedule, vehicle, insertion_constraint[1]):
 
         detour_cost = 0
-        dep_time_offset = abs(request_group_max_pt - get_departure_time_at_node(vehicles_schedule,
+        dep_time_offset = abs(request_group_rep_pt - get_departure_time_at_node(vehicles_schedule,
                                                                                 vehicle, insertion_constraint[1]))
 
     # we don't have to check for capacity if it is the first node we're checking
@@ -193,7 +190,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
                                                                 insertion_constraint[1], last_node)
         detour_cost = 0
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
-                              - cost_matrix[o, d] - request_group_max_pt - cost_matrix[network_dim[0],o]
+                              - cost_matrix[o, d] - request_group_rep_pt - cost_matrix[network_dim[0],o]
                               )*(default_multiplier + waiting_passengers_mult)
 
     elif insertion_constraint[0] == 'on arc with o: ' and \
@@ -202,9 +199,9 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, insertion_constraint[1],
                                                                 last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, insertion_constraint[1])
-        detour_cost = -1000
+        detour_cost = -stop_addition_penalty
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
-                              - request_group_max_pt)*(default_multiplier + waiting_passengers_mult + inveh_passenger_mult)
+                              - request_group_rep_pt)*(default_multiplier + waiting_passengers_mult + inveh_passenger_mult)
 
     elif insertion_constraint[0] == 'insert o after' and \
             room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1]) > 0:
@@ -217,23 +214,23 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         detour_cost = (cost_matrix[(cv(x), o)] + cost_matrix[(o, cv(d))]
                        - cost_matrix[(cv(x), cv(d))])*(default_multiplier + waiting_passengers_mult + inveh_passenger_mult)
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
-                              + cost_matrix[(cv(x), o)] - request_group_max_pt)*(default_multiplier + (waiting_passengers_mult + inveh_passenger_mult))
+                              + cost_matrix[(cv(x), o)] - request_group_rep_pt)*(default_multiplier + (waiting_passengers_mult + inveh_passenger_mult))
 
     # we don't need to check for capacity in the following two cases
     elif insertion_constraint == 'in front':
         first_node = get_prev_node(vehicles_schedule, vehicle)
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, first_node, last_node)
-        detour_cost = stop_addition_penalty
+        detour_cost = 0*stop_addition_penalty
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, first_node) -
                               cost_matrix[(d, cv(first_node))] -
-                              request_group_max_pt - cost_matrix[(o, d)] -
+                              request_group_rep_pt - cost_matrix[(o, d)] -
                               cost_matrix[(network_dim[0], o)])*(default_multiplier + waiting_passengers_mult)
 
     elif insertion_constraint == 'back':
         last_node = get_next_node(vehicles_schedule, vehicle)
         detour_cost = cost_matrix[(cv(last_node), o)]
         dep_time_offset = abs(
-            request_group_max_pt - get_departure_time_at_node(vehicles_schedule, vehicle, last_node))
+            request_group_rep_pt - get_departure_time_at_node(vehicles_schedule, vehicle, last_node))
 
     # penalize the entry if the vehicle already has a lengthy tour
     if not is_empty_vehicle_schedule(vehicles_schedule, vehicle) and \
@@ -285,7 +282,8 @@ def insert_request_group(vehicles_schedule, requests_dict, request_group, vehicl
 
     if return_added_portion:
         added_portion = occupy_available_seats(vehicles_schedule, vehicle, requests_dict,
-                                               request_group, node_to_insert_pax, end_node, return_added_portion, ignore_request_dict)
+                                               request_group, node_to_insert_pax, end_node, return_added_portion,
+                                               ignore_request_dict)
     else:
         occupy_available_seats(vehicles_schedule, vehicle, requests_dict,
                                request_group, node_to_insert_pax, end_node, return_added_portion, ignore_request_dict)
@@ -373,9 +371,9 @@ def occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_gr
     available_seats = room_for_insertion_at_node(vehicles_schedule, vehicle, start_node, end_node)
     portion_to_add = request_group[:min(available_seats, len(request_group))]
 
-    # add portion to the schedule
+    # add request_group to the schedule
     if not boarding_pass_at_node(vehicles_schedule, vehicle, start_node):
-        vehicles_schedule[vehicle][start_node][0] = max(round(get_max_pick_time(portion_to_add), 2),
+        vehicles_schedule[vehicle][start_node][0] = max(round(get_rep_pick_up_time(portion_to_add), 2),
                                                         vehicles_schedule[vehicle][start_node][0])
     vehicles_schedule[vehicle][start_node].append(portion_to_add)
 
@@ -399,7 +397,7 @@ def update_dep_time_at_node(vehicles_schedule, vehicle, node):
     imposed_dep_time_by_req_pt = 0
 
     if boarding_pass_at_node(vehicles_schedule, vehicle, node):
-        imposed_dep_time_by_req_pt = max([get_max_pick_time(group) for group in vehicles_schedule[vehicle][node][1:]])
+        imposed_dep_time_by_req_pt = max([get_rep_pick_up_time(group) for group in vehicles_schedule[vehicle][node][1:]])
 
     previous_node = get_prev_node(vehicles_schedule, vehicle, node)
     if previous_node:

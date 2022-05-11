@@ -7,6 +7,8 @@ def import_network(size, interstop_distance):
         size_name = 'small'
     elif size == 'medium':
         size_name = 'medium'
+    elif size == 'large':
+        size_name = 'real'
     else:
         size_name = 'real'
 
@@ -80,7 +82,5 @@ def cv(node):
     """
     Converts a node of the form 'node, occ' to 'node', which can be understood by the distance/cost matrix
     """
-    if node[:2].isdigit():
-        return int(node[:2])
-    else:
-        return int(node[:1])
+    sep = node.index(',')
+    return int(node[:sep])
