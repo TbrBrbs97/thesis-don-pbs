@@ -3,7 +3,7 @@ import pandas as pd
 from random import choice, randint, seed
 
 
-def get_scenario_mean_demand(direction, size, scen, peak=1):
+def get_scenario_mean_demand(direction, size, scen=2, subscen=2, peak=1):
 
     if size == 'small':
         size_name = 'SmallD2'
@@ -23,36 +23,64 @@ def get_scenario_mean_demand(direction, size, scen, peak=1):
 
     path_name = 'Data/Demand rates/DemandInput' + size_name + '.xlsx'
 
-    df_lambda = pd.read_excel(path_name, engine='openpyxl', sheet_name=sheet_lambda,header=0, index_col=(0,1), dtype=float)
-    df_mu = pd.read_excel(path_name, engine='openpyxl', sheet_name=sheet_mu, header=0, index_col=(0,1), dtype=float)
+    if size != 'real':
+        df_lambda = pd.read_excel(path_name, engine='openpyxl', sheet_name=sheet_lambda, header=0, index_col=(0, 1),
+                                  dtype=float)
+        df_mu = pd.read_excel(path_name, engine='openpyxl', sheet_name=sheet_mu, header=0, index_col=(0, 1),
+                              dtype=float)
 
-    if direction == 'city':
-        df = df_lambda
-        n = len(df.iloc[0])
-        a = 1
+        if direction == 'city':
+            df = df_lambda
+            n = len(df.iloc[0])
+            a = 1
 
-        return df.loc[(scen,a):(scen,n),1:n]
+            return df.loc[(scen, a):(scen, n), 1:n]
 
-    else: 
-        df = df_mu
-        n = len(df.iloc[0])
-        a = n
-    
-        return df.loc[(scen, a):(scen, 2*n-1), 1:2*n-1]
-    
+        else:
+            df = df_mu
+            n = len(df.iloc[0])
+            a = n
 
-def convert_md_todict(df_meandemand_city, df_meandemand_terminal, scen):
+            return df.loc[(scen, a):(scen, 2*n-1), 1:2*n-1]
+    else: # subcase because in 'real', there are more scenarios
+        df_lambda = pd.read_excel(path_name, engine='openpyxl', sheet_name=sheet_lambda, header=0, index_col=(0, 1, 2),
+                                  dtype=float)
+        df_mu = pd.read_excel(path_name, engine='openpyxl', sheet_name=sheet_mu, header=0, index_col=(0, 1, 2),
+                              dtype=float)
+
+        if direction == 'city':
+            df = df_lambda
+            n = len(df.iloc[0])
+            a = 1
+
+            return df.loc[(scen, subscen, a):(scen, subscen, n), 1:n]
+
+        else:
+            df = df_mu
+            n = len(df.iloc[0])
+            a = n
+
+            return df.loc[(scen, subscen, a):(scen, subscen, 2 * n - 1), 1:2 * n - 1]
+
+
+def convert_md_todict(df_meandemand_city, df_meandemand_terminal, scen, subscen=None):
+
     n = len(df_meandemand_city.iloc[0])
-    # create a list of the to terminal nodes and call it 'm'
     m = list(range(n, 2*n))
     demand_dict = {}
     
     for i in range(1, n+1):
         for j in range(1, n+1):
-            if i < j:
-                demand_dict[(i, j)] = df_meandemand_city.loc[(scen, i), j]
+            if not subscen:
+                if i < j:
+                    demand_dict[(i, j)] = df_meandemand_city.loc[(scen, i), j]
+                else:
+                    demand_dict[(i, j)] = df_meandemand_terminal.loc[(scen, m[-i]), m[-j]]
             else:
-                demand_dict[(i, j)] = df_meandemand_terminal.loc[(scen, m[-i]), m[-j]]
+                if i < j:
+                    demand_dict[(i, j)] = df_meandemand_city.loc[(scen, subscen, i), j]
+                else:
+                    demand_dict[(i, j)] = df_meandemand_terminal.loc[(scen, subscen, m[-i]), m[-j]]
 
     return demand_dict
     

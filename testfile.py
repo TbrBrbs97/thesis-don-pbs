@@ -14,7 +14,7 @@ from static_operators import find_best_position_for_request_group, select_random
 from dynamic_operators import filter_dynamic_insertion_possibilities
 
 from solution_construct import generate_initial_solution, static_optimization, \
-    disturb_solution, select_random_request_groups, init_fill_every_vehicle, \
+    select_random_request_groups, init_fill_every_vehicle, \
     generate_dynamic_solution, iter_generate_initial_solution
 
 from solution_evaluation import calc_request_group_waiting_time, calc_request_group_invehicle_time, \
@@ -28,21 +28,29 @@ from parameters import network, lambdapeak, mupeak, demand_scenario, peak_durati
     network_dim, distance_matrix, average_interstop_distance, requests_per_od, mean_demand, \
     count_groups, network_size, shuffle_threshold
 
-
 # import cProfile, pstats, io
 # pr = cProfile.Profile()
 # pr.enable()
 
 total_requests = count_requests(grouped_requests)
+print(total_requests)
+
 # print(grouped_requests)
 # print(mean_demand)
 # print(count_groups)
-print(total_requests)
 # print(requests_per_od)
 
 # print(cost_matrix)
 # print(network)
 # print(average_interstop_distance)
+
+## TEST LOAD REAL NETWORK
+
+# sheet_lambda = 0
+# sheet_mu = 1
+# path_name = 'Data/Demand rates/DemandInputReal.xlsx'
+# df_lambda = pd.read_excel(path_name, engine='openpyxl', sheet_name=sheet_lambda,header=0, index_col=(0,1,2), dtype=float)
+# df_mu = pd.read_excel(path_name, engine='openpyxl', sheet_name=sheet_mu, header=0, index_col=(0,1,2), dtype=float)
 
 
 ## INITIAL SOLUTION
@@ -56,11 +64,13 @@ for i in initial_solution:
 
 ## OPTIMIZED STATIC SOLUTION
 
-optimized_solution = static_optimization(initial_solution, required_requests_per_it=steep_descent_intensity,
-                                         time_limit=opt_time_lim)
+optimized_solution, best_iteration = static_optimization(initial_solution,
+                                                         required_requests_per_it=steep_descent_intensity,
+                                                         time_limit=opt_time_lim)
 for i in optimized_solution:
     print('veh ', i, ': ', optimized_solution[i])
-print('overal objective function: ', get_objective_function_val(optimized_solution, relative=False))
+print('overal objective function: ', get_objective_function_val(optimized_solution, relative=False),
+      'at iteration: ', best_iteration)
 print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
 print(count_total_assigned_requests(optimized_solution) == count_total_assigned_requests(initial_solution))
 

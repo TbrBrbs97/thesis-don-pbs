@@ -2,34 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="da9fdea6-face-44e3-9aed-8a24aecdd7dc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Data/Demand rates/DemandInputLargeD1.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Demand rates/DemandInputLargeD2.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Demand rates/DemandInputLargeD3.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Demand rates/DemandInputMediumD1.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Demand rates/DemandInputMediumD2.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Demand rates/DemandInputMediumD3.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Demand rates/DemandInputReal.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Demand rates/DemandInputSmallD1.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Demand rates/DemandInputSmallD2.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Demand rates/DemandInputSmallD3.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Demand rates/old/DemandInputMedium3.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Demand rates/old/DemandInputReal3.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Demand rates/old/DemandInputSmall3.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Archive/.ipynb_checkpoints/old_solution_construct.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Archive/function_archive.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/function_archive.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Archive/old_solution_generation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/old_solution_generation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Demand rates/DemandInputMedium3.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Demand rates/DemandInputReal3.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Demand rates/DemandInputSmall3.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/find_position.py" beforeDir="false" afterPath="$PROJECT_DIR$/find_position.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/network_generation.py" beforeDir="false" afterPath="$PROJECT_DIR$/network_generation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/parameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requests.py" beforeDir="false" afterPath="$PROJECT_DIR$/requests.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/solution_construct.py" beforeDir="false" afterPath="$PROJECT_DIR$/solution_construct.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/solution_evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/solution_evaluation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_operators.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testfile.py" beforeDir="false" afterPath="$PROJECT_DIR$/testfile.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vehicle.py" beforeDir="false" afterPath="$PROJECT_DIR$/vehicle.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -150,13 +129,13 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "exceleditor.install": "false",
-    "settings.editor.selected.configurable": "editor.preferences.fonts.default"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;exceleditor.install&quot;: &quot;false&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\thesis-don-pbs\Archive" />
