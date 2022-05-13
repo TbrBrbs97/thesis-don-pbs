@@ -114,12 +114,6 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
         # if it == 5:
         #     print('debug')
 
-        if not best_schedule_so_far or get_objective_function_val(
-                vehicles_schedule) < get_objective_function_val(best_schedule_so_far):
-            print('NEW BEST SOLUTION', get_objective_function_val(vehicles_schedule))
-            best_schedule_so_far = deepcopy(vehicles_schedule)
-            best_iteration = it
-
         start_time = time.time()
         temp_schedule = deepcopy(vehicles_schedule)
 
@@ -142,20 +136,43 @@ def static_optimization(vehicles_schedule, required_requests_per_it=1, time_limi
             request_group = most_costly_requests[j]
             temp_schedule = steepest_descent(temp_schedule, request_group)
             difference = get_objective_function_val(temp_schedule) - get_objective_function_val(vehicles_schedule)
-            vehicles_schedule = deepcopy(temp_schedule)
-            if difference > 0.0:
+            if difference < 0.0:
+                print('new improvement found: ', get_objective_function_val(temp_schedule))
+                vehicles_schedule = deepcopy(temp_schedule)
+            else:
                 improvement_found = False
             j += 1
 
-        if not improvement_found:
 
-            # disturbance_rate = min(disturbance_ratio + 0.005 * dis, 0.45)
-            disturbance_rate = disturbance_ratio
+        # j = 0
+        # improvement_found = True
+        # while improvement_found and j < required_requests_per_it:
+        #     request_group = select_most_costly_request_groups(temp_schedule, 1)[0]
+        #     temp_schedule = steepest_descent(temp_schedule, request_group)
+        #     difference = get_objective_function_val(temp_schedule) - get_objective_function_val(vehicles_schedule)
+        #     if difference < 0.0:
+        #         print('new improvement found: ', get_objective_function_val(temp_schedule))
+        #         vehicles_schedule = deepcopy(temp_schedule)
+        #     else:
+        #         improvement_found = False
+        #     j += 1
 
-            print('no improvement found, obj. func: ', get_objective_function_val(temp_schedule),
-                  'disturb with rate: ', disturbance_rate)
-            vehicles_schedule = shuffle(vehicles_schedule, shuffle_rate=disturbance_rate)
-            dis += 1
+
+        if not best_schedule_so_far or get_objective_function_val(
+                vehicles_schedule) < get_objective_function_val(best_schedule_so_far):
+            print('NEW BEST SOLUTION', get_objective_function_val(vehicles_schedule))
+            best_schedule_so_far = deepcopy(vehicles_schedule)
+            best_iteration = it
+
+        # else:
+        # if not improvement_found:
+        # disturbance_rate = min(disturbance_ratio + 0.005 * dis, 0.45)
+        disturbance_rate = disturbance_ratio
+
+        print('no improvement found, obj. func: ', get_objective_function_val(temp_schedule),
+              'disturb with rate: ', disturbance_rate)
+        vehicles_schedule = shuffle(vehicles_schedule, shuffle_rate=disturbance_rate)
+        dis += 1
 
         # if (it - best_iteration) % shuffle_threshold == 0 and it != 0:
         if get_objective_function_val(vehicles_schedule) >= \

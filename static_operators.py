@@ -174,7 +174,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, x, last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, x)
         detour_cost = (cost_matrix[(o, d)] + cost_matrix[(d, cv(x))] -
-                       cost_matrix[(o, cv(x))])*(default_multiplier + waiting_passengers_mult)*w
+                       cost_matrix[(o, cv(x))])*(default_multiplier + inveh_passenger_mult + waiting_passengers_mult)*w
         dep_time_offset = abs(request_group_rep_pt -
                               get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])) \
                            *(default_multiplier + inveh_passenger_mult + waiting_passengers_mult)*w*v
