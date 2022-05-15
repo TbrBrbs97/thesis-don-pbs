@@ -19,7 +19,7 @@ from solution_construct import generate_initial_solution, static_optimization, \
 
 from solution_evaluation import calc_request_group_waiting_time, calc_request_group_invehicle_time, \
     get_objective_function_val, generate_waiting_time_dict, generate_in_vehicle_time_dict, \
-    generate_total_travel_time_dict, select_most_costly_request_groups
+    generate_total_travel_time_dict, select_most_costly_request_groups, calc_total_vehicle_kilometers
 
 from parameters import network, lambdapeak, mupeak, demand_scenario, peak_duration, \
     req_max_cluster_time, cap_per_veh, nb_of_available_vehicles, \
@@ -52,14 +52,19 @@ print(total_requests)
 # df_lambda = pd.read_excel(path_name, engine='openpyxl', sheet_name=sheet_lambda,header=0, index_col=(0,1,2), dtype=float)
 # df_mu = pd.read_excel(path_name, engine='openpyxl', sheet_name=sheet_mu, header=0, index_col=(0,1,2), dtype=float)
 
+
+
 ## INITIAL SOLUTION
 
-initial_solution = generate_initial_solution(grouped_requests)
-print('objective func: ', get_objective_function_val(initial_solution, relative=False))
-print(count_total_assigned_requests(initial_solution))
+
+initial_solution = generate_initial_solution(network, grouped_requests, nb_of_available_veh=nb_of_available_vehicles)
+# print(count_total_assigned_requests(initial_solution))
 
 for i in initial_solution:
     print('veh ', i, ': ', initial_solution[i])
+
+print('objective func: ', get_objective_function_val(initial_solution, relative=False))
+print(count_total_assigned_requests(initial_solution))
 
 ## OPTIMIZED STATIC SOLUTION
 
@@ -73,8 +78,8 @@ for i in initial_solution:
 # print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
 # print(count_total_assigned_requests(optimized_solution) == count_total_assigned_requests(initial_solution))
 
-# ## DYNAMIC SOLUTION
-#
+## DYNAMIC SOLUTION
+
 # if degree_of_dynamism > 0.0:
 #     dynamic_initial_solution = generate_dynamic_solution(optimized_solution, all_dynamic_requests,
 #                                                          lead_time=lead_time, peak_hour_duration=peak_duration)

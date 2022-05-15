@@ -253,7 +253,7 @@ def services_to_vehicles(solution, max_services_per_veh):
             while i < len(solution.keys())-1 and ser <= max_services_per_veh:
                 # the vehicle arrival needs to be updated as another service is added to a schedule!
 
-                # get the key for the next candidate in chain in the original solution
+                # get the key for the next candidate in chain in the original vehicles_schedule
                 next_possible_key = index_to_key(solution, i+1)
 
                 if next_possible_key not in added_services:

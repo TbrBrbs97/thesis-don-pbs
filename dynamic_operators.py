@@ -1,12 +1,10 @@
 from requests import collect_request_until_time, get_od_from_request_group
-from vehicle import get_insertion_possibilities, get_departure_time_at_node, \
-    room_for_insertion_at_node, get_prev_node, get_next_node
+from vehicle import get_insertion_possibilities, get_departure_time_at_node, get_prev_node, get_next_node
 from network_generation import cv
-from parameters import nb_of_available_vehicles, cost_matrix
 from static_operators import find_pos_cost_given_ins_cons
 
 
-def filter_dynamic_insertion_possibilities(vehicles_schedule, vehicle, request, insertion_constraints, current_time):
+def filter_dynamic_insertion_possibilities(vehicles_schedule, vehicle, request, insertion_constraints, current_time, cost_matrix):
     """
     A function that narrows down the insertions constraints, based on the current real time ('current_time'). As such,
     the 'locking point' principle is applied, which dictates that a request can ONLY be inserted in 'vehicle' at a point
@@ -49,17 +47,18 @@ def filter_dynamic_insertion_possibilities(vehicles_schedule, vehicle, request, 
     return filtered_insertion_constraints
 
 
-def find_best_position_for_dynamic_request(vehicles_schedule, request, current_time, current_vehicle=1,
+def find_best_position_for_dynamic_request(vehicles_schedule, request, current_time, cost_matrix, current_vehicle=1,
                                            best_pos_so_far=None):
     """
     Finds the best position for a request group, taking the locking point condition into account as well.
     """
-    if current_vehicle > nb_of_available_vehicles:
+    if current_vehicle > len(list(vehicles_schedule)):
         return best_pos_so_far
 
     insertion_constraints = get_insertion_possibilities(vehicles_schedule, current_vehicle, request)
     filtered_insertion_constraints = filter_dynamic_insertion_possibilities(vehicles_schedule, current_vehicle,
-                                                                            request, insertion_constraints, current_time)
+                                                                            request, insertion_constraints,
+                                                                            current_time, cost_matrix)
 
     for ins_con in filtered_insertion_constraints:
         matching_score = find_pos_cost_given_ins_cons(vehicles_schedule, current_vehicle, request, ins_con)
@@ -67,4 +66,4 @@ def find_best_position_for_dynamic_request(vehicles_schedule, request, current_t
             best_pos_so_far = current_vehicle, ins_con, round(matching_score, 2)
 
     current_vehicle += 1
-    return find_best_position_for_dynamic_request(vehicles_schedule, request, current_time, current_vehicle, best_pos_so_far)
+    return find_best_position_for_dynamic_request(vehicles_schedule, request, current_time, cost_matrix, current_vehicle, best_pos_so_far)

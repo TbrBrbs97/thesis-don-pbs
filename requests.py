@@ -130,9 +130,16 @@ def generate_static_requests_2(mean_demand, peak_hour_duration=60, set_seed=None
                 if t > peak_hour_duration:
                     break
                 else:
-                    static_requests[od].append(round(t, 3))
+                    static_requests[od].append(round(t, 4))
 
     return static_requests
+
+
+def count_total_requests(requests_per_od):
+    """
+    Total number of static & dynamic requests
+    """
+    return sum([len(requests_per_od[r]) for r in requests_per_od])
 
 
 def list_individual_requests(requests_per_od, dod=0, lead_time=1, set_seed=None):

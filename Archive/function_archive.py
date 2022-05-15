@@ -177,7 +177,7 @@ def find_best_insertion(solution, request_group, excluded_insertion=None, start=
                     dep_time = vg.get_stop_dep_time(solution, service, stop)
                     delta_dep_time = round(abs(dep_time - reference_pickup_time), 2)
                     if not closest_match_so_far or delta_dep_time < closest_match_so_far[1]:
-                            #or vg.is_empty_stop(solution, service, stop):
+                            #or vg.is_empty_stop(vehicles_schedule, service, stop):
                         closest_match_so_far = (service, stop), delta_dep_time
 
     return closest_match_so_far
@@ -194,7 +194,7 @@ def find_first_available_best_insertion(solution, request_group, excluded_insert
     '''
     od = rg.get_od_from_request_group(request_group)
     # Running the function below hardly makes sense if it is already removed from the schedule
-    #curr_pos = sg.get_request_group_position(solution, request_group)[0]
+    #curr_pos = sg.get_request_group_position(vehicles_schedule, request_group)[0]
 
     best_insertion_so_far = find_best_insertion(solution, request_group, excluded_insertions, start)
     candidate_service = best_insertion_so_far[0][0]

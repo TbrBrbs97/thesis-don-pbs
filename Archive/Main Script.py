@@ -8,7 +8,7 @@
 # - Main function
 # - Auxillary functions:
 #     - (greedy) insertion heuristic: in stead of looking for all possible insertions, look for a better insertion until you find no better one
-#         - initial solution creator > spatio-temporal clustering of requests?
+#         - initial vehicles_schedule creator > spatio-temporal clustering of requests?
 #         - feasibility check
 #         - incremental waiting time + travel time calculator
 #     - improvement heuristic

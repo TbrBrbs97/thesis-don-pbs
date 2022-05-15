@@ -32,7 +32,7 @@ def steepest_descent_2(vehicles_schedule, request_group):
 
 def large_shuffle(vehicles_schedule, temp_request_dict=None, shuffle_rate=shuffle_ratio):
     """
-    Function which shakes a solution schedule by a large amount. The shaking process goes as follows:
+    Function which shakes a vehicles_schedule schedule by a large amount. The shaking process goes as follows:
     """
 
     if not temp_request_dict:
@@ -68,7 +68,7 @@ def large_shuffle(vehicles_schedule, temp_request_dict=None, shuffle_rate=shuffl
 
 def large_shuffle_2(vehicles_schedule, temp_request_dict=None, shuffle_rate=shuffle_ratio):
     """
-    Function which shakes a solution schedule by a large amount. The shaking process goes as follows:
+    Function which shakes a vehicles_schedule schedule by a large amount. The shaking process goes as follows:
     """
 
     if not temp_request_dict:
@@ -92,35 +92,12 @@ def large_shuffle_2(vehicles_schedule, temp_request_dict=None, shuffle_rate=shuf
     return vehicles_schedule
 
 
-def disturb_solution(vehicles_schedule, temp_request_dict=None, disturbance=disturbance_ratio):
-    """
-    Function which shakes a solution schedule. The intensity parameter
-    indicates how many requests are lifted and moved elsewhere. The shaking process goes as follows:
-    - 'intensity' amount of requests are removed from the schedule and put in a random
-    """
 
-    if not temp_request_dict:
-        temp_request_dict = dict()
-
-    request_groups_to_select = int(round(disturbance * count_assigned_request_groups(vehicles_schedule)))
-    random_request_groups = select_random_request_groups(vehicles_schedule, request_groups_to_select)
-
-    for request_group in random_request_groups:
-        remove_request_group(vehicles_schedule, request_group)
-        temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
-
-    while count_requests(temp_request_dict) != 0:
-        request_group = pop_request_group(temp_request_dict, set_seed=False)
-        candidate_vehicle, candidate_node, score = find_best_position_for_request_group(vehicles_schedule,
-                                                                                        request_group)
-        insert_request_group(vehicles_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node)
-
-    return vehicles_schedule
 
 
 def disturb_solution_2(vehicles_schedule, temp_request_dict=None, disturbance=disturbance_ratio):
     """
-    Function which shakes a solution schedule. The intensity parameter
+    Function which shakes a vehicles_schedule schedule. The intensity parameter
     indicates how many requests are lifted and moved elsewhere. The shaking process goes as follows:
     - 'intensity' amount of requests are removed from the schedule and put in a random
     """

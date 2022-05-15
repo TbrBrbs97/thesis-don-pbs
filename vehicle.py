@@ -1,6 +1,5 @@
 from requests import get_od_from_request_group, get_rep_pick_up_time
 from network_generation import cv
-from parameters import cap_per_veh, req_max_cluster_time, cost_matrix, network_dim
 
 
 def get_copy_vehicles_schedule(vehicles_schedule):
@@ -144,7 +143,7 @@ def get_next_occ_of_node(vehicles_schedule, vehicle, start_node, target_node):
             return all_nodes[idx]
 
 
-def room_for_insertion_at_node(vehicles_schedule, vehicle, start_node, end_node=None):
+def room_for_insertion_at_node(vehicles_schedule, vehicle, start_node, end_node=None, capacity=20):
     """
     Returns the available capacity for insertion at a node 'node'. The function essentially diminishes the capacity
     per vehicle (which is a parameter) with the amount of request which obey the following criteria:
@@ -156,7 +155,7 @@ def room_for_insertion_at_node(vehicles_schedule, vehicle, start_node, end_node=
     pax_from_prev_stops = count_inveh_pax_over_node(vehicles_schedule, vehicle, start_node)
     pax_boarding_until_end = count_boarding_pax_until_dest(vehicles_schedule, vehicle, start_node, end_node)
 
-    return cap_per_veh - (pax_boarding_until_end + pax_from_prev_stops)
+    return capacity - (pax_boarding_until_end + pax_from_prev_stops)
 
 
 def count_boarding_pax_until_dest(vehicles_schedule, vehicle, start_node, end_node=None):
@@ -208,8 +207,18 @@ def count_assigned_request_groups(vehicle_schedule):
 
 
 def count_total_assigned_requests(vehicle_schedule):
-    return sum([len(group) for vehicle in vehicle_schedule for node in vehicle_schedule[vehicle] for group in node[1:]
-                if boarding_pass_at_node(vehicle_schedule, vehicle, node)])
+    result = 0
+    for vehicle in vehicle_schedule:
+        for node in vehicle_schedule[vehicle]:
+            if boarding_pass_at_node(vehicle_schedule, vehicle, node):
+                subset = vehicle_schedule[vehicle][node][1:]
+                for group in subset:
+                    result += len(group)
+
+    return result
+
+    # return sum([len(group) for vehicle in vehicle_schedule for node in vehicle_schedule[vehicle] for group in node[1:]
+    #             if boarding_pass_at_node(vehicle_schedule, vehicle, node)])
 
 
 def locate_request_group_in_schedule(vehicles_schedule, request_group):
