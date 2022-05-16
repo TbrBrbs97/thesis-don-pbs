@@ -13,7 +13,7 @@ from solution_construct import generate_initial_solution, static_optimization
 
 # SETTINGS
 
-req_max_cluster_times = [1, 5, 10, 20] # OK
+req_max_cluster_times = [1, 5, 10, 20]
 resource_scenarios = [(4, 80), (16, 20), (80, 4)]
 periods = [60, 120]
 depot_allocation = ['terminal', 'middle', 'center']

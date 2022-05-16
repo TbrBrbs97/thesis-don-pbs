@@ -2,70 +2,47 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="da9fdea6-face-44e3-9aed-8a24aecdd7dc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Results/large_half_0_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/large_half_0_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/large_half_1_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/large_half_1_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/large_half_2_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/large_half_2_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/large_more_0_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/large_more_0_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/large_more_1_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/large_more_1_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/large_more_2_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/large_more_2_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/medium_half_0_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/medium_half_0_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/medium_half_1_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/medium_half_1_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/medium_half_2_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/medium_half_2_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/medium_more_0_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/medium_more_0_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/medium_more_1_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/medium_more_1_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/medium_more_2_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/medium_more_2_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/real_half_0_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/real_half_0_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/real_half_1_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/real_half_1_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/real_half_2_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/real_half_2_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/real_more_0_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/real_more_0_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/real_more_1_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/real_more_1_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/real_more_2_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/real_more_2_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/small_half_0_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/small_half_0_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/small_half_1_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/small_half_1_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/small_half_2_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/small_half_2_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/small_more_0_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/small_more_0_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/small_more_1_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/small_more_1_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/small_more_2_init" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Results/small_more_2_opt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static_experiments_1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static_experiments_2.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_0_120phd_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_0_16veh_20cap__opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_0_4veh_80cap__opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_0_60phd_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_0_80veh_4cap__opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_0_center_dep_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_0_clust_10_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_0_clust_1_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_0_clust_20_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_0_clust_5_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_0_middle_dep_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_0_terminal_dep_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_1_120phd_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_1_16veh_20cap__opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_1_4veh_80cap__opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_1_60phd_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_1_80veh_4cap__opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_1_center_dep_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_1_clust_10_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_1_clust_1_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_1_clust_20_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_1_clust_5_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_1_middle_dep_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_1_terminal_dep_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_2_120phd_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_2_16veh_20cap__opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_2_4veh_80cap__opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_2_60phd_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_2_80veh_4cap__opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_2_center_dep_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_2_clust_10_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_2_clust_1_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_2_clust_20_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_2_clust_5_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_2_middle_dep_opt.pickle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Results/real_2_terminal_dep_opt.pickle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Archive/.ipynb_checkpoints/old_solution_construct.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/.ipynb_checkpoints/old_solution_construct.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Archive/Main Script.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/Main Script.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Archive/function_archive.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/function_archive.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Archive/old_solution_generation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/old_solution_generation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dynamic_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/dynamic_operators.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/find_position.py" beforeDir="false" afterPath="$PROJECT_DIR$/find_position.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/parameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requests.py" beforeDir="false" afterPath="$PROJECT_DIR$/requests.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/solution_construct.py" beforeDir="false" afterPath="$PROJECT_DIR$/solution_construct.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/solution_evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/solution_evaluation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_operators.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static_experiments_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_experiments_2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testfile.py" beforeDir="false" afterPath="$PROJECT_DIR$/testfile.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vehicle.py" beforeDir="false" afterPath="$PROJECT_DIR$/vehicle.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -189,14 +166,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "exceleditor.install": "false",
-    "last_opened_file_path": "D:/thesis-don-pbs/static_experiments_2.py",
-    "settings.editor.selected.configurable": "editor.preferences.fonts.default"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;exceleditor.install&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/thesis-don-pbs/static_experiments_2.py&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\thesis-don-pbs" />
@@ -376,6 +353,17 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <option name="LAST_COMMIT_MESSAGE" value="" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/testfile.py</url>
+          <line>70</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">

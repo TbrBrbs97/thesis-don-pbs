@@ -13,6 +13,7 @@ peak_duration = 60  # min.
 degree_of_dynamism = 0.0 # percent
 lead_time = 1 # min.
 random_seed = 9
+depot = 'terminal'
 
 # NETWORK CHARACTERISTICS
 
@@ -58,7 +59,7 @@ size_groups = size_request_groups_per_od(grouped_requests)
 # OPTIMIZATION
 
 M = 1000  # a very large number
-opt_time_lim = 0.1  # minutes
+opt_time_lim = 20  # minutes
 disturbance_ratio = max((cap_per_veh / 4000, 0.01))
 shuffle_threshold = 30
 shuffle_ratio = 0.25

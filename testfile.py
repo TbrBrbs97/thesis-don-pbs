@@ -26,7 +26,7 @@ from parameters import network, lambdapeak, mupeak, demand_scenario, peak_durati
     cost_matrix, grouped_requests, nb_of_available_vehicles, opt_time_lim, all_static_requests, \
     all_dynamic_requests, lead_time, steep_descent_intensity, degree_of_dynamism, \
     network_dim, distance_matrix, average_interstop_distance, requests_per_od, mean_demand, \
-    count_groups, network_size, shuffle_threshold
+    count_groups, network_size, shuffle_threshold, depot
 
 # import cProfile, pstats, io
 # pr = cProfile.Profile()
@@ -68,15 +68,15 @@ print(count_total_assigned_requests(initial_solution))
 
 ## OPTIMIZED STATIC SOLUTION
 
-# optimized_solution, best_iteration = static_optimization(initial_solution,
-#                                                          required_requests_per_it=steep_descent_intensity,
-#                                                          time_limit=opt_time_lim)
-# for i in optimized_solution:
-#     print('veh ', i, ': ', optimized_solution[i])
-# print('overal objective function: ', get_objective_function_val(optimized_solution, relative=False),
-#       'at iteration: ', best_iteration)
-# print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
-# print(count_total_assigned_requests(optimized_solution) == count_total_assigned_requests(initial_solution))
+optimized_solution, best_iteration = static_optimization(network, initial_solution,
+                                                         required_requests_per_it=steep_descent_intensity,
+                                                         time_limit=opt_time_lim, capacity=cap_per_veh, depot=depot)
+for i in optimized_solution:
+    print('veh ', i, ': ', optimized_solution[i])
+print('overal objective function: ', get_objective_function_val(optimized_solution, relative=False),
+      'at iteration: ', best_iteration)
+print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
+
 
 ## DYNAMIC SOLUTION
 

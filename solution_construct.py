@@ -202,7 +202,7 @@ def steepest_descent(network, vehicles_schedule, request_group, temp_request_dic
                                                                                         request_group, capacity=capacity,
                                                                                         depot=depot)
         insert_request_group(network, temp_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node,
-                             capacity, depot)
+                             capacity=capacity, depot=depot)
 
     return temp_schedule
 
