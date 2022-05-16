@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="da9fdea6-face-44e3-9aed-8a24aecdd7dc" name="Default Changelist" comment="">
+<<<<<<< HEAD
       <change afterPath="$PROJECT_DIR$/Results/real_0_120phd_opt.pickle" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Results/real_0_16veh_20cap__opt.pickle" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Results/real_0_4veh_80cap__opt.pickle" afterDir="false" />
@@ -43,6 +47,59 @@
       <change beforePath="$PROJECT_DIR$/solution_construct.py" beforeDir="false" afterPath="$PROJECT_DIR$/solution_construct.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static_experiments_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_experiments_2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testfile.py" beforeDir="false" afterPath="$PROJECT_DIR$/testfile.py" afterDir="false" />
+=======
+      <change afterPath="$PROJECT_DIR$/interpret_results.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static_experiments_3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/large_half_0_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/large_half_0_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/large_half_1_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/large_half_1_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/large_half_2_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/large_half_2_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/large_more_0_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/large_more_0_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/large_more_1_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/large_more_1_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/large_more_2_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/large_more_2_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/medium_half_0_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/medium_half_0_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/medium_half_1_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/medium_half_1_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/medium_half_2_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/medium_half_2_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/medium_more_0_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/medium_more_0_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/medium_more_1_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/medium_more_1_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/medium_more_2_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/medium_more_2_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/real_half_0_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/real_half_0_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/real_half_1_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/real_half_1_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/real_half_2_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/real_half_2_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/real_more_0_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/real_more_0_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/real_more_1_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/real_more_1_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/real_more_2_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/real_more_2_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/small_half_0_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/small_half_0_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/small_half_1_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/small_half_1_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/small_half_2_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/small_half_2_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/small_more_0_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/small_more_0_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/small_more_1_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/small_more_1_opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/small_more_2_init" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Results/small_more_2_opt" beforeDir="false" />
+>>>>>>> 319721168848c44417ffb403828f47bf197b2bc9
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -166,12 +223,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+<<<<<<< HEAD
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
     &quot;exceleditor.install&quot;: &quot;false&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/thesis-don-pbs/static_experiments_2.py&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;
+=======
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "exceleditor.install": "false",
+    "last_opened_file_path": "E:/Tibor/thesis-don-pbs/interpret_results.py",
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default"
+>>>>>>> 319721168848c44417ffb403828f47bf197b2bc9
   }
 }</component>
   <component name="RecentsManager">
@@ -180,7 +246,7 @@
       <recent name="D:\thesis-don-pbs\Archive" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.experiments_2">
+  <component name="RunManager" selected="Python.interpret_results">
     <configuration name="experiments_1" type="PythonConfigurationType" factoryName="Python">
       <module name="thesis-don-pbs" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -209,12 +275,33 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="C:\Anaconda\envs\thesisenv\python.exe" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/static_experiments_2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="interpret_results" type="PythonConfigurationType" factoryName="Python">
+      <module name="thesis-don-pbs" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\tibor\anaconda3\envs\thesisenv\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/static_experiments_2.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/interpret_results.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -248,6 +335,7 @@
       <item itemvalue="Python.testfile" />
       <item itemvalue="Python.experiments_1" />
       <item itemvalue="Python.experiments_2" />
+      <item itemvalue="Python.interpret_results" />
     </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="project-level" UseSingleDictionary="true" transferred="true" />
