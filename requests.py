@@ -115,13 +115,16 @@ def generate_static_requests(mean_demand, peak_hour_duration=60, set_seed=None):
 def generate_static_requests_2(mean_demand, peak_hour_duration=60, set_seed=None):
     static_requests = {}
 
-    if set_seed:
-        np.random.seed(set_seed)
+    # if set_seed:
+    #     np.random.seed(set_seed)
 
     for od in mean_demand.keys():
+
         if mean_demand[od] > 0:
 
             static_requests[od] = []
+            if set_seed:
+                np.random.seed(set_seed)
 
             interarrival_times = list(np.random.exponential(1 / mean_demand[od], int(mean_demand[od]*peak_hour_duration)))
             t = 0

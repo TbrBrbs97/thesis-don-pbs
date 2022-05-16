@@ -9,16 +9,24 @@ v_mean = 50  # km/h
 demand_scenario = 2
 demand_subscenario = 2
 time_of_day = 1  # 1 = peak, 0 = off-peak
-peak_duration = 60  # min.
 degree_of_dynamism = 0.0 # percent
 lead_time = 1 # min.
-random_seed = 9
+random_seed = 0
 depot = 'terminal'
 
 # NETWORK CHARACTERISTICS
 
-network_size = 'small'
+network_size = 'medium'
 network_variant = 'half' # this refers to the 1 in S1
+
+if network_size == 'small':
+    peak_duration = 20  # min.
+elif network_size == 'medium':
+    peak_duration = 40
+elif network_size == 'large':
+    peak_duration = 60
+else:
+    peak_duration = 120
 
 network = import_network(network_size, network_variant)
 cost_matrix = generate_cost_matrix(network, v_mean)
@@ -35,7 +43,7 @@ nb_of_available_vehicles = 16
 
 # REQUEST CHARACTERISTICS
 
-req_max_cluster_time = cap_per_veh #min.
+req_max_cluster_time = peak_duration / 4 #min.
 
 lambdapeak = get_scenario_mean_demand('city', network_size, scen=demand_scenario, subscen=demand_subscenario, peak=1)
 mupeak = get_scenario_mean_demand('terminal', network_size, scen=demand_scenario, subscen=demand_subscenario, peak=1)
@@ -59,10 +67,10 @@ size_groups = size_request_groups_per_od(grouped_requests)
 # OPTIMIZATION
 
 M = 1000  # a very large number
-opt_time_lim = 20  # minutes
+opt_time_lim = 60  # minutes
 disturbance_ratio = max((cap_per_veh / 4000, 0.01))
-shuffle_threshold = 30
+shuffle_threshold = 50
 shuffle_ratio = 0.25
-steep_descent_intensity = 10
+steep_descent_intensity = 15
 stop_addition_penalty = 0  # node addition penalty
 delta = int(peak_duration / 4)  # min.
