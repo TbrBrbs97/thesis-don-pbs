@@ -11,12 +11,12 @@ demand_subscenario = 2
 time_of_day = 1  # 1 = peak, 0 = off-peak
 degree_of_dynamism = 0.0 # percent
 lead_time = 1 # min.
-random_seed = 0
+random_seed = 9
 depot = 'terminal'
 
 # NETWORK CHARACTERISTICS
 
-network_size = 'medium'
+network_size = 'real'
 network_variant = 'half' # this refers to the 1 in S1
 
 if network_size == 'small':
@@ -67,8 +67,9 @@ size_groups = size_request_groups_per_od(grouped_requests)
 # OPTIMIZATION
 
 M = 1000  # a very large number
-opt_time_lim = 60  # minutes
-disturbance_ratio = max((cap_per_veh / 4000, 0.01))
+opt_time_lim = 30  # minutes
+# disturbance_ratio = max((cap_per_veh / 4000, 0.01))
+disturbance_ratio = 0.02
 shuffle_threshold = 50
 shuffle_ratio = 0.25
 steep_descent_intensity = 15

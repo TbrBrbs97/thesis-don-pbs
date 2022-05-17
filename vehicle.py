@@ -31,7 +31,7 @@ def get_insertion_possibilities(vehicles_schedule, vehicle, request_group):
         if len(positions_at_origin_as_last_stop) == 0:
             default_positions.append('back')
 
-        if len(positions_before_first_stop) == 0:
+        if len(positions_before_first_stop) == 0 and len(positions_before_dest):
             default_positions.append('in front')
 
         insertion_constraints = positions_at_origin + positions_at_origin_as_last_stop + positions_before_dest + \

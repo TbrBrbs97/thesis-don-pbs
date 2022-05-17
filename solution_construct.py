@@ -230,8 +230,9 @@ def disturb_2(network, vehicles_schedule, temp_request_dict=None,
     if not temp_request_dict:
         temp_request_dict = dict()
 
-    request_groups_to_select = int(round(disturbance * count_assigned_request_groups(vehicles_schedule)))
-    random_request_groups = select_most_costly_request_groups(network, vehicles_schedule, request_groups_to_select)
+    nb_request_groups_to_select = int(round(disturbance * count_assigned_request_groups(vehicles_schedule)))
+    # random_request_groups = select_most_costly_request_groups(network, vehicles_schedule, request_groups_to_select)
+    random_request_groups = select_random_request_groups(vehicles_schedule, nb_request_groups_to_select)
 
     for request_group in random_request_groups:
         original_score = round(calc_request_group_opportunity_cost(network, vehicles_schedule, request_group), 2)
