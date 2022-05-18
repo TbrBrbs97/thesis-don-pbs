@@ -2,15 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cb3c5185-75d1-4ba8-bc92-2bb886e12991" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/dynamic_experiments.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interpret_results.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpret_results.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/solution_evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/solution_evaluation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static_experiments_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_experiments_1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static_experiments_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_experiments_2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static_experiments_3.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_experiments_3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/parameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testfile.py" beforeDir="false" afterPath="$PROJECT_DIR$/testfile.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vehicle.py" beforeDir="false" afterPath="$PROJECT_DIR$/vehicle.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
