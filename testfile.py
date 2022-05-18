@@ -78,13 +78,14 @@ print('avg. travel time per passenger: ', get_objective_function_val(optimized_s
 
 ## DYNAMIC SOLUTION
 
-# if degree_of_dynamism > 0.0:
-#     dynamic_initial_solution = generate_dynamic_solution(optimized_solution, all_dynamic_requests,
-#                                                          lead_time=lead_time, peak_hour_duration=peak_duration)
-#     for i in dynamic_initial_solution:
-#         print('veh ', i, ': ', dynamic_initial_solution[i])
-#     print('objective func: ', get_objective_function_val(dynamic_initial_solution, relative=False))
-#     print('avg. travel time per passenger: ', get_objective_function_val(dynamic_initial_solution, relative=True))
+if degree_of_dynamism > 0.0:
+    dynamic_initial_solution = generate_dynamic_solution(network, optimized_solution, all_dynamic_requests,
+                                                         lead_time=lead_time, peak_hour_duration=peak_duration,
+                                                         capacity=cap_per_veh, depot=depot)
+    for i in dynamic_initial_solution:
+        print('veh ', i, ': ', dynamic_initial_solution[i])
+    print('objective func: ', get_objective_function_val(dynamic_initial_solution, relative=False))
+    print('avg. travel time per passenger: ', get_objective_function_val(dynamic_initial_solution, relative=True))
 
 
 # cProfiler

@@ -1,3 +1,5 @@
+## PARAMETER ADJUSTMENTS ON REAL
+
 import pickle
 
 from parameters import v_mean, demand_scenario, demand_subscenario, \
@@ -44,7 +46,7 @@ for h in req_max_cluster_times:
     peak_duration = 60
     nb_of_available_vehicles = 16
     capacity = 20
-    req_max_cluster_time = h
+    req_max_cluster_time = peak_duration / 4
     sample = 0
 
     while sample < nb_of_samples:
@@ -73,7 +75,7 @@ for h in req_max_cluster_times:
         optimized_solution, best_iteration = static_optimization(network, initial_solution,
                                                                  required_requests_per_it=steep_descent_intensity,
                                                                  time_limit=opt_time_lim, capacity=capacity)
-        opt_name = 'Results/' + network_size + '_' + str(sample) + '_clust_' + str(h) + '_opt.pickle'
+        opt_name = 'Results/SE_2/' + network_size + '_' + str(sample) + '_clust_' + str(h) + '_opt.pickle'
         file_to_write_2 = open(opt_name, "wb")
         pickle.dump(optimized_solution, file_to_write_2)
 
@@ -115,7 +117,7 @@ for tup in resource_scenarios:
         optimized_solution, best_iteration = static_optimization(network, initial_solution,
                                                                  required_requests_per_it=steep_descent_intensity,
                                                                  time_limit=opt_time_lim, capacity=capacity)
-        opt_name = 'Results/' + network_size + '_' + str(sample) + '_' + str(nb_of_available_vehicles) + 'veh_' \
+        opt_name = 'Results/SE2/' + network_size + '_' + str(sample) + '_' + str(nb_of_available_vehicles) + 'veh_' \
                    + str(capacity) + 'cap_' + '_opt.pickle'
         file_to_write_2 = open(opt_name, "wb")
         pickle.dump(optimized_solution, file_to_write_2)
@@ -158,7 +160,7 @@ for phd in periods:
         optimized_solution, best_iteration = static_optimization(network, initial_solution,
                                                                  required_requests_per_it=steep_descent_intensity,
                                                                  time_limit=opt_time_lim, capacity=capacity)
-        opt_name = 'Results/' + network_size + '_' + str(sample) + '_' + str(phd) + 'phd' + '_opt.pickle'
+        opt_name = 'Results/SE_2/' + network_size + '_' + str(sample) + '_' + str(phd) + 'phd' + '_opt.pickle'
         file_to_write_2 = open(opt_name, "wb")
         pickle.dump(optimized_solution, file_to_write_2)
 
@@ -203,7 +205,7 @@ for dep in depot_allocation:
                                                                  required_requests_per_it=steep_descent_intensity,
                                                                  time_limit=opt_time_lim, capacity=capacity,
                                                                  depot=dep)
-        opt_name = 'Results/' + network_size + '_' + str(sample) + '_' + dep + '_dep' + '_opt.pickle'
+        opt_name = 'Results/SE_2/' + network_size + '_' + str(sample) + '_' + dep + '_dep' + '_opt.pickle'
         file_to_write_2 = open(opt_name, "wb")
         pickle.dump(optimized_solution, file_to_write_2)
 

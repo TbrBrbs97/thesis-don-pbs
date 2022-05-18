@@ -206,19 +206,37 @@ def count_assigned_request_groups(vehicle_schedule):
                 vehicle_schedule[vehicle] if boarding_pass_at_node(vehicle_schedule, vehicle, node)])
 
 
-def count_total_assigned_requests(vehicle_schedule):
+def count_total_assigned_requests(vehicle_schedule, direction='all'):
     result = 0
-    for vehicle in vehicle_schedule:
-        for node in vehicle_schedule[vehicle]:
-            if boarding_pass_at_node(vehicle_schedule, vehicle, node):
-                subset = vehicle_schedule[vehicle][node][1:]
-                for group in subset:
-                    result += len(group)
+
+    if direction == 'all':
+        for vehicle in vehicle_schedule:
+            for node in vehicle_schedule[vehicle]:
+                if boarding_pass_at_node(vehicle_schedule, vehicle, node):
+                    subset = vehicle_schedule[vehicle][node][1:]
+                    for group in subset:
+                        result += len(group)
+    elif direction == 'city':
+        for vehicle in vehicle_schedule:
+            for node in vehicle_schedule[vehicle]:
+                if boarding_pass_at_node(vehicle_schedule, vehicle, node):
+                    subset = vehicle_schedule[vehicle][node][1:]
+                    for group in subset:
+                        o, d = get_od_from_request_group(group)
+                        if o < d:
+                            result += len(group)
+
+    elif direction == 'terminal':
+        for vehicle in vehicle_schedule:
+            for node in vehicle_schedule[vehicle]:
+                if boarding_pass_at_node(vehicle_schedule, vehicle, node):
+                    subset = vehicle_schedule[vehicle][node][1:]
+                    for group in subset:
+                        o, d = get_od_from_request_group(group)
+                        if o > d:
+                            result += len(group)
 
     return result
-
-    # return sum([len(group) for vehicle in vehicle_schedule for node in vehicle_schedule[vehicle] for group in node[1:]
-    #             if boarding_pass_at_node(vehicle_schedule, vehicle, node)])
 
 
 def locate_request_group_in_schedule(vehicles_schedule, request_group):

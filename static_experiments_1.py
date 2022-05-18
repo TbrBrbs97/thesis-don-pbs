@@ -1,7 +1,7 @@
 import pickle
 
-from parameters import v_mean, demand_scenario, demand_subscenario, req_max_cluster_time, peak_duration, \
-    degree_of_dynamism, lead_time, nb_of_available_vehicles, steep_descent_intensity, opt_time_lim
+from parameters import v_mean, demand_scenario, demand_subscenario, req_max_cluster_time, \
+    degree_of_dynamism, nb_of_available_vehicles, steep_descent_intensity, opt_time_lim
 
 from network_generation import import_network, generate_cost_matrix, \
     get_network_boundaries, generate_distance_matrix
@@ -15,16 +15,25 @@ from solution_construct import generate_initial_solution, static_optimization
 # PARAMETERS
 network_sizes = ['small', 'medium', 'large', 'real']
 network_variants = ['half', 'more']
-nb_of_samples = 3
+nb_of_samples = 4
 
 for size in network_sizes:
     for variant in network_variants:
-        sample = 0
+        sample = 1
         while sample < nb_of_samples:
             print('CURRENTLY RUNNING: ', size, variant, sample)
             network_size = size
             network_variant = variant
             random_seed = sample
+
+            if network_size == 'small':
+                peak_duration = 20  # min.
+            elif network_size == 'medium':
+                peak_duration = 40
+            elif network_size == 'large':
+                peak_duration = 60
+            else:
+                peak_duration = 120
 
             network = import_network(network_size, network_variant)
             cost_matrix = generate_cost_matrix(network, v_mean)
@@ -53,7 +62,7 @@ for size in network_sizes:
 
             # INITIAL SOLUTION
             initial_solution = generate_initial_solution(network, grouped_requests, nb_of_available_veh=nb_of_available_vehicles)
-            init_name = 'Results/' + network_size + '_' + network_variant + '_' + str(sample) + '_init'
+            init_name = 'Results/SE_1/' + network_size + '_' + network_variant + '_' + str(sample) + '_init'
 
             file_to_write_1 = open(init_name, "wb")
             pickle.dump(initial_solution, file_to_write_1)
@@ -62,7 +71,7 @@ for size in network_sizes:
             optimized_solution, best_iteration = static_optimization(network, initial_solution,
                                                                      required_requests_per_it=steep_descent_intensity,
                                                                      time_limit=opt_time_lim)
-            opt_name = 'Results/' + network_size + '_' + network_variant + '_' + str(sample) + '_opt'
+            opt_name = 'Results/SE_1/' + network_size + '_' + network_variant + '_' + str(sample) + '_opt'
             file_to_write_2 = open(opt_name, "wb")
             pickle.dump(optimized_solution, file_to_write_2)
 
