@@ -1,6 +1,6 @@
 import pickle
 
-from parameters import v_mean, demand_scenario, demand_subscenario, \
+from settings import v_mean, demand_scenario, demand_subscenario, \
     degree_of_dynamism, lead_time, steep_descent_intensity, opt_time_lim
 
 from network_generation import import_network, generate_cost_matrix, \

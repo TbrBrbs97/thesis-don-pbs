@@ -5,13 +5,14 @@ from requests import count_requests, get_scenario_mean_demand, \
     generate_static_requests_2, count_requests_per_od, size_request_groups_per_od, group_requests_dt, count_total_requests
 
 # GENERAL
+
 v_mean = 50  # km/h
 demand_scenario = 2
 demand_subscenario = 2
 time_of_day = 1  # 1 = peak, 0 = off-peak
 degree_of_dynamism = 0.0 # percent
 lead_time = 1 # min.
-random_seed = 9
+random_seed = 8
 depot = 'terminal'
 
 # NETWORK CHARACTERISTICS
@@ -67,9 +68,11 @@ size_groups = size_request_groups_per_od(grouped_requests)
 # OPTIMIZATION
 
 M = 1000  # a very large number
-opt_time_lim = 30  # minutes
+opt_time_lim = 30 #minutes
 # disturbance_ratio = max((cap_per_veh / 4000, 0.01))
-disturbance_ratio = 0.02
+reinitiation_threshold = 2
+disturbance_threshold = 1 #iterations
+disturbance_ratio = 0.01
 shuffle_threshold = 50
 shuffle_ratio = 0.25
 steep_descent_intensity = 15

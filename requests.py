@@ -127,11 +127,12 @@ def generate_static_requests_2(mean_demand, peak_hour_duration, set_seed=None):
             interarrival_times = list(np.random.exponential(1 / mean_demand[od], int(mean_demand[od]*peak_hour_duration)))
             t = 0
             for delta_t in interarrival_times:
+                delta_t = max((delta_t, 0.00001))
                 t += delta_t
                 if t > peak_hour_duration:
                     break
                 else:
-                    static_requests[od].append(round(t, 4))
+                    static_requests[od].append(round(t, 7))
 
     return static_requests
 

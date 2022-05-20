@@ -11,7 +11,7 @@ from vehicle import locate_request_group_in_schedule, get_departure_time_at_node
 
 from requests import get_od_from_request_group, get_rep_pick_up_time
 
-from parameters import max_vehicle_ride_time, M, stop_addition_penalty, v_mean
+from settings import max_vehicle_ride_time, M, stop_addition_penalty, v_mean
 
 
 def remove_request_group(network, vehicles_schedule, request_group):

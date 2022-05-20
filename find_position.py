@@ -1,4 +1,4 @@
-from parameters import nb_of_available_vehicles, M
+from settings import nb_of_available_vehicles, M
 from copy import deepcopy
 from requests import add_request_group_to_dict
 from vehicle import get_insertion_possibilities, room_for_insertion_at_node, \

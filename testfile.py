@@ -21,7 +21,7 @@ from solution_evaluation import calc_request_group_waiting_time, calc_request_gr
     get_objective_function_val, generate_waiting_time_dict, generate_in_vehicle_time_dict, \
     generate_total_travel_time_dict, select_most_costly_request_groups, calc_total_vehicle_kilometers
 
-from parameters import network, lambdapeak, mupeak, demand_scenario, peak_duration, \
+from settings import network, lambdapeak, mupeak, demand_scenario, peak_duration, \
     req_max_cluster_time, cap_per_veh, nb_of_available_vehicles, \
     cost_matrix, grouped_requests, nb_of_available_vehicles, opt_time_lim, all_static_requests, \
     all_dynamic_requests, lead_time, steep_descent_intensity, degree_of_dynamism, \

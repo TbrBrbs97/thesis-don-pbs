@@ -23,7 +23,8 @@ from solution_evaluation import select_most_costly_request_groups, \
     get_objective_function_val, calc_request_group_waiting_time, \
     calc_request_group_invehicle_time, calc_request_group_opportunity_cost
 
-from parameters import disturbance_ratio, shuffle_ratio, shuffle_threshold, delta, v_mean
+from settings import disturbance_threshold, disturbance_ratio, shuffle_ratio,\
+    shuffle_threshold, delta, v_mean, reinitiation_threshold
 
 
 def init_fill_every_vehicle(network, request_dict, nb_of_available_veh, seed=True, capacity=20, depot='terminal'):
@@ -145,13 +146,20 @@ def static_optimization(network, vehicles_schedule, required_requests_per_it=1, 
             best_schedule_so_far = deepcopy(vehicles_schedule)
             best_iteration = it
 
-        disturbance_rate = disturbance_ratio
 
-        print('no further improvement found, obj. func: ', get_objective_function_val(vehicles_schedule),
-              'disturb with rate: ', disturbance_rate)
-        vehicles_schedule = disturb_2(network, vehicles_schedule, disturbance=disturbance_rate, capacity=capacity,
-                                    depot=depot)
-        dis += 1
+        if get_objective_function_val(vehicles_schedule) >= \
+                get_objective_function_val(best_schedule_so_far) and it % disturbance_threshold == 0 and it != 0:
+            disturbance_rate = disturbance_ratio
+            print('no further improvement found, obj. func: ', get_objective_function_val(vehicles_schedule),
+                  'disturb with rate: ', disturbance_rate)
+            vehicles_schedule = disturb_2(network, vehicles_schedule, disturbance=disturbance_rate, capacity=capacity,
+                                        depot=depot)
+            dis += 1
+
+        if it % reinitiation_threshold == 0 and it != 0 and it % shuffle_threshold != 0:
+            print('exploring new neighborhood using the incumbent:', get_objective_function_val(best_schedule_so_far))
+            vehicles_schedule = best_schedule_so_far
+            dis = 0
 
         if get_objective_function_val(vehicles_schedule) >= \
                 get_objective_function_val(best_schedule_so_far) and it % shuffle_threshold == 0 and it != 0:
@@ -160,6 +168,7 @@ def static_optimization(network, vehicles_schedule, required_requests_per_it=1, 
             vehicles_schedule = shuffle(network, vehicles_schedule, shuffle_rate=shuffle_rate, capacity=capacity,
                                         depot=depot)
             shf += 1
+
 
         end_time = time.time()
         elapsed_time += end_time - start_time

@@ -8,7 +8,7 @@ import numpy as np
 import vehicle as vg
 import requests as rg
 
-from parameters import cost_matrix, network_dim, cap_per_veh
+from settings import cost_matrix, network_dim, cap_per_veh
 
 
 def occupy_available_capacity(request_dict, index_rg, rg, vehicles_dict, curr_veh, max_capacity,

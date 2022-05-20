@@ -1,6 +1,6 @@
 import pickle
 
-from parameters import v_mean, degree_of_dynamism, lead_time, steep_descent_intensity, opt_time_lim
+from settings import v_mean, degree_of_dynamism, lead_time, steep_descent_intensity, opt_time_lim
 
 from network_generation import import_network, generate_cost_matrix, \
     get_network_boundaries, generate_distance_matrix
