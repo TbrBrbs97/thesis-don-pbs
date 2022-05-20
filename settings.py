@@ -17,7 +17,7 @@ depot = 'terminal'
 
 # NETWORK CHARACTERISTICS
 
-network_size = 'real'
+network_size = 'large'
 network_variant = 'half' # this refers to the 1 in S1
 
 if network_size == 'small':

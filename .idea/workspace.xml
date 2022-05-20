@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="cb3c5185-75d1-4ba8-bc92-2bb886e12991" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/Archive/old_solution_generation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Archive/old_solution_generation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/find_position.py" beforeDir="false" afterPath="$PROJECT_DIR$/find_position.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
@@ -15,12 +16,22 @@
       <change beforePath="$PROJECT_DIR$/static_experiments_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_experiments_2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static_experiments_3.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_experiments_3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/static_operators.py" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/parameters.py" afterDir="false" />
+>>>>>>> a83794a3273d3a174ed69bcdce893f4972816bff
       <change beforePath="$PROJECT_DIR$/testfile.py" beforeDir="false" afterPath="$PROJECT_DIR$/testfile.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />

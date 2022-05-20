@@ -55,40 +55,89 @@ def calc_request_group_invehicle_time(vehicles_schedule, request_group, relative
     return in_vehicle_time
 
 
-def generate_waiting_time_dict(vehicles_schedule, relative=False):
+def generate_waiting_time_dict(vehicles_schedule, relative=False, direction='all'):
     waiting_time_dict = {}
 
-    for vehicle in vehicles_schedule:
-        waiting_time_dict[vehicle] = {}
-        for node in vehicles_schedule[vehicle]:
-            waiting_time_dict[vehicle][node] = []
-            for request_group in vehicles_schedule[vehicle][node][1:]:
-                if boarding_pass_at_node(vehicles_schedule, vehicle, node):
-                    waiting_time_dict[vehicle][node].\
-                        append(calc_request_group_waiting_time(vehicles_schedule, request_group, relative))
+    if direction == 'all':
+        for vehicle in vehicles_schedule:
+            waiting_time_dict[vehicle] = {}
+            for node in vehicles_schedule[vehicle]:
+                waiting_time_dict[vehicle][node] = []
+                for request_group in vehicles_schedule[vehicle][node][1:]:
+                    if boarding_pass_at_node(vehicles_schedule, vehicle, node):
+                        waiting_time_dict[vehicle][node].\
+                            append(calc_request_group_waiting_time(vehicles_schedule, request_group, relative))
+    elif direction == 'city':
+        for vehicle in vehicles_schedule:
+            waiting_time_dict[vehicle] = {}
+            for node in vehicles_schedule[vehicle]:
+                waiting_time_dict[vehicle][node] = []
+                for request_group in vehicles_schedule[vehicle][node][1:]:
+                    if boarding_pass_at_node(vehicles_schedule, vehicle, node):
+                        o, d = get_od_from_request_group(request_group)
+                        if o < d:
+                            waiting_time_dict[vehicle][node].\
+                                    append(calc_request_group_waiting_time(vehicles_schedule, request_group, relative))
+
+    elif direction == 'terminal':
+        for vehicle in vehicles_schedule:
+            waiting_time_dict[vehicle] = {}
+            for node in vehicles_schedule[vehicle]:
+                waiting_time_dict[vehicle][node] = []
+                for request_group in vehicles_schedule[vehicle][node][1:]:
+                    if boarding_pass_at_node(vehicles_schedule, vehicle, node):
+                        o, d = get_od_from_request_group(request_group)
+                        if o > d:
+                            waiting_time_dict[vehicle][node].\
+                                    append(calc_request_group_waiting_time(vehicles_schedule, request_group, relative))
 
     return waiting_time_dict
 
 
-def generate_in_vehicle_time_dict(vehicles_schedule, relative=False):
+def generate_in_vehicle_time_dict(vehicles_schedule, relative=False, direction='all'):
     in_vehicle_time_dict = {}
 
-    for vehicle in vehicles_schedule:
-        in_vehicle_time_dict[vehicle] = {}
-        if not is_empty_vehicle_schedule(vehicles_schedule, vehicle):
-            for node in vehicles_schedule[vehicle]:
-                in_vehicle_time_dict[vehicle][node] = []
-                for request_group in vehicles_schedule[vehicle][node][1:]:
-                    if boarding_pass_at_node(vehicles_schedule, vehicle, node):
-                        in_vehicle_time_dict[vehicle][node].\
-                            append(calc_request_group_invehicle_time(vehicles_schedule, request_group, relative))
+    if direction == 'all':
+        for vehicle in vehicles_schedule:
+            in_vehicle_time_dict[vehicle] = {}
+            if not is_empty_vehicle_schedule(vehicles_schedule, vehicle):
+                for node in vehicles_schedule[vehicle]:
+                    in_vehicle_time_dict[vehicle][node] = []
+                    for request_group in vehicles_schedule[vehicle][node][1:]:
+                        if boarding_pass_at_node(vehicles_schedule, vehicle, node):
+                            in_vehicle_time_dict[vehicle][node].\
+                                append(calc_request_group_invehicle_time(vehicles_schedule, request_group, relative))
+    elif direction == 'city':
+        for vehicle in vehicles_schedule:
+            in_vehicle_time_dict[vehicle] = {}
+            if not is_empty_vehicle_schedule(vehicles_schedule, vehicle):
+                for node in vehicles_schedule[vehicle]:
+                    in_vehicle_time_dict[vehicle][node] = []
+                    for request_group in vehicles_schedule[vehicle][node][1:]:
+                        if boarding_pass_at_node(vehicles_schedule, vehicle, node):
+                            o, d = get_od_from_request_group(request_group)
+                            if o < d:
+                                in_vehicle_time_dict[vehicle][node].\
+                                    append(calc_request_group_invehicle_time(vehicles_schedule, request_group, relative))
+    elif direction == 'terminal':
+        for vehicle in vehicles_schedule:
+            in_vehicle_time_dict[vehicle] = {}
+            if not is_empty_vehicle_schedule(vehicles_schedule, vehicle):
+                for node in vehicles_schedule[vehicle]:
+                    in_vehicle_time_dict[vehicle][node] = []
+                    for request_group in vehicles_schedule[vehicle][node][1:]:
+                        if boarding_pass_at_node(vehicles_schedule, vehicle, node):
+                            o, d = get_od_from_request_group(request_group)
+                            if o > d:
+                                in_vehicle_time_dict[vehicle][node].\
+                                    append(calc_request_group_invehicle_time(vehicles_schedule, request_group, relative))
 
     return in_vehicle_time_dict
 
 
-def generate_total_travel_time_dict(vehicles_schedule, relative=False):
-    in_vehicle_time_dict = generate_in_vehicle_time_dict(vehicles_schedule, relative)
-    waiting_time_dict = generate_waiting_time_dict(vehicles_schedule, relative)
+def generate_total_travel_time_dict(vehicles_schedule, relative=False, direction='all'):
+    in_vehicle_time_dict = generate_in_vehicle_time_dict(vehicles_schedule, relative, direction)
+    waiting_time_dict = generate_waiting_time_dict(vehicles_schedule, relative, direction)
 
     total_travel_time_dict = {}
 
@@ -121,12 +170,29 @@ def sum_total_travel_time(total_travel_time_dict, level='total'):
     return result
 
 
-def get_objective_function_val(vehicles_schedule, relative=False):
-    total_travel_time = generate_total_travel_time_dict(vehicles_schedule)
-    if relative is True:
-        return round(sum_total_travel_time(total_travel_time, 'total') / count_total_assigned_requests(vehicles_schedule), 2)
-    else:
-        return round(sum_total_travel_time(total_travel_time, 'total'), 2)
+def get_objective_function_val(vehicles_schedule, relative=False, direction='all'):
+    if direction == 'all':
+        total_travel_time = generate_total_travel_time_dict(vehicles_schedule, direction=direction)
+        if relative is True:
+            return round(sum_total_travel_time(total_travel_time, 'total') / count_total_assigned_requests(vehicles_schedule), 2)
+        else:
+            return round(sum_total_travel_time(total_travel_time, 'total'), 2)
+
+    elif direction == 'city':
+        total_travel_time = generate_total_travel_time_dict(vehicles_schedule, direction=direction)
+        if relative is True:
+            return round(sum_total_travel_time(total_travel_time, 'total') /
+                         count_total_assigned_requests(vehicles_schedule, direction=direction), 2)
+        else:
+            return round(sum_total_travel_time(total_travel_time, 'total'), 2)
+
+    elif direction == 'terminal':
+        total_travel_time = generate_total_travel_time_dict(vehicles_schedule, direction=direction)
+        if relative is True:
+            return round(sum_total_travel_time(total_travel_time, 'total') /
+                         count_total_assigned_requests(vehicles_schedule, direction=direction), 2)
+        else:
+            return round(sum_total_travel_time(total_travel_time, 'total'), 2)
 
 
 def select_most_costly_request_groups(network, vehicles_schedule, required_amount=1, request_groups=None, current_time=None):
