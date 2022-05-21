@@ -160,8 +160,11 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
 
     default_multiplier = len(request_group)
     # default_multiplier = 1
-    w = 0.1 # weighing factor waiting time
-    v = 0.1 # weighing factor for in-vehicle time
+
+    if capacity > 20: # additional correction factor when capacity increases.
+        kappa = 0.5
+    else:
+        kappa = 0.1
 
     if type(insertion_constraint) == tuple:
         available_cap = room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1], capacity=capacity)
@@ -180,10 +183,11 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, x, last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, x)
         detour_cost = (cost_matrix[(o, d)] + cost_matrix[(d, cv(x))] -
-                       cost_matrix[(o, cv(x))])*(default_multiplier + inveh_passenger_mult + waiting_passengers_mult)*v
+                       cost_matrix[(o, cv(x))])*(default_multiplier + inveh_passenger_mult + waiting_passengers_mult)*kappa
         dep_time_offset = abs(request_group_rep_pt -
                               get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])) \
-                           *(default_multiplier + inveh_passenger_mult + waiting_passengers_mult)*w
+                           *(default_multiplier + inveh_passenger_mult + waiting_passengers_mult)*kappa
+
 
     # we don't affect other passenger by inserting a destination node after the existing schedule
     elif insertion_constraint[0] == 'insert d after' and \
@@ -201,7 +205,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         detour_cost = 0
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
                               - cost_matrix[o, d] - request_group_rep_pt - cost_matrix[dep, o]
-                              )*(default_multiplier + waiting_passengers_mult)*w
+                              )*(default_multiplier + waiting_passengers_mult)*kappa
 
     elif insertion_constraint[0] == 'on arc with o: ' and \
             room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1],
@@ -211,7 +215,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, insertion_constraint[1])
         detour_cost = -stop_addition_penalty
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
-                              - request_group_rep_pt)*(default_multiplier + waiting_passengers_mult + inveh_passenger_mult)*w
+                              - request_group_rep_pt)*(default_multiplier + waiting_passengers_mult + inveh_passenger_mult)*kappa
 
     elif insertion_constraint[0] == 'insert o after' and \
             room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1], capacity=capacity) > 0:
@@ -222,9 +226,10 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, d)
 
         detour_cost = (cost_matrix[(cv(x), o)] + cost_matrix[(o, cv(d))]
-                       - cost_matrix[(cv(x), cv(d))])*(default_multiplier + waiting_passengers_mult + inveh_passenger_mult)*v
+                       - cost_matrix[(cv(x), cv(d))])*(default_multiplier + waiting_passengers_mult + inveh_passenger_mult)*kappa
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])
-                              + cost_matrix[(cv(x), o)] - request_group_rep_pt)*(default_multiplier + (waiting_passengers_mult + inveh_passenger_mult))*w
+                              + cost_matrix[(cv(x), o)] - request_group_rep_pt)*(default_multiplier + (waiting_passengers_mult + inveh_passenger_mult))*kappa
+
 
     # we don't need to check for capacity in the following two cases
     elif insertion_constraint == 'in front':
@@ -234,7 +239,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         dep_time_offset = abs(get_departure_time_at_node(vehicles_schedule, vehicle, first_node) -
                               cost_matrix[(d, cv(first_node))] -
                               request_group_rep_pt - cost_matrix[(o, d)] -
-                              cost_matrix[(dep, o)])*(default_multiplier + waiting_passengers_mult)*v
+                              cost_matrix[(dep, o)])*(default_multiplier + waiting_passengers_mult)*kappa
 
     elif insertion_constraint == 'back':
         last_node = get_next_node(vehicles_schedule, vehicle)

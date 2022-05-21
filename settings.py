@@ -39,8 +39,8 @@ average_interstop_distance = calc_average_interstop_distance(network)
 # VEHICLE CHARACTERISTICS
 
 max_vehicle_ride_time = peak_duration + cost_matrix[(network_dim[0], network_dim[2])]  #min.
-cap_per_veh = 20
-nb_of_available_vehicles = 16
+cap_per_veh = 80
+nb_of_available_vehicles = 4
 
 # REQUEST CHARACTERISTICS
 

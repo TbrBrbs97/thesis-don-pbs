@@ -27,7 +27,7 @@ from settings import disturbance_threshold, disturbance_ratio, shuffle_ratio,\
     shuffle_threshold, delta, v_mean, reinitiation_threshold
 
 
-def init_fill_every_vehicle(network, request_dict, nb_of_available_veh, seed=True, capacity=20, depot='terminal'):
+def init_fill_every_vehicle(network, requests_dict, nb_of_available_veh, seed=True, capacity=20, depot='terminal'):
     """
     Function that fills every vehicle with a request group to start.
     A node ID consists of the stop id, followed by its occurence in the schedule.
@@ -36,13 +36,13 @@ def init_fill_every_vehicle(network, request_dict, nb_of_available_veh, seed=Tru
     vehicles_schedule = dict()
 
     for v in range(1, nb_of_available_veh + 1):
+        vehicles_schedule[v] = dict()
         if seed is True:
             random.seed(1)
-
-        request_group = pop_request_group(request_dict)
-        vehicles_schedule[v] = dict()
-        insert_request_group(network, vehicles_schedule, request_dict, request_group,
-                             vehicle=v, position='first entry', capacity=capacity, depot=depot)
+        if count_requests(requests_dict) != 0:
+            request_group = pop_request_group(requests_dict)
+            insert_request_group(network, vehicles_schedule, requests_dict, request_group,
+                                 vehicle=v, position='first entry', capacity=capacity, depot=depot)
 
     return vehicles_schedule
 

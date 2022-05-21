@@ -55,7 +55,9 @@ print(total_requests)
 
 ## INITIAL SOLUTION
 
-initial_solution = generate_initial_solution(network, grouped_requests, nb_of_available_veh=nb_of_available_vehicles)
+initial_solution = generate_initial_solution(network, grouped_requests,
+                                             nb_of_available_veh=nb_of_available_vehicles,
+                                             capacity=cap_per_veh, depot=depot)
 # print(count_total_assigned_requests(initial_solution))
 
 for i in initial_solution:
@@ -75,14 +77,14 @@ print('terminal requests avg. TT: ', get_objective_function_val(initial_solution
 
 ## OPTIMIZED STATIC SOLUTION
 
-optimized_solution, best_iteration = static_optimization(network, initial_solution,
-                                                         required_requests_per_it=steep_descent_intensity,
-                                                         time_limit=opt_time_lim, capacity=cap_per_veh, depot=depot)
-for i in optimized_solution:
-    print('veh ', i, ': ', optimized_solution[i])
-print('overall objective function: ', get_objective_function_val(optimized_solution, relative=False),
-      'at iteration: ', best_iteration)
-print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
+# optimized_solution, best_iteration = static_optimization(network, initial_solution,
+#                                                          required_requests_per_it=steep_descent_intensity,
+#                                                          time_limit=opt_time_lim, capacity=cap_per_veh, depot=depot)
+# for i in optimized_solution:
+#     print('veh ', i, ': ', optimized_solution[i])
+# print('overall objective function: ', get_objective_function_val(optimized_solution, relative=False),
+#       'at iteration: ', best_iteration)
+# print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
 
 
 # ## DYNAMIC SOLUTION
