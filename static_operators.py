@@ -158,7 +158,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         detour_cost = 0.0
         dep_time_offset = 0.0
 
-    default_multiplier = 0*len(request_group)
+    default_multiplier = len(request_group)
     # default_multiplier = 1
     w = 0.1 # weighing factor waiting time
     v = 0.1 # weighing factor for in-vehicle time
@@ -166,7 +166,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     if type(insertion_constraint) == tuple:
         available_cap = room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1], capacity=capacity)
         feasible_portion = request_group[:min(len(request_group), available_cap)]
-        default_multiplier = 0*len(feasible_portion)
+        default_multiplier = len(feasible_portion)
         # print(request_group_rep_pt, get_rep_pick_up_time(feasible_portion))
         request_group_rep_pt = min(request_group_rep_pt, get_rep_pick_up_time(feasible_portion, method='max'))
 
@@ -192,7 +192,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
 
         detour_cost = 0
         dep_time_offset = abs(request_group_rep_pt - get_departure_time_at_node(vehicles_schedule,
-                                                                                vehicle, insertion_constraint[1]))
+                                                                                vehicle, insertion_constraint[1]))*(default_multiplier)
 
     # we don't have to check for capacity if it is the first node we're checking
     elif insertion_constraint[0] == 'insert o before':
@@ -240,7 +240,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         last_node = get_next_node(vehicles_schedule, vehicle)
         detour_cost = cost_matrix[(cv(last_node), o)]
         dep_time_offset = abs(
-            request_group_rep_pt - get_departure_time_at_node(vehicles_schedule, vehicle, last_node))
+            request_group_rep_pt - get_departure_time_at_node(vehicles_schedule, vehicle, last_node))*(default_multiplier)
 
     # penalize the entry if the vehicle already has a lengthy tour
     if not is_empty_vehicle_schedule(vehicles_schedule, vehicle) and \

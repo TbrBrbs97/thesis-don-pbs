@@ -2,7 +2,7 @@
 
 import pickle
 
-from settings import v_mean, degree_of_dynamism, lead_time, steep_descent_intensity, opt_time_lim
+from settings import v_mean, degree_of_dynamism, lead_time, steep_descent_intensity
 
 from network_generation import import_network, generate_cost_matrix, \
     get_network_boundaries, generate_distance_matrix
@@ -16,8 +16,9 @@ from solution_construct import generate_initial_solution, static_optimization
 
 network_size = 'real'
 network_variant = 'half'
-nb_of_samples = 3
+nb_of_samples = 1
 
+opt_time_lim = 480
 peak_duration = 120
 nb_of_available_vehicles = 16
 capacity = 20
@@ -63,10 +64,6 @@ for subscen in demand_subscenarios:
         initial_solution = generate_initial_solution(network, grouped_requests,
                                                      nb_of_available_veh=nb_of_available_vehicles,
                                                      capacity=capacity)
-        # init_name = 'Results/' + network_size + '_' + str(sample) + '_clust_' + str(h) + '_init'
-        #
-        # file_to_write_1 = open(init_name, "wb")
-        # pickle.dump(initial_solution, file_to_write_1)
 
         # OPTIMIZED SOLUTION
         optimized_solution, best_iteration = static_optimization(network, initial_solution,

@@ -299,6 +299,13 @@ def shuffle(network, vehicles_schedule, temp_request_dict=None, shuffle_rate=shu
                                  candidate_vehicle, candidate_node, ignore_request_dict=True, capacity=capacity, depot=depot)
             positions.append((added_portion, candidate_vehicle, candidate_node, score))
             assigned_so_far += added_portion
+
+            if len(added_portion) == 0:
+                print('added portion: ', added_portion)
+                print('assigned so far', assigned_so_far)
+                print('request group: ', request_group)
+                print('veh. schedule: ', temp_schedule)
+
             if candidate_node != 'current pos':
                 original_score -= calc_request_group_opportunity_cost(network, temp_schedule, added_portion)
 

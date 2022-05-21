@@ -6,7 +6,7 @@ from solution_evaluation import generate_waiting_time_dict, generate_in_vehicle_
     sum_total_travel_time, calc_total_vehicle_kilometers, calc_occupancy_rate
 from vehicle import count_total_assigned_requests, count_assigned_request_groups
 
-# ADJUST NAMING !!
+# ADJUST NAMING BEFORE RUNNING !!
 
 directory = 'Results/SE_1'
 output_name = 'static_experiments_1'
@@ -49,11 +49,16 @@ for filename in os.listdir(directory):
     passenger_travel_time = get_objective_function_val(vehicles_schedule, relative=True)
     total_vehicle_kms = calc_total_vehicle_kilometers(network, vehicles_schedule)
 
+    city_travellers = get_objective_function_val(vehicles_schedule, relative=True, direction='city')
+    terminal_travellers = get_objective_function_val(vehicles_schedule, relative=True, direction='terminal')
+
     export[filename] = [total_passenger_count, summed_waiting_time, summed_in_veh_time,
-                        total_travel_time, passenger_travel_time, total_vehicle_kms]
+                        total_travel_time, passenger_travel_time, total_vehicle_kms,
+                        city_travellers, terminal_travellers]
 
 df = pd.DataFrame.from_dict(export, orient='index')
 headers = ['total pass. count', 'total waiting time', 'total in-veh. time',
-           'total travel time', 'travel time per pass.', 'total veh. kms']
+           'total travel time', 'travel time per pass.', 'total veh. kms',
+           'avg. travel time to city', 'avg. travel time to terminal']
 output_path = 'Results/SE_1' + output_name + '.csv'
 pd.DataFrame.to_csv(df, path_or_buf=output_path, header=headers)

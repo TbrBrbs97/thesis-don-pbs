@@ -182,7 +182,7 @@ def get_objective_function_val(vehicles_schedule, relative=False, direction='all
         total_travel_time = generate_total_travel_time_dict(vehicles_schedule, direction=direction)
         if relative is True:
             return round(sum_total_travel_time(total_travel_time, 'total') /
-                         count_total_assigned_requests(vehicles_schedule, direction=direction), 2)
+                         max((count_total_assigned_requests(vehicles_schedule, direction=direction), 1)), 2)
         else:
             return round(sum_total_travel_time(total_travel_time, 'total'), 2)
 
@@ -190,7 +190,7 @@ def get_objective_function_val(vehicles_schedule, relative=False, direction='all
         total_travel_time = generate_total_travel_time_dict(vehicles_schedule, direction=direction)
         if relative is True:
             return round(sum_total_travel_time(total_travel_time, 'total') /
-                         count_total_assigned_requests(vehicles_schedule, direction=direction), 2)
+                         max((count_total_assigned_requests(vehicles_schedule, direction=direction), 1)), 2)
         else:
             return round(sum_total_travel_time(total_travel_time, 'total'), 2)
 

@@ -92,10 +92,10 @@ def find_first_best_improvement_for_request_group_2(network, vehicles_schedule, 
                                              ignore_request_dict=True, capacity=capacity, depot=depot)
         if len(added_portion) > 0:
             current_score = calc_request_group_opportunity_cost(network, temp_schedule, added_portion)
-        else: # penalize insertions that have very high costs
-            current_score = 5*M
+        else: # penalize insertions that are infeasible! (e.g. due to the violation of capacity constraint)
+            current_score = 100*M
 
-        if current_score < best_improvement[2]:
+        if current_score < 0.5*best_improvement[2]:
             best_improvement = current_vehicle, ins_cons, round(current_score, 2), added_portion
             return best_improvement
 
