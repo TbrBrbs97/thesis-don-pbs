@@ -2,7 +2,7 @@
 
 import pickle
 
-from settings import v_mean, degree_of_dynamism, lead_time, steep_descent_intensity
+from settings import v_mean, degree_of_dynamism, lead_time, steep_descent_intensity, depot
 
 from network_generation import import_network, generate_cost_matrix, \
     get_network_boundaries, generate_distance_matrix
@@ -16,7 +16,7 @@ from solution_construct import generate_initial_solution, static_optimization
 
 network_size = 'real'
 network_variant = 'half'
-nb_of_samples = 1
+nb_of_samples = 2
 
 opt_time_lim = 480
 peak_duration = 120
@@ -45,7 +45,7 @@ for subscen in demand_subscenarios:
     else:
         mean_demand = convert_md_todict(lambdapeak, mupeak, scen=demand_scenario, subscen=subscen)
 
-    sample = 0
+    sample = 1
     while sample < nb_of_samples:
         print('CURRENTLY RUNNING scenario: ', demand_scenario,  'and subscenario:', subscen)
         random_seed = sample
@@ -63,7 +63,7 @@ for subscen in demand_subscenarios:
         # INITIAL SOLUTION
         initial_solution = generate_initial_solution(network, grouped_requests,
                                                      nb_of_available_veh=nb_of_available_vehicles,
-                                                     capacity=capacity)
+                                                     capacity=capacity, depot=depot)
 
         # OPTIMIZED SOLUTION
         optimized_solution, best_iteration = static_optimization(network, initial_solution,
