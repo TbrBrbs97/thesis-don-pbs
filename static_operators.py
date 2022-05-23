@@ -188,7 +188,6 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
                               get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])) \
                            *(default_multiplier + inveh_passenger_mult + waiting_passengers_mult)*kappa
 
-
     # we don't affect other passenger by inserting a destination node after the existing schedule
     elif insertion_constraint[0] == 'insert d after' and \
             room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1], capacity=capacity) > 0 and \

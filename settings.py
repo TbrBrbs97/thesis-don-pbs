@@ -12,7 +12,7 @@ demand_subscenario = 2
 time_of_day = 1  # 1 = peak, 0 = off-peak
 degree_of_dynamism = 0.0 # percent
 lead_time = 1 # min.
-random_seed = 8
+random_seed = 1
 depot = 'terminal'
 
 # NETWORK CHARACTERISTICS
@@ -39,12 +39,12 @@ average_interstop_distance = calc_average_interstop_distance(network)
 # VEHICLE CHARACTERISTICS
 
 max_vehicle_ride_time = peak_duration + cost_matrix[(network_dim[0], network_dim[2])]  #min.
-cap_per_veh = 80
-nb_of_available_vehicles = 4
+cap_per_veh = 20
+nb_of_available_vehicles = 16
 
 # REQUEST CHARACTERISTICS
 
-req_max_cluster_time = peak_duration / 4 #min.
+req_max_cluster_time = peak_duration / 8 #min.
 
 lambdapeak = get_scenario_mean_demand('city', network_size, scen=demand_scenario, subscen=demand_subscenario, peak=1)
 mupeak = get_scenario_mean_demand('terminal', network_size, scen=demand_scenario, subscen=demand_subscenario, peak=1)
@@ -69,7 +69,6 @@ size_groups = size_request_groups_per_od(grouped_requests)
 
 M = 1000  # a very large number
 opt_time_lim = 30 #minutes
-# disturbance_ratio = max((cap_per_veh / 4000, 0.01))
 reinitiation_threshold = 5
 disturbance_threshold = 1 #iterations
 disturbance_ratio = 0.01

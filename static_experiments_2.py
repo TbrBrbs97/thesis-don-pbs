@@ -15,9 +15,9 @@ from solution_construct import generate_initial_solution, static_optimization
 
 # SETTINGS
 
-req_max_cluster_times = [1, 5, 10, 20]
+req_max_cluster_times = [5, 15, 30]
 resource_scenarios = [(4, 80), (16, 20), (80, 4)]
-periods = [60, 120]
+periods = [120, 180]
 depot_allocation = ['terminal', 'middle', 'center']
 
 network_size = 'real'

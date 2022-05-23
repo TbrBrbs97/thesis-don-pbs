@@ -17,7 +17,7 @@ def calc_request_group_waiting_time(vehicles_schedule, request_group, relative=F
     if len(request_group) > 0:
         vehicle, node = locate_request_group_in_schedule(vehicles_schedule, request_group)
         departure_time = get_departure_time_at_node(vehicles_schedule, vehicle, node)
-        waiting_time = round(sum([departure_time - request[1] for request in request_group])/denominator, 2)
+        waiting_time = round(sum([(departure_time - request[1]) for request in request_group])/denominator, 2)
 
     return waiting_time
 

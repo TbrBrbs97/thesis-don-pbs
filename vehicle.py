@@ -23,10 +23,15 @@ def get_insertion_possibilities(vehicles_schedule, vehicle, request_group):
                                        if cv(node) == d and get_prev_node(vehicles_schedule, vehicle, node) is None]
         positions_on_existing_arc = [('on arc with o: ', node) for node in vehicles_schedule[vehicle]
                                      if cv(node) == o and get_next_occ_of_node(vehicles_schedule, vehicle, node, d) is not None]
+        # positions_before_dest = [('insert o after', node) for node in vehicles_schedule[vehicle] if
+        #                          get_next_node(vehicles_schedule, vehicle, node) is not None and
+        #                          cv(get_next_node(vehicles_schedule, vehicle, node)) == d and node not in
+        #                          [tup[1] for tup in positions_on_existing_arc]]
         positions_before_dest = [('insert o after', node) for node in vehicles_schedule[vehicle] if
-                                 get_next_node(vehicles_schedule, vehicle, node) is not None and
-                                 cv(get_next_node(vehicles_schedule, vehicle, node)) == d and node not in
+                                 get_next_occ_of_node(vehicles_schedule, vehicle, node, d) and
+                                 cv(get_next_occ_of_node(vehicles_schedule, vehicle, node, d)) == d and node not in
                                  [tup[1] for tup in positions_on_existing_arc]]
+
         default_positions = []
         if len(positions_at_origin_as_last_stop) == 0:
             default_positions.append('back')
