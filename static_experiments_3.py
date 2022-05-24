@@ -22,7 +22,7 @@ opt_time_lim = 480
 peak_duration = 120
 nb_of_available_vehicles = 16
 capacity = 20
-req_max_cluster_time = 20
+req_max_cluster_time = peak_duration / 8
 
 network = import_network(network_size, network_variant)
 cost_matrix = generate_cost_matrix(network, v_mean)
@@ -68,7 +68,7 @@ for subscen in demand_subscenarios:
         # OPTIMIZED SOLUTION
         optimized_solution, best_iteration = static_optimization(network, initial_solution,
                                                                  required_requests_per_it=steep_descent_intensity,
-                                                                 time_limit=opt_time_lim, capacity=capacity)
+                                                                 time_limit=opt_time_lim, capacity=capacity, depot=depot)
         opt_name = 'Results/SE_3/' + network_size + '_scen' + str(demand_scenario) + '_subscen' + str(subscen) + '_opt.pickle'
         file_to_write_2 = open(opt_name, "wb")
         pickle.dump(optimized_solution, file_to_write_2)
