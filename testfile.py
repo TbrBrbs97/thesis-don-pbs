@@ -28,10 +28,6 @@ from settings import network, lambdapeak, mupeak, demand_scenario, peak_duration
     network_dim, distance_matrix, average_interstop_distance, requests_per_od, mean_demand, \
     count_groups, network_size, shuffle_threshold, depot, max_vehicle_ride_time
 
-# import cProfile, pstats, io
-# pr = cProfile.Profile()
-# pr.enable()
-
 total_requests = count_requests(grouped_requests)
 print(total_requests)
 # print(count_requests_per_od(grouped_requests))
@@ -99,17 +95,6 @@ print('avg. travel time per passenger: ', get_objective_function_val(optimized_s
 #         print('veh ', i, ': ', dynamic_initial_solution[i])
 #     print('objective func: ', get_objective_function_val(dynamic_initial_solution, relative=False))
 #     print('avg. travel time per passenger: ', get_objective_function_val(dynamic_initial_solution, relative=True))
-
-
-# cProfiler
-
-# pr.disable()
-# s = io.StringIO()
-# sortby = 'cumulative'
-# ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-# ps.print_stats()
-# print(s.getvalue())
-
 
 
 

@@ -69,10 +69,10 @@ size_groups = size_request_groups_per_od(grouped_requests)
 
 M = 1000  # a very large number
 opt_time_lim = 30 #minutes
-reinitiation_threshold = 5
+reinitiation_threshold = 10
 disturbance_threshold = 1 #iterations
 disturbance_ratio = 0.01
-shuffle_threshold = 50
+shuffle_threshold = 2
 shuffle_ratio = 0.25
 steep_descent_intensity = 15
 stop_addition_penalty = 0  # node addition penalty

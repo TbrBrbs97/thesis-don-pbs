@@ -161,8 +161,10 @@ def static_optimization(network, vehicles_schedule, required_requests_per_it=1, 
             vehicles_schedule = best_schedule_so_far
             dis = 0
 
+        # if get_objective_function_val(vehicles_schedule) >= \
+        #         get_objective_function_val(best_schedule_so_far) and it % shuffle_threshold == 0 and it != 0:
         if get_objective_function_val(vehicles_schedule) >= \
-                get_objective_function_val(best_schedule_so_far) and it % shuffle_threshold == 0 and it != 0:
+                get_objective_function_val(best_schedule_so_far) and it == shuffle_threshold and it != 0:
             shuffle_rate = shuffle_ratio
             print('performing large shuffle with rate: ', shuffle_rate)
             vehicles_schedule = shuffle(network, vehicles_schedule, shuffle_rate=shuffle_rate, capacity=capacity,
