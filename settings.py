@@ -34,7 +34,7 @@ cost_matrix = generate_cost_matrix(network, v_mean)
 distance_matrix = generate_distance_matrix(network)
 network_dim = get_network_boundaries(network)
 
-average_interstop_distance = calc_average_interstop_distance(network)
+average_interstop_distance = calc_average_interstop_distance(network) / v_mean * 60
 
 # VEHICLE CHARACTERISTICS
 

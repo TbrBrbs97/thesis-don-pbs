@@ -33,7 +33,7 @@ for size in network_sizes:
                 opt_time_limit = 120
             elif network_size == 'large':
                 peak_duration = 60
-                opt_time_limit = 240
+                opt_time_limit = 180
             else:
                 peak_duration = 120
                 opt_time_limit = 480
@@ -43,7 +43,7 @@ for size in network_sizes:
             distance_matrix = generate_distance_matrix(network)
             network_dim = get_network_boundaries(network)
 
-            req_max_cluster_time = peak_duration / 4
+            req_max_cluster_time = peak_duration / 8
 
             lambdapeak = get_scenario_mean_demand('city', network_size, scen=demand_scenario,
                                                   subscen=demand_subscenario, peak=1)
