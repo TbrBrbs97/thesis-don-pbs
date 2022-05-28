@@ -62,7 +62,8 @@ for i in initial_solution:
     print('veh ', i, ': ', initial_solution[i])
 
 print('objective func: ', get_objective_function_val(initial_solution, relative=False))
-print(count_total_assigned_requests(initial_solution))
+print('assigned ind. requests', count_total_assigned_requests(initial_solution))
+print('assigned request groups', count_assigned_request_groups(initial_solution))
 
 waiting_time = generate_waiting_time_dict(initial_solution)
 in_veh_time = generate_in_vehicle_time_dict(initial_solution)
@@ -70,19 +71,19 @@ in_veh_time = generate_in_vehicle_time_dict(initial_solution)
 print('avg. waiting time: ', sum_total_travel_time(waiting_time))
 print('avg. in-vehicle time: ', sum_total_travel_time(in_veh_time))
 
-# print('city requests avg. TT: ', get_objective_function_val(initial_solution, relative=True, direction='city'))
-# print('terminal requests avg. TT: ', get_objective_function_val(initial_solution, relative=True, direction='terminal'))
+print('city requests avg. TT: ', get_objective_function_val(initial_solution, relative=True, direction='city'))
+print('terminal requests avg. TT: ', get_objective_function_val(initial_solution, relative=True, direction='terminal'))
 
 ## OPTIMIZED STATIC SOLUTION
 
-optimized_solution, best_iteration = static_optimization(network, initial_solution,
-                                                         required_requests_per_it=steep_descent_intensity,
-                                                         time_limit=opt_time_lim, capacity=cap_per_veh, depot=depot)
-for i in optimized_solution:
-    print('veh ', i, ': ', optimized_solution[i])
-print('overall objective function: ', get_objective_function_val(optimized_solution, relative=False),
-      'at iteration: ', best_iteration)
-print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
+# optimized_solution, best_iteration = static_optimization(network, initial_solution,
+#                                                          required_requests_per_it=steep_descent_intensity,
+#                                                          time_limit=opt_time_lim, capacity=cap_per_veh, depot=depot)
+# for i in optimized_solution:
+#     print('veh ', i, ': ', optimized_solution[i])
+# print('overall objective function: ', get_objective_function_val(optimized_solution, relative=False),
+#       'at iteration: ', best_iteration)
+# print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
 
 
 # ## DYNAMIC SOLUTION

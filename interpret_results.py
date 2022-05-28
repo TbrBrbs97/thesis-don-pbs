@@ -9,7 +9,7 @@ from vehicle import count_total_assigned_requests, count_assigned_request_groups
 # ADJUST NAMING BEFORE RUNNING !!
 
 directory = 'Results/SE_1'
-output_name = 'static_experiments_1'
+output_name = 'static_experiments_1_new'
 network = None
 
 # GENERATE EXPORT
@@ -49,16 +49,36 @@ for filename in os.listdir(directory):
     passenger_travel_time = get_objective_function_val(vehicles_schedule, relative=True)
     total_vehicle_kms = calc_total_vehicle_kilometers(network, vehicles_schedule)
 
-    city_travellers = get_objective_function_val(vehicles_schedule, relative=True, direction='city')
-    terminal_travellers = get_objective_function_val(vehicles_schedule, relative=True, direction='terminal')
+    city_travellers_tt = get_objective_function_val(vehicles_schedule, relative=True, direction='city')
+    terminal_travellers_tt = get_objective_function_val(vehicles_schedule, relative=True, direction='terminal')
+
+    count_city_travellers = count_total_assigned_requests(vehicles_schedule, direction='city')
+    count_terminal_travellers = count_total_assigned_requests(vehicles_schedule, direction='terminal')
+
+    city_wt_dict = generate_waiting_time_dict(vehicles_schedule, direction='city')
+    city_ivt_dict = generate_in_vehicle_time_dict(vehicles_schedule, direction='city')
+
+    terminal_wt_dict = generate_waiting_time_dict(vehicles_schedule, direction='terminal')
+    terminal_ivt_dict = generate_in_vehicle_time_dict(vehicles_schedule, direction='terminal')
+
+    city_travellers_wt = sum_total_travel_time(city_wt_dict) / count_city_travellers
+    city_travellers_ivt = sum_total_travel_time(city_ivt_dict) / count_city_travellers
+    terminal_travellers_wt = sum_total_travel_time(terminal_wt_dict) / max(count_terminal_travellers, 1)
+    terminal_travellers_ivt = sum_total_travel_time(terminal_ivt_dict) / max(count_terminal_travellers, 1)
 
     export[filename] = [total_passenger_count, summed_waiting_time, summed_in_veh_time,
                         total_travel_time, passenger_travel_time, total_vehicle_kms,
-                        city_travellers, terminal_travellers]
+                        count_city_travellers, count_terminal_travellers,
+                        city_travellers_tt, terminal_travellers_tt,
+                        city_travellers_wt, city_travellers_ivt,
+                        terminal_travellers_wt, terminal_travellers_ivt]
 
 df = pd.DataFrame.from_dict(export, orient='index')
 headers = ['total pass. count', 'total waiting time', 'total in-veh. time',
            'total travel time', 'travel time per pass.', 'total veh. kms',
-           'avg. travel time to city', 'avg. travel time to terminal']
-output_path = 'Results/SE_1' + output_name + '.csv'
+           'total city travelers', 'total terminal travelers',
+           'avg. travel time to city', 'avg. travel time to terminal',
+           'wt city travel', 'ivt city travel',
+           'wt terminal travel', 'ivt terminal travel']
+output_path = 'Results/SE_1_' + output_name + '.csv'
 pd.DataFrame.to_csv(df, path_or_buf=output_path, header=headers)

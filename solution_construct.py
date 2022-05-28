@@ -66,7 +66,7 @@ def generate_initial_solution(network, requests_dict, vehicles_schedule=None,
     candidate_position = find_best_position_for_request_group(network, vehicles_schedule,
                                                               request_group, capacity=capacity, depot=depot)
     candidate_vehicle, candidate_node, score = candidate_position
-    # print(request_group, candidate_position)
+    # print(len(request_group), candidate_position)
     insert_request_group(network, vehicles_schedule, requests_dict,
                          request_group, candidate_vehicle, candidate_node, capacity=capacity, depot=depot)
     return generate_initial_solution(network, requests_dict, vehicles_schedule, nb_of_available_veh, capacity, depot)
