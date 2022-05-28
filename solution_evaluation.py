@@ -1,6 +1,6 @@
 from vehicle import locate_request_group_in_schedule, get_departure_time_at_node, get_next_occ_of_node, \
     boarding_pass_at_node, is_empty_vehicle_schedule, count_total_assigned_requests
-from requests import get_od_from_request_group
+from requests import get_od_from_request_group, get_issue_time
 from static_operators import remove_request_group
 from network_generation import cv, generate_distance_matrix
 from copy import deepcopy
@@ -78,7 +78,6 @@ def generate_waiting_time_dict(vehicles_schedule, relative=False, direction='all
                         if o < d:
                             waiting_time_dict[vehicle][node].\
                                     append(calc_request_group_waiting_time(vehicles_schedule, request_group, relative))
-
     elif direction == 'terminal':
         for vehicle in vehicles_schedule:
             waiting_time_dict[vehicle] = {}
@@ -233,21 +232,32 @@ def select_most_costly_request_groups(network, vehicles_schedule, required_amoun
     return select_most_costly_request_groups(network, vehicles_schedule, required_amount, request_groups, current_time)
 
 
-def calc_total_vehicle_kilometers(network, vehicles_schedule):
+def calc_total_vehicle_kilometers(network, vehicles_schedule, list_per_vehicle=False):
     """
     Calculates the total distance driven by all vehicles.
     """
     distance_matrix = generate_distance_matrix(network)
 
-    total_vehicle_kilometres = 0
-    for vehicle in vehicles_schedule:
-        n = 0
-        stops = list(vehicles_schedule[vehicle])
-        while n < len(vehicles_schedule[vehicle])-1:
-            total_vehicle_kilometres += distance_matrix[(cv(stops[n]), cv(stops[n+1]))]
-            n += 1
+    if not list_per_vehicle:
+        total_vehicle_kilometres = 0
+        for vehicle in vehicles_schedule:
+            n = 0
+            stops = list(vehicles_schedule[vehicle])
+            while n < len(vehicles_schedule[vehicle])-1:
+                total_vehicle_kilometres += distance_matrix[(cv(stops[n]), cv(stops[n+1]))]
+                n += 1
 
-    return round(total_vehicle_kilometres, 2)
+        return round(total_vehicle_kilometres, 2)
+    else:
+        kilometers_dict = dict()
+        for vehicle in vehicles_schedule:
+            kilometers_dict[vehicle] = 0
+            n = 0
+            stops = list(vehicles_schedule[vehicle])
+            while n < len(vehicles_schedule[vehicle])-1:
+                kilometers_dict[vehicle] += distance_matrix[(cv(stops[n]), cv(stops[n+1]))]
+                n += 1
+        return kilometers_dict
 
 
 def calc_occupancy_rate(vehicles_schedule, capacity):

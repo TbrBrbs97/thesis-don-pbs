@@ -195,7 +195,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
 
         detour_cost = 0
         dep_time_offset = abs(request_group_rep_pt - get_departure_time_at_node(vehicles_schedule,
-                                                                                vehicle, insertion_constraint[1]))*(default_multiplier)
+                                                                                vehicle, insertion_constraint[1]))*default_multiplier
 
     # we don't have to check for capacity if it is the first node we're checking
     elif insertion_constraint[0] == 'insert o before':

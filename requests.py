@@ -313,7 +313,7 @@ def add_request_group_to_dict(request_group, request_dict=None):
     return request_dict
 
 
-def collect_request_until_time(dynamic_requests, time, lead_time=5):
+def collect_request_until_time(dynamic_requests, time, lead_time=1):
     """
     Function that lists the request with an issue time up until 'lead_time' ago.
     Caution, the returned list might be empty!

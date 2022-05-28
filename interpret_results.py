@@ -8,8 +8,8 @@ from vehicle import count_total_assigned_requests, count_assigned_request_groups
 
 # ADJUST NAMING BEFORE RUNNING !!
 
-directory = 'Results/SE_1'
-output_name = 'static_experiments_1_new'
+directory = 'Results/SE_2'
+output_name = 'static_experiments_2_2705'
 network = None
 
 # GENERATE EXPORT
@@ -80,5 +80,5 @@ headers = ['total pass. count', 'total waiting time', 'total in-veh. time',
            'avg. travel time to city', 'avg. travel time to terminal',
            'wt city travel', 'ivt city travel',
            'wt terminal travel', 'ivt terminal travel']
-output_path = 'Results/SE_1_' + output_name + '.csv'
+output_path = 'Results/SE_2_' + output_name + '.csv'
 pd.DataFrame.to_csv(df, path_or_buf=output_path, header=headers)

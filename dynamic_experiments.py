@@ -2,7 +2,7 @@
 
 import pickle
 
-from parameters import v_mean, lead_time, steep_descent_intensity, opt_time_lim, demand_scenario, demand_subscenario
+from settings import v_mean, lead_time, steep_descent_intensity, demand_scenario, demand_subscenario
 
 from network_generation import import_network, generate_cost_matrix, \
     get_network_boundaries, generate_distance_matrix
@@ -12,6 +12,7 @@ from requests import get_scenario_mean_demand, list_individual_requests, convert
 
 from solution_construct import generate_initial_solution, static_optimization, dynamic_optimization, generate_dynamic_solution
 
+opt_time_lim = 240
 degrees_of_dynamism = [0.25, 0.5, 0.75]
 random_seed = 1
 network_size = 'real'
