@@ -12,13 +12,13 @@ from solution_construct import generate_initial_solution, static_optimization
 
 
 # PARAMETERS
-network_sizes = ['small', 'medium', 'large', 'real']
+network_sizes = ['small', 'medium', 'large']
 network_variants = ['half', 'more']
-nb_of_samples = 2
+nb_of_samples = 4
 
 for size in network_sizes:
     for variant in network_variants:
-        sample = 1
+        sample = 2
         while sample < nb_of_samples:
             print('CURRENTLY RUNNING: ', size, variant, sample)
             network_size = size
@@ -36,7 +36,7 @@ for size in network_sizes:
                 opt_time_limit = 180
             else:
                 peak_duration = 120
-                opt_time_limit = 480
+                opt_time_limit = 240
 
             network = import_network(network_size, network_variant)
             cost_matrix = generate_cost_matrix(network, v_mean)
@@ -67,7 +67,7 @@ for size in network_sizes:
 
             # INITIAL SOLUTION
             initial_solution = generate_initial_solution(network, grouped_requests, nb_of_available_veh=nb_of_available_vehicles)
-            init_name = 'Results/SE_1/' + network_size + '_' + network_variant + '_' + str(sample) + '_init'
+            init_name = 'Results/SE_1/' + network_size + '_' + network_variant + '_' + str(sample) + '_init.pickle'
 
             file_to_write_1 = open(init_name, "wb")
             pickle.dump(initial_solution, file_to_write_1)
@@ -76,7 +76,7 @@ for size in network_sizes:
             optimized_solution, best_iteration = static_optimization(network, initial_solution,
                                                                      required_requests_per_it=steep_descent_intensity,
                                                                      time_limit=opt_time_limit)
-            opt_name = 'Results/SE_1/' + network_size + '_' + network_variant + '_' + str(sample) + '_opt'
+            opt_name = 'Results/SE_1/' + network_size + '_' + network_variant + '_' + str(sample) + '_opt.pickle'
             file_to_write_2 = open(opt_name, "wb")
             pickle.dump(optimized_solution, file_to_write_2)
 
