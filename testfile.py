@@ -13,6 +13,7 @@ from static_operators import find_best_position_for_request_group, select_random
 
 from dynamic_operators import filter_dynamic_insertion_possibilities
 
+
 from solution_construct import generate_initial_solution, static_optimization, \
     select_random_request_groups, init_fill_every_vehicle, \
     generate_dynamic_solution, iter_generate_initial_solution
@@ -26,10 +27,14 @@ from settings import network, lambdapeak, mupeak, demand_scenario, peak_duration
     cost_matrix, grouped_requests, nb_of_available_vehicles, opt_time_lim, all_static_requests, \
     all_dynamic_requests, lead_time, steep_descent_intensity, degree_of_dynamism, \
     network_dim, distance_matrix, average_interstop_distance, requests_per_od, mean_demand, \
-    count_groups, network_size, shuffle_threshold, depot, max_vehicle_ride_time
+    count_groups, network_size, shuffle_threshold, depot, max_vehicle_ride_time, oneway_distance, oneway_duration, delta
 
 total_requests = count_requests(grouped_requests)
 print(total_requests)
+print(len(all_dynamic_requests))
+print(len(all_static_requests))
+# print('oneway dist: ', oneway_distance)
+# print('oneway dur: ', oneway_duration)
 # print(count_requests_per_od(grouped_requests))
 # print(max_vehicle_ride_time)
 
@@ -41,15 +46,6 @@ print(total_requests)
 # print(cost_matrix)
 # print(network)
 # print(average_interstop_distance)
-
-## TEST LOAD REAL NETWORK
-
-# sheet_lambda = 0
-# sheet_mu = 1
-# path_name = 'Data/Demand rates/DemandInputReal.xlsx'
-# df_lambda = pd.read_excel(path_name, engine='openpyxl', sheet_name=sheet_lambda,header=0, index_col=(0,1,2), dtype=float)
-# df_mu = pd.read_excel(path_name, engine='openpyxl', sheet_name=sheet_mu, header=0, index_col=(0,1,2), dtype=float)
-
 
 ## INITIAL SOLUTION
 
@@ -74,29 +70,35 @@ print('avg. in-vehicle time: ', sum_total_travel_time(in_veh_time))
 print('city requests avg. TT: ', get_objective_function_val(initial_solution, relative=True, direction='city'))
 print('terminal requests avg. TT: ', get_objective_function_val(initial_solution, relative=True, direction='terminal'))
 
+print('in-advance TT:', get_objective_function_val(initial_solution, relative=False, direction='all', dynamic_filter=False))
+print('real-time TT:', get_objective_function_val(initial_solution, relative=False, direction='all', dynamic_filter=True))
+
 ## OPTIMIZED STATIC SOLUTION
 
-# optimized_solution, best_iteration = static_optimization(network, initial_solution,
-#                                                          required_requests_per_it=steep_descent_intensity,
-#                                                          time_limit=opt_time_lim, capacity=cap_per_veh, depot=depot)
-# for i in optimized_solution:
-#     print('veh ', i, ': ', optimized_solution[i])
-# print('overall objective function: ', get_objective_function_val(optimized_solution, relative=False),
-#       'at iteration: ', best_iteration)
-# print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
+optimized_solution, best_iteration = static_optimization(network, initial_solution,
+                                                         required_requests_per_it=steep_descent_intensity,
+                                                         time_limit=opt_time_lim, capacity=cap_per_veh, depot=depot)
+for i in optimized_solution:
+    print('veh ', i, ': ', optimized_solution[i])
+print('overall objective function: ', get_objective_function_val(optimized_solution, relative=False),
+      'at iteration: ', best_iteration)
+print('avg. travel time per passenger: ', get_objective_function_val(optimized_solution, relative=True))
 
 
-# ## DYNAMIC SOLUTION
-#
-# if degree_of_dynamism > 0.0:
-#     dynamic_initial_solution = generate_dynamic_solution(network, optimized_solution, all_dynamic_requests,
-#                                                          lead_time=lead_time, peak_hour_duration=peak_duration,
-#                                                          capacity=cap_per_veh, depot=depot)
-#     for i in dynamic_initial_solution:
-#         print('veh ', i, ': ', dynamic_initial_solution[i])
-#     print('objective func: ', get_objective_function_val(dynamic_initial_solution, relative=False))
-#     print('avg. travel time per passenger: ', get_objective_function_val(dynamic_initial_solution, relative=True))
+## DYNAMIC SOLUTION
 
+if degree_of_dynamism > 0.0:
+    dynamic_initial_solution = generate_dynamic_solution(network, optimized_solution, all_dynamic_requests,
+                                                         lead_time=lead_time, peak_hour_duration=peak_duration,
+                                                         capacity=cap_per_veh, depot=depot, delta=delta)
+    for i in dynamic_initial_solution:
+        print('veh ', i, ': ', dynamic_initial_solution[i])
+    print('objective func: ', get_objective_function_val(dynamic_initial_solution, relative=False))
+    print('avg. travel time per passenger: ', get_objective_function_val(dynamic_initial_solution, relative=True))
 
+    print('in-advance TT:', get_objective_function_val(dynamic_initial_solution, relative=False, direction='all', dynamic_filter=False))
+    print('real-time TT:', get_objective_function_val(dynamic_initial_solution, relative=False, direction='all', dynamic_filter=True))
 
+    print('in-advance travellers', count_total_assigned_requests(dynamic_initial_solution, dynamic=False))
+    print('real-time travellers', count_total_assigned_requests(dynamic_initial_solution, dynamic=True))
 

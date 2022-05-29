@@ -29,7 +29,7 @@ from Archive import old_solution_generation
 
 available_vehicles = 5
 vehicle_capacity = 20
-dod = 0 # static version = 0, dynamic version > 0
+dod = 0 # static version = 0, dynamic_filter version > 0
 WT_penalty = 0 
 TT_penalty = 0 
 

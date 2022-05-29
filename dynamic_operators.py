@@ -1,4 +1,4 @@
-from requests import collect_request_until_time, get_od_from_request_group
+from requests import get_od_from_request_group
 from vehicle import get_insertion_possibilities, get_departure_time_at_node, get_prev_node, get_next_node
 from network_generation import cv, generate_cost_matrix
 from static_operators import find_pos_cost_given_ins_cons

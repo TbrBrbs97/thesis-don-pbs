@@ -139,7 +139,7 @@ def generate_static_requests_2(mean_demand, peak_hour_duration, set_seed=None):
 
 def count_total_requests(requests_per_od):
     """
-    Total number of static & dynamic requests
+    Total number of static & dynamic_filter requests
     """
     return sum([len(requests_per_od[r]) for r in requests_per_od])
 
@@ -150,7 +150,7 @@ def list_individual_requests(requests_per_od, dod=0, lead_time=1, set_seed=None)
 
     for k in requests_per_od.keys():
         for v in requests_per_od[k]:
-            all_static_requests.append((k, v, 0))
+            all_static_requests.append((k, v, -1))
 
     amount_dynamic_requests = int(dod*len(all_static_requests))
 
@@ -159,7 +159,8 @@ def list_individual_requests(requests_per_od, dod=0, lead_time=1, set_seed=None)
 
     for count in range(amount_dynamic_requests):
 
-        random_request = all_static_requests.pop(randint(0, len(all_static_requests)))
+        index = randint(0, len(all_static_requests)-1)
+        random_request = all_static_requests.pop(index)
 
         editable_request = list(random_request)
         if random_request[1] < 1:
@@ -271,7 +272,8 @@ def get_issue_time(request):
     """
     Returns the issue time of an individual request.
     """
-    return request[0][2]
+    if len(request) == 1:
+        return request[0][2]
 
 
 def pop_request_group(request_dictionairy, set_seed=True):
@@ -313,12 +315,12 @@ def add_request_group_to_dict(request_group, request_dict=None):
     return request_dict
 
 
-def collect_request_until_time(dynamic_requests, time, lead_time=1):
+def collect_request_until_time(dynamic_requests, time):
     """
-    Function that lists the request with an issue time up until 'lead_time' ago.
+    Function that lists the request with an issue time up until 1 time step ago.
     Caution, the returned list might be empty!
     """
-    return [request for request in dynamic_requests if get_issue_time(request) in range(time-lead_time, time)]
+    return [request for request in dynamic_requests if get_issue_time(request) in range(time-1, time)]
 
 
 def is_portion_in_request_group(portion, request_group):

@@ -68,14 +68,38 @@ def calc_average_interstop_distance(network):
     return round(sum(distance_list)/len(distance_list), 2)
 
 
+def calc_oneway_distance(network):
+    distance_matrix = generate_distance_matrix(network)
+    terminal, middle, city = get_network_boundaries(network)
+    result = 0
+    i = terminal
+    while i < city-1:
+        result += distance_matrix[i, i+1]
+        i += 1
+
+    return result
+
+
+def calc_oneway_duration(network, v_mean):
+    cost_matrix = generate_cost_matrix(network, v_mean)
+    terminal, middle, city = get_network_boundaries(network)
+    result = 0
+    i = terminal
+    while i < city-1:
+        result += cost_matrix[i, i+1]
+        i += 1
+
+    return result
+
+
 def get_network_boundaries(network):
     all_stops = set(network.keys())
 
     terminal = min(all_stops)
-    terminal_end = max(all_stops)
-    city = round(terminal_end/2) + 1
+    city = max(all_stops)
+    middle = round(city/2) + 1
 
-    return terminal, city, terminal_end
+    return terminal, middle, city
 
 
 def cv(node):

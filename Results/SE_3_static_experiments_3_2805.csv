@@ -1,0 +1,3 @@
+;total pass. count;total waiting time;total in-veh. time;total travel time;travel time per pass.;total veh. kms;total city travelers;total terminal travelers;avg. travel time to city;avg. travel time to terminal;wt city travel;ivt city travel;wt terminal travel;ivt terminal travel
+real_scen1_subscen2_opt.pickle;719;9749.24;20093.97;29843.21;41.51;1347.2;667;52;40.48;54.63;12.79565217;27.68796102;23.35653846;31.27115385
+real_scen3_subscen2_opt.pickle;653;8351.44;17969.97;26321.41;40.31;1250.13;643;10;39.87;68.81;12.4118818;27.45337481;37.06;31.745

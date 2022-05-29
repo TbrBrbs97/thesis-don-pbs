@@ -1,0 +1,7 @@
+;total pass. count;total waiting time;total in-veh. time;total travel time;travel time per pass.;total veh. kms;total city travelers;total terminal travelers;avg. travel time to city;avg. travel time to terminal;wt city travel;ivt city travel;wt terminal travel;ivt terminal travel;in-advance pass. count;real-time pass. count;in-advance tt;real-time tt
+small_dod0.25_dyn_opt.pickle;166;243.17;1003.83;1247;7.51;149.49;159;7;7.42;9.49;1.416855346;6.007987421;2.555714286;6.937142857;125;41;934.36;312.64
+small_dod0.25_stat_opt.pickle;125;193.05;754.85;947.9;7.58;104.61;120;5;7.49;9.81;1.505083333;5.9855;2.488;7.318;125;0;947.9;0
+small_dod0.5_dyn_opt.pickle;166;245.06;1039.66;1284.72;7.74;154.43;159;7;7.67;9.37;1.423333333;6.244339623;2.678571429;6.687142857;83;83;633.66;651.06
+small_dod0.5_stat_opt.pickle;83;127.52;496.79;624.31;7.52;99.64;78;5;7.46;8.48;1.475384615;5.985;2.488;5.992;83;0;624.31;0
+small_dod0.75_dyn_opt.pickle;166;308.13;1062.92;1371.05;8.26;159.46;159;7;8.2;9.51;1.824465409;6.379874214;2.577142857;6.931428571;42;124;346.81;1024.24
+small_dod0.75_stat_opt.pickle;42;42.27;251.37;293.64;6.99;74.76;41;1;6.98;7.36;0.997804878;5.984634146;1.36;6;42;0;293.64;0
