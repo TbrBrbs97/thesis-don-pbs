@@ -164,7 +164,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     if capacity > 20: # additional correction factor when capacity increases.
         kappa = 0.5
     else:
-        kappa = 0.1
+        kappa = 0.5
 
     if type(insertion_constraint) == tuple:
         available_cap = room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1], capacity=capacity)

@@ -10,7 +10,7 @@ v_mean = 50  # km/h
 demand_scenario = 2
 demand_subscenario = 2
 time_of_day = 1  # 1 = peak, 0 = off-peak
-degree_of_dynamism = 0.25 # percent
+degree_of_dynamism = 0.75 # percent
 lead_time = 0 # min.
 random_seed = 1
 depot = 'terminal'
@@ -20,7 +20,7 @@ depot = 'terminal'
 network_size = 'real'
 network_variant = 'half' # this refers to the 1 in S1
 
-if network_size == 'small':
+if network_size == 'large':
     peak_duration = 20  # min.
     req_max_cluster_time = 2.5
 elif network_size == 'medium':
@@ -30,7 +30,7 @@ elif network_size == 'large':
     peak_duration = 60
     req_max_cluster_time = 7.5
 else:
-    peak_duration = 120
+    peak_duration = 180
     req_max_cluster_time = 15
 
 network = import_network(network_size, network_variant)
@@ -73,7 +73,7 @@ size_groups = size_request_groups_per_od(grouped_requests)
 # OPTIMIZATION
 
 M = 1000  # a very large number
-opt_time_lim = 30 # minutes
+opt_time_lim = 180 # minutes
 reinitiation_threshold = 5
 disturbance_threshold = 1 #iterations
 disturbance_ratio = 0.01
@@ -81,4 +81,4 @@ shuffle_threshold = 50
 shuffle_ratio = 0.25
 steep_descent_intensity = 15
 stop_addition_penalty = 0  # node addition penalty
-delta = int(1 / degree_of_dynamism)  # min.
+delta = int(1 / max(degree_of_dynamism, 0.001))  # min.

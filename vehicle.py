@@ -207,6 +207,59 @@ def count_assigned_request_groups(vehicle_schedule):
                 vehicle_schedule[vehicle] if boarding_pass_at_node(vehicle_schedule, vehicle, node)])
 
 
+def count_assigned_request_groups_2(vehicle_schedule):
+    result = 0
+
+    for vehicle in vehicle_schedule:
+        for node in vehicle_schedule[vehicle]:
+            if boarding_pass_at_node(vehicle_schedule, vehicle, node):
+                subset = vehicle_schedule[vehicle][node][1:]
+                result += len(subset)
+    return result
+
+
+def list_assigned_travellers(vehicle_schedule, direction='all', dynamic=False):
+    result = []
+
+    if direction == 'all':
+        for vehicle in vehicle_schedule:
+            for node in vehicle_schedule[vehicle]:
+                if boarding_pass_at_node(vehicle_schedule, vehicle, node):
+                    subset = vehicle_schedule[vehicle][node][1:]
+                    for group in subset:
+                        if not dynamic:
+                            result.append(group)
+                        elif dynamic and len(group) == 1 and get_issue_time(group) >= 0:
+                            result.append(group)
+    elif direction == 'city':
+        for vehicle in vehicle_schedule:
+            for node in vehicle_schedule[vehicle]:
+                if boarding_pass_at_node(vehicle_schedule, vehicle, node):
+                    subset = vehicle_schedule[vehicle][node][1:]
+                    for group in subset:
+                        o, d = get_od_from_request_group(group)
+                        if o < d and not dynamic:
+                            result.append(group)
+                        elif o < d and dynamic:
+                            if len(group) == 1 and get_issue_time(group) >= 0:
+                                result.append(group)
+    elif direction == 'terminal':
+        for vehicle in vehicle_schedule:
+            for node in vehicle_schedule[vehicle]:
+                if boarding_pass_at_node(vehicle_schedule, vehicle, node):
+                    subset = vehicle_schedule[vehicle][node][1:]
+                    for group in subset:
+                        o, d = get_od_from_request_group(group)
+                        if o > d and not dynamic:
+                            result.append(group)
+                        elif o > d and dynamic:
+                            if len(group) == 1 and get_issue_time(group) >= 0:
+                                result.append(group)
+
+    return result
+
+
+
 def count_total_assigned_requests(vehicle_schedule, direction='all', dynamic=False):
     result = 0
 

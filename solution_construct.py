@@ -18,7 +18,7 @@ from find_position import find_first_best_improvement_for_request_group_2, \
 from dynamic_operators import find_best_position_for_dynamic_request
 
 from vehicle import locate_request_group_in_schedule, count_assigned_request_groups, \
-    get_copy_vehicles_schedule, count_total_assigned_requests
+    get_copy_vehicles_schedule, count_total_assigned_requests, count_assigned_request_groups_2
 
 from solution_evaluation import select_most_costly_request_groups, \
     get_objective_function_val, calc_request_group_waiting_time, \
@@ -71,7 +71,7 @@ def generate_initial_solution(network, requests_dict, vehicles_schedule=None,
     # if o > d:
     #     print('T: ', request_group, candidate_position)
     # else:
-    # print(request_group, candidate_position)
+    # print(request_group, candidate_position, score)
     insert_request_group(network, vehicles_schedule, requests_dict,
                          request_group, candidate_vehicle, candidate_node, capacity=capacity, depot=depot)
     return generate_initial_solution(network, requests_dict, vehicles_schedule, nb_of_available_veh, capacity, depot)
@@ -123,32 +123,35 @@ def static_optimization(network, vehicles_schedule, required_requests_per_it=1, 
     best_iteration = 0
     best_schedule_so_far = None
 
+    print('original tot. assigned req. groups: ', count_assigned_request_groups_2(vehicles_schedule))
+
     while elapsed_time < time_limit:
 
         start_time = time.time()
         temp_schedule = deepcopy(vehicles_schedule)
 
         most_costly_requests = select_most_costly_request_groups(network, temp_schedule, required_requests_per_it,
-                                                                 relative=True)
+                                                                 relative=False)
 
-        print('current iteration: ', it, 'obj. func: ', get_objective_function_val(temp_schedule))
+        print('current iteration: ', it, 'obj. func: ', get_objective_function_val(network, temp_schedule))
 
         j = 0
         # improvement_found = True
         while j < len(most_costly_requests): # improvement_found and
             request_group = most_costly_requests[j]
             temp_schedule = steepest_descent(network, vehicles_schedule, request_group, capacity=capacity, depot=depot)
-            difference = get_objective_function_val(temp_schedule) - get_objective_function_val(vehicles_schedule)
+            difference = get_objective_function_val(network, temp_schedule) - get_objective_function_val(network, vehicles_schedule)
             if difference < 0.0:
-                print('new improvement found: ', get_objective_function_val(temp_schedule))
+                print('new improvement found: ', get_objective_function_val(network, temp_schedule))
                 vehicles_schedule = deepcopy(temp_schedule)
+                print('tot. assigned req. groups after SD: ', count_assigned_request_groups_2(vehicles_schedule))
             j += 1
 
         assert count_total_assigned_requests(vehicles_schedule) == count_total_assigned_requests(temp_schedule)
 
-        if not best_schedule_so_far or get_objective_function_val(
-                vehicles_schedule) < get_objective_function_val(best_schedule_so_far):
-            print('NEW BEST SOLUTION', get_objective_function_val(vehicles_schedule))
+        if not best_schedule_so_far or get_objective_function_val(network,
+                vehicles_schedule) < get_objective_function_val(network, best_schedule_so_far):
+            print('NEW BEST SOLUTION', get_objective_function_val(network, vehicles_schedule))
             best_schedule_so_far = deepcopy(vehicles_schedule)
             best_iteration = it
 
@@ -157,25 +160,26 @@ def static_optimization(network, vehicles_schedule, required_requests_per_it=1, 
         #         get_objective_function_val(best_schedule_so_far) and it % disturbance_threshold == 0 and it != 0:
         if it % disturbance_threshold == 0:
             disturbance_rate = disturbance_ratio
-            print('no further improvement found, obj. func: ', get_objective_function_val(vehicles_schedule),
+            print('no further improvement found, obj. func: ', get_objective_function_val(network, vehicles_schedule),
                   'disturb with rate: ', disturbance_rate)
             vehicles_schedule = disturb_2(network, vehicles_schedule, disturbance=disturbance_rate, capacity=capacity,
                                         depot=depot)
+            print('tot. assigned req. groups after disturb: ', count_assigned_request_groups_2(vehicles_schedule))
             dis += 1
 
         if it % reinitiation_threshold == 0 and it != 0 and it % shuffle_threshold != 0:
-            print('exploring new neighborhood using the incumbent:', get_objective_function_val(best_schedule_so_far))
+            print('exploring new neighborhood using the incumbent:', get_objective_function_val(network,
+                                                                                                best_schedule_so_far))
             vehicles_schedule = best_schedule_so_far
             dis = 0
 
-        # if get_objective_function_val(vehicles_schedule) >= \
-        #         get_objective_function_val(best_schedule_so_far) and it % shuffle_threshold == 0 and it != 0:
-        if get_objective_function_val(vehicles_schedule) >= \
-                get_objective_function_val(best_schedule_so_far) and it == shuffle_threshold and it != 0:
+        if get_objective_function_val(network, vehicles_schedule) >= \
+                get_objective_function_val(network, best_schedule_so_far) and it == shuffle_threshold and it != 0:
             shuffle_rate = shuffle_ratio
             print('performing large shuffle with rate: ', shuffle_rate)
             vehicles_schedule = shuffle(network, vehicles_schedule, shuffle_rate=shuffle_rate, capacity=capacity,
                                         depot=depot)
+            print('tot. assigned req. groups after shuffle: ', count_assigned_request_groups_2(vehicles_schedule))
             shf += 1
 
 
@@ -200,12 +204,16 @@ def steepest_descent(network, vehicles_schedule, request_group, temp_request_dic
     remove_request_group(network, temp_schedule, request_group)
     temp_request_dict = add_request_group_to_dict(request_group, temp_request_dict)
 
+    count = 0
     while count_requests(temp_request_dict) != 0:
+        # if count == 1:
+            # print('SPLITTING UP REQUEST GROUP')
         request_group = pop_request_group(temp_request_dict, set_seed=False)
         if not current_time:
             candidate_vehicle, candidate_node, score = find_best_position_for_request_group(network, temp_schedule,
                                                                                             request_group, capacity=capacity,
                                                                                             depot=depot)
+            # print(request_group, candidate_node, score)
         else:
             candidate_vehicle, candidate_node, score = find_best_position_for_dynamic_request(network, temp_schedule,
                                                                                               request_group,
@@ -214,6 +222,7 @@ def steepest_descent(network, vehicles_schedule, request_group, temp_request_dic
                                                                                               capacity=capacity)
         insert_request_group(network, temp_schedule, temp_request_dict, request_group, candidate_vehicle, candidate_node,
                              capacity=capacity, depot=depot)
+        count += 1
 
     return temp_schedule
 
@@ -259,7 +268,7 @@ def disturb_2(network, vehicles_schedule, temp_request_dict=None,
     nb_request_groups_to_select = max(int(round(disturbance * count_assigned_request_groups(vehicles_schedule))), 1)
     # random_request_groups = select_most_costly_request_groups(network, vehicles_schedule, request_groups_to_select)
     random_request_groups = select_random_request_groups(vehicles_schedule, nb_request_groups_to_select)
-    print(random_request_groups)
+    # print(random_request_groups)
 
     for request_group in random_request_groups:
         original_score = round(calc_request_group_opportunity_cost(network, vehicles_schedule, request_group), 2)
@@ -268,6 +277,7 @@ def disturb_2(network, vehicles_schedule, temp_request_dict=None,
 
         positions = []
         assigned_so_far = []
+        count = 0
         while len(assigned_so_far) != len(request_group):
             portion_to_add = [r for r in request_group if r not in assigned_so_far]
             candidate_vehicle, candidate_node, \
@@ -276,13 +286,16 @@ def disturb_2(network, vehicles_schedule, temp_request_dict=None,
                                                                                     capacity=capacity, depot=depot)
             insert_request_group(network, temp_schedule, temp_request_dict, portion_to_add,
                                  candidate_vehicle, candidate_node, ignore_request_dict=True, capacity=capacity, depot=depot)
+
             positions.append((added_portion, candidate_vehicle, candidate_node, score))
             assigned_so_far += added_portion
             if candidate_node != 'current pos':
                 original_score -= calc_request_group_opportunity_cost(network, temp_schedule, added_portion)
+                count += 1
 
         if all([candidate[2] != 'current pos' for candidate in positions]):
             vehicles_schedule = temp_schedule
+            # print('succesful addition with splits: ', count)
 
     return vehicles_schedule
 
@@ -390,7 +403,7 @@ def dynamic_optimization(network, vehicles_schedule, current_time, required_requ
         most_costly_requests = select_most_costly_request_groups(network, vehicles_schedule, required_requests_per_it,
                                                                  current_time=current_time)
 
-        print('current iteration: ', it, 'obj. func: ', get_objective_function_val(vehicles_schedule))
+        print('current iteration: ', it, 'obj. func: ', get_objective_function_val(network, vehicles_schedule))
         temp_schedule = deepcopy(vehicles_schedule)
 
         j = 0
@@ -398,16 +411,18 @@ def dynamic_optimization(network, vehicles_schedule, current_time, required_requ
             request_group = most_costly_requests[j]
             temp_schedule = steepest_descent(network, vehicles_schedule, request_group,
                                              capacity=capacity, depot=depot, current_time=current_time)
-            difference = get_objective_function_val(temp_schedule) - get_objective_function_val(vehicles_schedule)
+            difference = get_objective_function_val(network, temp_schedule) - \
+                         get_objective_function_val(network, vehicles_schedule)
             if difference < 0.0:
-                print('new improvement found: ', get_objective_function_val(temp_schedule))
+                print('new improvement found: ', get_objective_function_val(network, temp_schedule))
                 vehicles_schedule = deepcopy(temp_schedule)
             j += 1
 
         assert count_total_assigned_requests(vehicles_schedule) == count_total_assigned_requests(temp_schedule)
 
-        if not best_schedule_so_far or get_objective_function_val(best_schedule_so_far) > get_objective_function_val(
-                vehicles_schedule):
+        if not best_schedule_so_far or get_objective_function_val(network,
+                                                                  best_schedule_so_far) > get_objective_function_val(
+                                                                    network, vehicles_schedule):
             best_schedule_so_far = vehicles_schedule
 
         # print('returning best found vehicles_schedule: ', get_objective_function_val(best_schedule_so_far))
@@ -417,5 +432,5 @@ def dynamic_optimization(network, vehicles_schedule, current_time, required_requ
         elapsed_time += end_time - start_time
         it += 1
 
-    print('returning best found vehicles_schedule: ', get_objective_function_val(best_schedule_so_far))
+    print('returning best found vehicles_schedule: ', get_objective_function_val(network, best_schedule_so_far))
     return best_schedule_so_far

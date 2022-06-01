@@ -1,11 +1,12 @@
 import pickle
 import os
 from pandas import read_pickle
-from solution_evaluation import calc_total_vehicle_kilometers, sum_total_travel_time, generate_total_travel_time_dict
-from network_generation import import_network
-from vehicle import get_nodes_in_range
+from solution_evaluation import calc_total_vehicle_kilometers, sum_total_travel_time, generate_total_travel_time_dict, \
+    get_objective_function_val, generate_waiting_time_dict, generate_in_vehicle_time_dict, calc_total_vehicle_duration
+from network_generation import import_network, generate_cost_matrix
+from vehicle import get_nodes_in_range, count_total_assigned_requests, count_assigned_request_groups_2
 
-directory = 'Results/SE_3'
+directory = 'Results/DE_1'
 files = []
 networks = []
 
@@ -34,16 +35,35 @@ for filename in os.listdir(directory):
 
     networks.append(network)
 
-file = files[1]
-net = networks[1]
+print(files)
 
-vehicles_schedule = read_pickle(file)
-for i in vehicles_schedule:
-    print('veh ', i, ': ', vehicles_schedule[i], len(get_nodes_in_range(vehicles_schedule, i)))
+instances = [0, 1]
 
-print(sum([len(get_nodes_in_range(vehicles_schedule, i)) for i in vehicles_schedule])/len(vehicles_schedule))
-print(calc_total_vehicle_kilometers(net, vehicles_schedule, list_per_vehicle=True))
+for inst in instances:
+    sched = files[inst]
+    net = networks[inst]
 
-dict_total_tt = generate_total_travel_time_dict(vehicles_schedule)
-summed_per_veh = sum_total_travel_time(dict_total_tt, 'vehicle')
-print(summed_per_veh)
+    print(generate_cost_matrix(net, v_mean=50))
+
+    print('Returning results for: ', sched)
+    vehicles_schedule = read_pickle(sched)
+    for i in vehicles_schedule:
+        print('veh ', i, ': ', vehicles_schedule[i], len(get_nodes_in_range(vehicles_schedule, i)))
+
+    print('tot. veh km', calc_total_vehicle_kilometers(net, vehicles_schedule))
+    print('obj. func: ', get_objective_function_val(net, vehicles_schedule))
+    print('tot. ind. requests', count_total_assigned_requests(vehicles_schedule))
+    print('tot. request groups', count_assigned_request_groups_2(vehicles_schedule))
+
+    print('objective func: ', get_objective_function_val(net, vehicles_schedule, relative=False))
+    print('assigned ind. requests', count_total_assigned_requests(vehicles_schedule))
+    print('assigned request groups', count_assigned_request_groups_2(vehicles_schedule))
+
+    waiting_time = generate_waiting_time_dict(vehicles_schedule)
+    in_veh_time = generate_in_vehicle_time_dict(net, vehicles_schedule)
+
+    print('avg. waiting time: ', sum_total_travel_time(waiting_time))
+    print('avg. in-vehicle time: ', sum_total_travel_time(in_veh_time))
+
+    print('tot. veh duration: ', calc_total_vehicle_duration(net, vehicles_schedule))
+    print('waiting time at stops: ', sum_total_travel_time(in_veh_time) - calc_total_vehicle_duration(net, vehicles_schedule))

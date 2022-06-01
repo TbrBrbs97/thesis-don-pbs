@@ -1,15 +1,17 @@
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
 from network_generation import generate_cost_matrix, import_network
 from solution_evaluation import generate_waiting_time_dict, generate_in_vehicle_time_dict, \
     generate_total_travel_time_dict, generate_distance_matrix, get_objective_function_val, \
-    sum_total_travel_time, calc_total_vehicle_kilometers
-from vehicle import count_total_assigned_requests
+    sum_total_travel_time, calc_total_vehicle_kilometers, calc_request_group_invehicle_time, \
+    calc_request_group_waiting_time
+from vehicle import count_total_assigned_requests, list_assigned_travellers
 
 # ADJUST NAMING BEFORE RUNNING !!
 
 directory = 'Results/DE_1'
-output_name = 'dynamic_experiments_2905'
+output_name = 'dynamic_experiments_1_3005'
 network = None
 
 # GENERATE EXPORT
@@ -40,26 +42,26 @@ for filename in os.listdir(directory):
         network = import_network('real', 'half')
 
     waiting_time = generate_waiting_time_dict(vehicles_schedule)
-    in_veh_time = generate_in_vehicle_time_dict(vehicles_schedule)
+    in_veh_time = generate_in_vehicle_time_dict(network, vehicles_schedule)
 
     total_passenger_count = count_total_assigned_requests(vehicles_schedule, dynamic=False)
-    total_travel_time = get_objective_function_val(vehicles_schedule, relative=False)
+    total_travel_time = get_objective_function_val(network, vehicles_schedule, relative=False)
     summed_waiting_time = sum_total_travel_time(waiting_time)
     summed_in_veh_time = sum_total_travel_time(in_veh_time)
-    passenger_travel_time = get_objective_function_val(vehicles_schedule, relative=True)
+    passenger_travel_time = get_objective_function_val(network, vehicles_schedule, relative=True)
     total_vehicle_kms = calc_total_vehicle_kilometers(network, vehicles_schedule)
 
-    city_travellers_tt = get_objective_function_val(vehicles_schedule, relative=True, direction='city')
-    terminal_travellers_tt = get_objective_function_val(vehicles_schedule, relative=True, direction='terminal')
+    city_travellers_tt = get_objective_function_val(network, vehicles_schedule, relative=True, direction='city')
+    terminal_travellers_tt = get_objective_function_val(network, vehicles_schedule, relative=True, direction='terminal')
 
     count_city_travellers = count_total_assigned_requests(vehicles_schedule, direction='city')
     count_terminal_travellers = count_total_assigned_requests(vehicles_schedule, direction='terminal')
 
     city_wt_dict = generate_waiting_time_dict(vehicles_schedule, direction='city')
-    city_ivt_dict = generate_in_vehicle_time_dict(vehicles_schedule, direction='city')
+    city_ivt_dict = generate_in_vehicle_time_dict(network, vehicles_schedule, direction='city')
 
     terminal_wt_dict = generate_waiting_time_dict(vehicles_schedule, direction='terminal')
-    terminal_ivt_dict = generate_in_vehicle_time_dict(vehicles_schedule, direction='terminal')
+    terminal_ivt_dict = generate_in_vehicle_time_dict(network, vehicles_schedule, direction='terminal')
 
     city_travellers_wt = sum_total_travel_time(city_wt_dict) / count_city_travellers
     city_travellers_ivt = sum_total_travel_time(city_ivt_dict) / count_city_travellers
@@ -70,9 +72,22 @@ for filename in os.listdir(directory):
                              count_total_assigned_requests(vehicles_schedule, dynamic=True)
     real_time_travellers = count_total_assigned_requests(vehicles_schedule, dynamic= True)
 
-    in_advance_travel_time = get_objective_function_val(vehicles_schedule, relative=False, direction='all', dynamic_filter=False) - \
-                             get_objective_function_val(vehicles_schedule, relative=False, direction='all', dynamic_filter=True)
-    real_time_travel_time = get_objective_function_val(vehicles_schedule, relative=False, direction='all', dynamic_filter=True)
+    list_real_time_travellers = list_assigned_travellers(vehicles_schedule, dynamic=True)
+
+    # PLOT
+    x = [abs(tup[0][1]-tup[0][2]) for tup in list_real_time_travellers]
+    y = [calc_request_group_invehicle_time(network, vehicles_schedule, group) +
+         calc_request_group_waiting_time(vehicles_schedule, group) for group in list_real_time_travellers]
+    z = [tup[0][1] for tup in list_real_time_travellers]
+    plt.scatter(x, y, c=z)
+    plt.xlabel("Difference between pick up time - issue time (min.)")
+    plt.ylabel("Travel time (min.)")
+    plt.colorbar()
+    plt.show()
+
+    in_advance_travel_time = get_objective_function_val(network, vehicles_schedule, relative=False, direction='all', dynamic_filter=False) - \
+                             get_objective_function_val(network, vehicles_schedule, relative=False, direction='all', dynamic_filter=True)
+    real_time_travel_time = get_objective_function_val(network, vehicles_schedule, relative=False, direction='all', dynamic_filter=True)
 
     export[filename] = [total_passenger_count, summed_waiting_time, summed_in_veh_time,
                         total_travel_time, passenger_travel_time, total_vehicle_kms,
