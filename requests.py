@@ -330,3 +330,10 @@ def is_portion_in_request_group(portion, request_group):
     Returns true if the given request_group also appears in the request group.
     """
     return any([p == r for p in portion for r in request_group])
+
+
+def get_index_request_group_in_dict(request_group, request_dict):
+    o, d = get_od_from_request_group(request_group)
+    for group in request_dict[(o, d)]:
+        if is_portion_in_request_group(request_group, group):
+            return request_dict[o, d].index(group)

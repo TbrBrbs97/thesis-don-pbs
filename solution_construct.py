@@ -65,9 +65,10 @@ def generate_initial_solution(network, requests_dict, vehicles_schedule=None,
         request_group = pop_request_group(requests_dict)
 
     candidate_position = find_best_position_for_request_group(network, vehicles_schedule,
-                                                              request_group, capacity=capacity, depot=depot)
+                                                              request_group, capacity=capacity, depot=depot,
+                                                              return_feasible_portion=False)
     candidate_vehicle, candidate_node, score = candidate_position
-    o, d = get_od_from_request_group(request_group)
+    # o, d = get_od_from_request_group(request_group)
     # if o > d:
     #     print('T: ', request_group, candidate_position)
     # else:

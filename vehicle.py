@@ -27,6 +27,12 @@ def get_insertion_possibilities(vehicles_schedule, vehicle, request_group):
                                  get_next_occ_of_node(vehicles_schedule, vehicle, node, d) and
                                  cv(get_next_occ_of_node(vehicles_schedule, vehicle, node, d)) == d and node not in
                                  [tup[1] for tup in positions_on_existing_arc]]
+        # positions_before_dest = [('insert o after', node) for node in vehicles_schedule[vehicle] if
+        #                          get_next_occ_of_node(vehicles_schedule, vehicle, node, d) and
+        #                          cv(get_next_occ_of_node(vehicles_schedule, vehicle, node, d)) == d and
+        #                          cv(get_next_node(vehicles_schedule, vehicle, node)) != o and
+        #                          get_prev_node(vehicles_schedule, vehicle, node) and
+        #                          cv(get_prev_node(vehicles_schedule, vehicle, node)) != o]
 
         default_positions = []
         if len(positions_at_origin_as_last_stop) == 0:
@@ -257,7 +263,6 @@ def list_assigned_travellers(vehicle_schedule, direction='all', dynamic=False):
                                 result.append(group)
 
     return result
-
 
 
 def count_total_assigned_requests(vehicle_schedule, direction='all', dynamic=False):

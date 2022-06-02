@@ -33,22 +33,22 @@ from settings import network, lambdapeak, mupeak, demand_scenario, peak_duration
     count_groups, network_size, shuffle_threshold, depot, max_vehicle_ride_time, oneway_distance, oneway_duration, delta
 
 total_requests = count_requests(grouped_requests)
-# print(total_requests)
-print(all_dynamic_requests)
+print(total_requests)
+# print(all_dynamic_requests)
 # print(len(all_static_requests))
 
 # print(all_static_requests)
-hist_data = [tup[0][2] for tup in all_dynamic_requests]
-n, bins, patches = plt.hist(x=hist_data, bins='auto', color='#0504aa',
-                            alpha=0.7, rwidth=0.85, density=False)
-plt.grid(axis='y', alpha=0.75)
-plt.xlabel('Value')
-plt.ylabel('Frequency')
-plt.title('Distribution of pick up times: Pi = 120 min.')
-maxfreq = n.max()
-# Set a clean upper y-axis limit.
-plt.ylim(ymax=maxfreq + 10)
-plt.show()
+# hist_data = [tup[0][2] for tup in all_dynamic_requests]
+# n, bins, patches = plt.hist(x=hist_data, bins='auto', color='#0504aa',
+#                             alpha=0.7, rwidth=0.85, density=False)
+# plt.grid(axis='y', alpha=0.75)
+# plt.xlabel('Value')
+# plt.ylabel('Frequency')
+# plt.title('Distribution of pick up times: Pi = 120 min.')
+# maxfreq = n.max()
+# # Set a clean upper y-axis limit.
+# plt.ylim(ymax=maxfreq + 10)
+# plt.show()
 
 # print('oneway dist: ', oneway_distance)
 # print('oneway dur: ', oneway_duration)
@@ -66,17 +66,17 @@ plt.show()
 
 ## INITIAL SOLUTION
 
-# initial_solution = generate_initial_solution(network, grouped_requests,
-#                                              nb_of_available_veh=nb_of_available_vehicles,
-#                                              capacity=cap_per_veh, depot=depot)
-# print(count_total_assigned_requests(initial_solution))
-#
-# for i in initial_solution:
-#     print('veh ', i, ': ', initial_solution[i])
-#
-# print('objective func: ', get_objective_function_val(network, initial_solution, relative=False))
-# print('assigned ind. requests', count_total_assigned_requests(initial_solution))
-# print('assigned request groups', count_assigned_request_groups(initial_solution))
+initial_solution = generate_initial_solution(network, grouped_requests,
+                                             nb_of_available_veh=nb_of_available_vehicles,
+                                             capacity=cap_per_veh, depot=depot)
+print(count_total_assigned_requests(initial_solution))
+
+for i in initial_solution:
+    print('veh ', i, ': ', initial_solution[i])
+
+print('objective func: ', get_objective_function_val(network, initial_solution, relative=False))
+print('assigned ind. requests', count_total_assigned_requests(initial_solution))
+print('assigned request groups', count_assigned_request_groups(initial_solution))
 #
 # waiting_time = generate_waiting_time_dict(initial_solution)
 # in_veh_time = generate_in_vehicle_time_dict(network, initial_solution)

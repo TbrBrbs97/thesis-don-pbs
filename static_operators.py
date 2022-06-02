@@ -9,7 +9,7 @@ from vehicle import locate_request_group_in_schedule, get_departure_time_at_node
     get_last_arrival, get_all_occurrences_of_node, boarding_pass_at_node, count_boarding_pax_until_dest, \
     count_inveh_pax_over_node, get_occ
 
-from requests import get_od_from_request_group, get_rep_pick_up_time
+from requests import get_od_from_request_group, get_rep_pick_up_time, get_index_request_group_in_dict
 
 from settings import max_vehicle_ride_time, M, stop_addition_penalty, v_mean
 
@@ -44,7 +44,8 @@ def remove_request_group(network, vehicles_schedule, request_group):
 
 
 def find_best_position_for_request_group(network, vehicles_schedule, request_group, current_vehicle=1,
-                                         best_pos_so_far=None, excluded_vehicles=None, capacity=20, depot='terminal'):
+                                         best_pos_so_far=None, excluded_vehicles=None, capacity=20, depot='terminal',
+                                         return_feasible_portion=False):
     """
     Function that returns the best possible position in the schedule for insertion,
     taking into account capacity constraints. In a recursive way, it tries to compare for every vehicle the respecitvely
@@ -61,19 +62,25 @@ def find_best_position_for_request_group(network, vehicles_schedule, request_gro
     if current_vehicle in excluded_vehicles:
         current_vehicle += 1
         return find_best_position_for_request_group(network, vehicles_schedule, request_group,
-                                                    current_vehicle, best_pos_so_far, excluded_vehicles)
+                                                    current_vehicle, best_pos_so_far,
+                                                    excluded_vehicles, return_feasible_portion)
 
     insertion_constraints = get_insertion_possibilities(vehicles_schedule, current_vehicle, request_group)
 
     for ins_con in insertion_constraints:
-        matching_score = find_pos_cost_given_ins_cons(vehicles_schedule, current_vehicle, request_group, ins_con,
-                                                      network, capacity, depot)
+        matching_score = find_pos_cost_given_ins_cons(vehicles_schedule, current_vehicle,
+                                                                       request_group, ins_con, network, capacity, depot,
+                                                                        return_feasible_portion)
+        # if return_feasible_portion:
+        #     if not best_pos_so_far or min(best_pos_so_far[2], matching_score) == matching_score:
+        #         best_pos_so_far = current_vehicle, ins_con, round(matching_score, 2)
         if not best_pos_so_far or min(best_pos_so_far[2], matching_score) == matching_score:
             best_pos_so_far = current_vehicle, ins_con, round(matching_score, 2)
 
     current_vehicle += 1
     return find_best_position_for_request_group(network, vehicles_schedule, request_group, current_vehicle,
-                                                best_pos_so_far, excluded_vehicles, capacity, depot)
+                                                best_pos_so_far, excluded_vehicles, capacity, depot,
+                                                return_feasible_portion)
 
 
 def iter_find_best_position_for_request_group(network, vehicles_schedule, request_group, capacity, depot):
@@ -119,7 +126,7 @@ def find_random_position_for_request_group(vehicles_schedule, request_group, cur
 
 
 def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, insertion_constraint,
-                                 network, capacity, depot):
+                                 network, capacity, depot, return_feasible_portion=False):
     """
     Returns how a vehicles scores for accommodating a request group, GIVEN AN INSERTION CONSTRAINT: this is based
     on the difference between the departure time at a stop and the max pickup time of a request group.
@@ -165,6 +172,8 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         kappa = 0.5
     else:
         kappa = 0.5
+
+    feasible_portion = request_group
 
     if type(insertion_constraint) == tuple:
         available_cap = room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1], capacity=capacity)
@@ -253,7 +262,11 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         dep_time_offset += M
 
     position_cost = detour_cost + dep_time_offset
-    return position_cost
+
+    if return_feasible_portion:
+        return feasible_portion, position_cost
+    else:
+        return position_cost
 
 
 def insert_request_group(network, vehicles_schedule, requests_dict, request_group, vehicle, position,
@@ -403,14 +416,20 @@ def occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_gr
     # remove it from request dictionairy
     if ignore_request_dict is False:
         o, d = get_od_from_request_group(request_group)
-        idx_rq = requests_dict[(o, d)].index(request_group)
+        # idx_rq = requests_dict[(o, d)].index(request_group)
+        idx_rq = get_index_request_group_in_dict(request_group, requests_dict)
+
         if len(request_group[min(available_seats, len(request_group)):]) > 0:
             requests_dict[(o, d)][idx_rq] = request_group[min(available_seats, len(request_group)):]
         else:
             requests_dict[(o, d)].remove(requests_dict[(o, d)][idx_rq])
+        #
+        # requests_dict[(o, d)][idx_rq] = request_group[min(available_seats, len(request_group)):]
+        # if [] in requests_dict[(o, d)]:
+        #     requests_dict[(o, d)].remove([])
 
-    if return_added_portion:
-        return portion_to_add
+        if return_added_portion:
+            return portion_to_add
 
 
 def update_dep_time_at_node(vehicles_schedule, vehicle, node, network):

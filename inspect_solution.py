@@ -4,9 +4,10 @@ from pandas import read_pickle
 from solution_evaluation import calc_total_vehicle_kilometers, sum_total_travel_time, generate_total_travel_time_dict, \
     get_objective_function_val, generate_waiting_time_dict, generate_in_vehicle_time_dict, calc_total_vehicle_duration
 from network_generation import import_network, generate_cost_matrix
-from vehicle import get_nodes_in_range, count_total_assigned_requests, count_assigned_request_groups_2
+from vehicle import get_nodes_in_range, count_total_assigned_requests, count_assigned_request_groups_2, \
+    count_boarding_pax_until_dest, count_inveh_pax_over_node
 
-directory = 'Results/DE_1'
+directory = 'Results/SE_1'
 files = []
 networks = []
 
@@ -37,7 +38,7 @@ for filename in os.listdir(directory):
 
 print(files)
 
-instances = [0, 1]
+instances = [4, 5]
 
 for inst in instances:
     sched = files[inst]
@@ -49,6 +50,7 @@ for inst in instances:
     vehicles_schedule = read_pickle(sched)
     for i in vehicles_schedule:
         print('veh ', i, ': ', vehicles_schedule[i], len(get_nodes_in_range(vehicles_schedule, i)))
+
 
     print('tot. veh km', calc_total_vehicle_kilometers(net, vehicles_schedule))
     print('obj. func: ', get_objective_function_val(net, vehicles_schedule))
