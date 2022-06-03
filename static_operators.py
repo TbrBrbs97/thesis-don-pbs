@@ -64,7 +64,6 @@ def find_best_position_for_request_group(network, vehicles_schedule, request_gro
         return find_best_position_for_request_group(network, vehicles_schedule, request_group,
                                                     current_vehicle, best_pos_so_far,
                                                     excluded_vehicles, return_feasible_portion)
-
     insertion_constraints = get_insertion_possibilities(vehicles_schedule, current_vehicle, request_group)
 
     for ins_con in insertion_constraints:
@@ -169,14 +168,16 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     # default_multiplier = 1
 
     if capacity > 20: # additional correction factor when capacity increases.
-        kappa = 0.5
+        kappa = 1
     else:
-        kappa = 0.5
+        kappa = 1
 
     feasible_portion = request_group
 
     if type(insertion_constraint) == tuple:
-        available_cap = room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1], capacity=capacity)
+        end_node = get_next_occ_of_node(vehicles_schedule, vehicle, insertion_constraint[1], d)
+        available_cap = room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1],
+                                                   end_node=end_node, capacity=capacity)
         feasible_portion = request_group[:min(len(request_group), available_cap)]
         default_multiplier = len(feasible_portion)
         # print(request_group_rep_pt, get_rep_pick_up_time(feasible_portion))
@@ -260,6 +261,9 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
             get_last_arrival(vehicles_schedule, vehicle) > max_vehicle_ride_time:
         detour_cost += M
         dep_time_offset += M
+    if len(feasible_portion) == 0:
+        detour_cost += 100*M
+        dep_time_offset += 100*M
 
     position_cost = detour_cost + dep_time_offset
 
@@ -285,19 +289,25 @@ def insert_request_group(network, vehicles_schedule, requests_dict, request_grou
     end_node = None
     added_portion = None
 
-    if position[0] == 'insert d after':
-        insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=d,
-                               next_stop=get_next_node(vehicles_schedule, vehicle, position[1]), network=network, depot=depot)
-        node_to_insert_pax = position[1]
 
+    if position[0] == 'insert d after':
+        node_to_insert_pax = position[1]
+        end_node = get_next_occ_of_node(vehicles_schedule, vehicle, position[1], d)
+        if room_for_insertion_at_node(vehicles_schedule, vehicle, node_to_insert_pax, end_node, capacity) > 0:
+            insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=d,
+                               next_stop=get_next_node(vehicles_schedule, vehicle, position[1]), network=network, depot=depot)
     elif position[0] == 'insert o before':
         node_to_insert_pax = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=o, next_stop=position[1], network=network, depot=depot)
     elif position[0] == 'on arc with o: ':
-        node_to_insert_pax = position[1]
         end_node = get_next_occ_of_node(vehicles_schedule, vehicle, position[1], d)
+        if room_for_insertion_at_node(vehicles_schedule, vehicle, position[1], end_node, capacity) > 0:
+            node_to_insert_pax = position[1]
     elif position[0] == 'insert o after':
-        node_to_insert_pax = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=o,
-                                                    next_stop=get_next_node(vehicles_schedule, vehicle, position[1]), network=network, depot=depot)
+        end_node = get_next_occ_of_node(vehicles_schedule, vehicle, position[1], d)
+        if room_for_insertion_at_node(vehicles_schedule, vehicle, position[1], end_node, capacity) > 0:\
+            node_to_insert_pax = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=o,
+                                                    next_stop=get_next_node(vehicles_schedule, vehicle, position[1]),
+                                                    network=network, depot=depot)
     elif position == 'in front':
         node_to_insert_pax = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=(o, d),
                                                     next_stop='first stop', network=network, depot=depot)
@@ -307,19 +317,22 @@ def insert_request_group(network, vehicles_schedule, requests_dict, request_grou
     elif position == 'first entry':
         node_to_insert_pax = insert_stop_in_vehicle(vehicles_schedule, vehicle, node_type=(o, d), network=network, depot=depot)
 
-    if return_added_portion:
+    if return_added_portion and node_to_insert_pax:
         added_portion = occupy_available_seats(vehicles_schedule, vehicle, requests_dict,
                                                request_group, node_to_insert_pax, end_node, return_added_portion,
                                                ignore_request_dict, capacity=capacity)
     else:
         occupy_available_seats(vehicles_schedule, vehicle, requests_dict,
-                               request_group, node_to_insert_pax, end_node, return_added_portion, ignore_request_dict, capacity=capacity)
-    update_dep_time_at_node(vehicles_schedule, vehicle, node_to_insert_pax, network)
-    for next_node in get_nodes_in_range(vehicles_schedule, vehicle, start_node=node_to_insert_pax):
-        update_dep_time_at_node(vehicles_schedule, vehicle, next_node, network)
+                               request_group, node_to_insert_pax, end_node, return_added_portion,
+                               ignore_request_dict, capacity=capacity)
 
-    if return_added_portion:
-        return added_portion
+    if node_to_insert_pax:
+        update_dep_time_at_node(vehicles_schedule, vehicle, node_to_insert_pax, network)
+        for next_node in get_nodes_in_range(vehicles_schedule, vehicle, start_node=node_to_insert_pax):
+            update_dep_time_at_node(vehicles_schedule, vehicle, next_node, network)
+
+        if return_added_portion:
+            return added_portion
 
 
 def insert_stop_in_vehicle(vehicle_schedule, vehicle, network, node_type=None, next_stop=None, depot='terminal'):
@@ -436,6 +449,7 @@ def update_dep_time_at_node(vehicles_schedule, vehicle, node, network):
     """
     Update the departure time of a vehicle at a certain stop.
     """
+
     cost_matrix = generate_cost_matrix(network, v_mean)
     imposed_dep_time_by_req_pt = 0
 

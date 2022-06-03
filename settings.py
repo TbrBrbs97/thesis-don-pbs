@@ -20,7 +20,7 @@ depot = 'terminal'
 network_size = 'real'
 network_variant = 'half' # this refers to the 1 in S1
 
-if network_size == 'large':
+if network_size == 'small':
     peak_duration = 20  # min.
     req_max_cluster_time = 2.5
 elif network_size == 'medium':
@@ -73,7 +73,7 @@ size_groups = size_request_groups_per_od(grouped_requests)
 # OPTIMIZATION
 
 M = 10000  # a very large number
-opt_time_lim = 180 # minutes
+opt_time_lim = 30 # minutes
 reinitiation_threshold = 5
 disturbance_threshold = 1 #iterations
 disturbance_ratio = 0.01

@@ -14,11 +14,11 @@ from solution_construct import generate_initial_solution, static_optimization
 # PARAMETERS
 network_sizes = ['small', 'medium', 'large']
 network_variants = ['half', 'more']
-nb_of_samples = 4
+nb_of_samples = 3
 
 for size in network_sizes:
     for variant in network_variants:
-        sample = 2
+        sample = 1
         while sample < nb_of_samples:
             print('CURRENTLY RUNNING: ', size, variant, sample)
             network_size = size
@@ -28,22 +28,25 @@ for size in network_sizes:
             if network_size == 'small':
                 peak_duration = 20  # min.
                 opt_time_limit = 60
+                req_max_cluster_time = 2.5
             elif network_size == 'medium':
                 peak_duration = 40
                 opt_time_limit = 120
+                req_max_cluster_time = 5
             elif network_size == 'large':
                 peak_duration = 60
                 opt_time_limit = 180
+                req_max_cluster_time = 7.5
             else:
                 peak_duration = 120
                 opt_time_limit = 240
+                req_max_cluster_time = 15
 
             network = import_network(network_size, network_variant)
             cost_matrix = generate_cost_matrix(network, v_mean)
             distance_matrix = generate_distance_matrix(network)
             network_dim = get_network_boundaries(network)
 
-            req_max_cluster_time = peak_duration / 8
 
             lambdapeak = get_scenario_mean_demand('city', network_size, scen=demand_scenario,
                                                   subscen=demand_subscenario, peak=1)

@@ -23,16 +23,16 @@ def get_insertion_possibilities(vehicles_schedule, vehicle, request_group):
                                        if cv(node) == d and get_prev_node(vehicles_schedule, vehicle, node) is None]
         positions_on_existing_arc = [('on arc with o: ', node) for node in vehicles_schedule[vehicle]
                                      if cv(node) == o and get_next_occ_of_node(vehicles_schedule, vehicle, node, d) is not None]
-        positions_before_dest = [('insert o after', node) for node in vehicles_schedule[vehicle] if
-                                 get_next_occ_of_node(vehicles_schedule, vehicle, node, d) and
-                                 cv(get_next_occ_of_node(vehicles_schedule, vehicle, node, d)) == d and node not in
-                                 [tup[1] for tup in positions_on_existing_arc]]
         # positions_before_dest = [('insert o after', node) for node in vehicles_schedule[vehicle] if
         #                          get_next_occ_of_node(vehicles_schedule, vehicle, node, d) and
-        #                          cv(get_next_occ_of_node(vehicles_schedule, vehicle, node, d)) == d and
-        #                          cv(get_next_node(vehicles_schedule, vehicle, node)) != o and
-        #                          get_prev_node(vehicles_schedule, vehicle, node) and
-        #                          cv(get_prev_node(vehicles_schedule, vehicle, node)) != o]
+        #                          cv(get_next_occ_of_node(vehicles_schedule, vehicle, node, d)) == d and node not in
+        #                          [tup[1] for tup in positions_on_existing_arc]]
+        positions_before_dest = [('insert o after', node) for node in vehicles_schedule[vehicle] if
+                                 get_next_occ_of_node(vehicles_schedule, vehicle, node, d) and
+                                 cv(get_next_occ_of_node(vehicles_schedule, vehicle, node, d)) == d and
+                                 cv(get_next_node(vehicles_schedule, vehicle, node)) != o and
+                                 get_prev_node(vehicles_schedule, vehicle, node) and
+                                 cv(get_prev_node(vehicles_schedule, vehicle, node)) != o]
 
         default_positions = []
         if len(positions_at_origin_as_last_stop) == 0:
@@ -84,7 +84,8 @@ def get_next_node(vehicles_schedule, vehicle, node=None):
         return nodes_in_vehicle[-1]
 
 
-def get_nodes_in_range(vehicles_schedule, vehicle, start_node=None, end_node=None, start_included=False):
+def get_nodes_in_range(vehicles_schedule, vehicle, start_node=None, end_node=None, start_included=False,
+                       end_included=False):
     """
     Returns all nodes in a given range
     """
@@ -102,10 +103,14 @@ def get_nodes_in_range(vehicles_schedule, vehicle, start_node=None, end_node=Non
     elif start_node and end_node:
         idx_start_node = all_nodes.index(start_node)
         idx_end_node = all_nodes.index(end_node)
-        if start_included:
+        if start_included and end_included:
             return all_nodes[idx_start_node:idx_end_node + 1]
-        else:
+        elif start_included and not end_included:
+            return all_nodes[idx_start_node:idx_end_node]
+        elif not start_included and end_included:
             return all_nodes[idx_start_node + 1:idx_end_node + 1]
+        elif not start_included and not end_included:
+            return all_nodes[idx_start_node + 1:idx_end_node]
     else:
         return all_nodes
 
@@ -162,7 +167,7 @@ def room_for_insertion_at_node(vehicles_schedule, vehicle, start_node, end_node=
     pax_from_prev_stops = count_inveh_pax_over_node(vehicles_schedule, vehicle, start_node)
     pax_boarding_until_end = count_boarding_pax_until_dest(vehicles_schedule, vehicle, start_node, end_node)
 
-    return capacity - (pax_boarding_until_end + pax_from_prev_stops)
+    return max(capacity - (pax_boarding_until_end + pax_from_prev_stops), 0)
 
 
 def count_boarding_pax_until_dest(vehicles_schedule, vehicle, start_node, end_node=None):
@@ -176,7 +181,8 @@ def count_boarding_pax_until_dest(vehicles_schedule, vehicle, start_node, end_no
             count += sum(
                 [len(request_group) for request_group in vehicles_schedule[vehicle][start_node][1:]])
     else:
-        for n in get_nodes_in_range(vehicles_schedule, vehicle, start_node, end_node, start_included=True):
+        for n in get_nodes_in_range(vehicles_schedule, vehicle, start_node, end_node, start_included=False,
+                                    end_included=False):
             if boarding_pass_at_node(vehicles_schedule, vehicle, n):
                 count += sum(
                     [len(request_group) for request_group in vehicles_schedule[vehicle][n][1:]])
@@ -191,7 +197,7 @@ def count_inveh_pax_over_node(vehicles_schedule, vehicle, start_node):
     """
     all_nodes = get_existing_nodes(vehicles_schedule, vehicle)
     index_curr_node = all_nodes.index(start_node)
-    all_previous_nodes = all_nodes[:index_curr_node]
+    all_previous_nodes = all_nodes[:index_curr_node+1]
 
     inveh_pax = 0
 

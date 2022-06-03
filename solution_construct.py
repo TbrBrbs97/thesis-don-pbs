@@ -68,11 +68,6 @@ def generate_initial_solution(network, requests_dict, vehicles_schedule=None,
                                                               request_group, capacity=capacity, depot=depot,
                                                               return_feasible_portion=False)
     candidate_vehicle, candidate_node, score = candidate_position
-    # o, d = get_od_from_request_group(request_group)
-    # if o > d:
-    #     print('T: ', request_group, candidate_position)
-    # else:
-    # print(request_group, candidate_position, score)
     insert_request_group(network, vehicles_schedule, requests_dict,
                          request_group, candidate_vehicle, candidate_node, capacity=capacity, depot=depot)
     return generate_initial_solution(network, requests_dict, vehicles_schedule, nb_of_available_veh, capacity, depot)
@@ -93,7 +88,6 @@ def iter_generate_initial_solution(network, requests_dict, vehicles_schedule=Non
         # print(iteration)
 
         request_group = pop_request_group(requests_dict)
-        # print(request_group)
         candidate_position = iter_find_best_position_for_request_group(network, vehicles_schedule,
                                                                        request_group, capacity, depot=depot)
         candidate_vehicle, candidate_node, score = candidate_position
