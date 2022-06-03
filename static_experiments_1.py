@@ -27,15 +27,15 @@ for size in network_sizes:
 
             if network_size == 'small':
                 peak_duration = 20  # min.
-                opt_time_limit = 60
+                opt_time_limit = 40
                 req_max_cluster_time = 2.5
             elif network_size == 'medium':
                 peak_duration = 40
-                opt_time_limit = 120
+                opt_time_limit = 80
                 req_max_cluster_time = 5
             elif network_size == 'large':
                 peak_duration = 60
-                opt_time_limit = 180
+                opt_time_limit = 120
                 req_max_cluster_time = 7.5
             else:
                 peak_duration = 120

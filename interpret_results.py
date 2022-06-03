@@ -6,7 +6,7 @@ from solution_evaluation import generate_waiting_time_dict, generate_in_vehicle_
     generate_total_travel_time_dict, generate_distance_matrix, get_objective_function_val, \
     sum_total_travel_time, calc_total_vehicle_kilometers, calc_request_group_invehicle_time, \
     calc_request_group_waiting_time
-from vehicle import count_total_assigned_requests, list_assigned_travellers
+from vehicle import count_total_assigned_requests, list_assigned_travellers, count_assigned_request_groups_2
 
 # ADJUST NAMING BEFORE RUNNING !!
 
@@ -51,6 +51,8 @@ for filename in os.listdir(directory):
     passenger_travel_time = get_objective_function_val(network, vehicles_schedule, relative=True)
     total_vehicle_kms = calc_total_vehicle_kilometers(network, vehicles_schedule)
 
+    assigned_request_groups = count_assigned_request_groups_2(vehicles_schedule)
+
     city_travellers_tt = get_objective_function_val(network, vehicles_schedule, relative=True, direction='city')
     terminal_travellers_tt = get_objective_function_val(network, vehicles_schedule, relative=True, direction='terminal')
 
@@ -75,15 +77,16 @@ for filename in os.listdir(directory):
     list_real_time_travellers = list_assigned_travellers(vehicles_schedule, dynamic=True)
 
     # PLOT
-    x = [abs(tup[0][1]-tup[0][2]) for tup in list_real_time_travellers]
-    y = [calc_request_group_invehicle_time(network, vehicles_schedule, group) +
-         calc_request_group_waiting_time(vehicles_schedule, group) for group in list_real_time_travellers]
-    z = [tup[0][1] for tup in list_real_time_travellers]
-    plt.scatter(x, y, c=z)
-    plt.xlabel("Difference between pick up time - issue time (min.)")
-    plt.ylabel("Travel time (min.)")
-    plt.colorbar()
-    plt.show()
+    if 'dyn' in filename:
+        x = [abs(tup[0][1]-tup[0][2]) for tup in list_real_time_travellers]
+        y = [calc_request_group_invehicle_time(network, vehicles_schedule, group) +
+             calc_request_group_waiting_time(vehicles_schedule, group) for group in list_real_time_travellers]
+        z = [tup[0][1] for tup in list_real_time_travellers]
+        plt.scatter(x, y, c=z)
+        plt.xlabel("Difference between pick up time - issue time (min.)")
+        plt.ylabel("Travel time (min.)")
+        plt.colorbar()
+        plt.show()
 
     in_advance_travel_time = get_objective_function_val(network, vehicles_schedule, relative=False, direction='all', dynamic_filter=False) - \
                              get_objective_function_val(network, vehicles_schedule, relative=False, direction='all', dynamic_filter=True)

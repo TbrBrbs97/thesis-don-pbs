@@ -289,7 +289,6 @@ def insert_request_group(network, vehicles_schedule, requests_dict, request_grou
     end_node = None
     added_portion = None
 
-
     if position[0] == 'insert d after':
         node_to_insert_pax = position[1]
         end_node = get_next_occ_of_node(vehicles_schedule, vehicle, position[1], d)
@@ -441,8 +440,8 @@ def occupy_available_seats(vehicles_schedule, vehicle, requests_dict, request_gr
         # if [] in requests_dict[(o, d)]:
         #     requests_dict[(o, d)].remove([])
 
-        if return_added_portion:
-            return portion_to_add
+    if return_added_portion:
+        return portion_to_add
 
 
 def update_dep_time_at_node(vehicles_schedule, vehicle, node, network):

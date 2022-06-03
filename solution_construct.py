@@ -151,8 +151,6 @@ def static_optimization(network, vehicles_schedule, required_requests_per_it=1, 
             best_iteration = it
 
 
-        # if get_objective_function_val(vehicles_schedule) >= \
-        #         get_objective_function_val(best_schedule_so_far) and it % disturbance_threshold == 0 and it != 0:
         if it % disturbance_threshold == 0:
             disturbance_rate = disturbance_ratio
             print('no further improvement found, obj. func: ', get_objective_function_val(network, vehicles_schedule),
@@ -174,7 +172,7 @@ def static_optimization(network, vehicles_schedule, required_requests_per_it=1, 
             print('performing large shuffle with rate: ', shuffle_rate)
             vehicles_schedule = shuffle(network, vehicles_schedule, shuffle_rate=shuffle_rate, capacity=capacity,
                                         depot=depot)
-            print('tot. assigned req. groups after shuffle: ', count_assigned_request_groups_2(vehicles_schedule))
+            # print('tot. assigned req. groups after shuffle: ', count_assigned_request_groups_2(vehicles_schedule))
             shf += 1
 
 
@@ -263,10 +261,11 @@ def disturb_2(network, vehicles_schedule, temp_request_dict=None,
     nb_request_groups_to_select = max(int(round(disturbance * count_assigned_request_groups(vehicles_schedule))), 1)
     # random_request_groups = select_most_costly_request_groups(network, vehicles_schedule, request_groups_to_select)
     random_request_groups = select_random_request_groups(vehicles_schedule, nb_request_groups_to_select)
-    # print(random_request_groups)
+    print(random_request_groups)
 
     for request_group in random_request_groups:
         original_score = round(calc_request_group_opportunity_cost(network, vehicles_schedule, request_group), 2)
+        print(original_score)
         temp_schedule = copy.deepcopy(vehicles_schedule)
         remove_request_group(network, temp_schedule, request_group)
 
@@ -289,8 +288,8 @@ def disturb_2(network, vehicles_schedule, temp_request_dict=None,
                 count += 1
 
         if all([candidate[2] != 'current pos' for candidate in positions]):
+            print('found first best improvement')
             vehicles_schedule = temp_schedule
-            # print('succesful addition with splits: ', count)
 
     return vehicles_schedule
 
