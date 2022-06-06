@@ -5,13 +5,13 @@ from network_generation import generate_cost_matrix, import_network
 from solution_evaluation import generate_waiting_time_dict, generate_in_vehicle_time_dict, \
     generate_total_travel_time_dict, generate_distance_matrix, get_objective_function_val, \
     sum_total_travel_time, calc_total_vehicle_kilometers, calc_request_group_invehicle_time, \
-    calc_request_group_waiting_time
+    calc_request_group_waiting_time, calc_total_vehicle_duration
 from vehicle import count_total_assigned_requests, list_assigned_travellers, count_assigned_request_groups_2
 
 # ADJUST NAMING BEFORE RUNNING !!
 
-directory = 'Results/DE_1'
-output_name = 'dynamic_experiments_1_3005'
+directory = 'Results/SE_3'
+output_name = '0506'
 network = None
 
 # GENERATE EXPORT
@@ -50,6 +50,8 @@ for filename in os.listdir(directory):
     summed_in_veh_time = sum_total_travel_time(in_veh_time)
     passenger_travel_time = get_objective_function_val(network, vehicles_schedule, relative=True)
     total_vehicle_kms = calc_total_vehicle_kilometers(network, vehicles_schedule)
+    total_vehicle_dur = calc_total_vehicle_duration(network, vehicles_schedule)
+    stopping_time = summed_in_veh_time - total_vehicle_dur
 
     assigned_request_groups = count_assigned_request_groups_2(vehicles_schedule)
 
@@ -92,7 +94,8 @@ for filename in os.listdir(directory):
                              get_objective_function_val(network, vehicles_schedule, relative=False, direction='all', dynamic_filter=True)
     real_time_travel_time = get_objective_function_val(network, vehicles_schedule, relative=False, direction='all', dynamic_filter=True)
 
-    export[filename] = [total_passenger_count, summed_waiting_time, summed_in_veh_time,
+    export[filename] = [total_passenger_count, assigned_request_groups,
+                        summed_waiting_time, summed_in_veh_time, stopping_time,
                         total_travel_time, passenger_travel_time, total_vehicle_kms,
                         count_city_travellers, count_terminal_travellers,
                         city_travellers_tt, terminal_travellers_tt,
@@ -103,8 +106,8 @@ for filename in os.listdir(directory):
 
 
 df = pd.DataFrame.from_dict(export, orient='index')
-headers = ['total pass. count', 'total waiting time', 'total in-veh. time',
-           'total travel time', 'travel time per pass.', 'total veh. kms',
+headers = ['total pass. count', '#request groups', 'total waiting time', 'total in-veh. time',
+           'stopping time', 'total travel time', 'travel time per pass.', 'total veh. kms',
            'total city travelers', 'total terminal travelers',
            'avg. travel time to city', 'avg. travel time to terminal',
            'wt city travel', 'ivt city travel',

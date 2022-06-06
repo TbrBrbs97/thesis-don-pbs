@@ -8,7 +8,8 @@ from pprint import PrettyPrinter, pprint
 from requests import get_od_from_request_group
 
 from vehicle import locate_request_group_in_schedule, is_empty_vehicle_schedule, \
-    count_assigned_request_groups, room_for_insertion_at_node, get_insertion_possibilities, count_total_assigned_requests
+    count_assigned_request_groups, room_for_insertion_at_node, get_insertion_possibilities, \
+    count_total_assigned_requests, requests_per_node
 
 from requests import count_requests, add_request_group_to_dict, count_requests_per_od
 
@@ -34,6 +35,8 @@ from settings import network, lambdapeak, mupeak, demand_scenario, peak_duration
 
 total_requests = count_requests(grouped_requests)
 print(total_requests)
+
+
 # print(all_dynamic_requests)
 # print(len(all_static_requests))
 
@@ -73,25 +76,26 @@ print(count_total_assigned_requests(initial_solution))
 
 for i in initial_solution:
     print('veh ', i, ': ', initial_solution[i])
-
-print('objective func: ', get_objective_function_val(network, initial_solution, relative=False))
-print('assigned ind. requests', count_total_assigned_requests(initial_solution))
-print('assigned request groups', count_assigned_request_groups(initial_solution))
 #
-waiting_time = generate_waiting_time_dict(initial_solution)
-in_veh_time = generate_in_vehicle_time_dict(network, initial_solution)
-
-print('avg. waiting time: ', sum_total_travel_time(waiting_time))
-print('avg. in-vehicle time: ', sum_total_travel_time(in_veh_time))
-
-print('city requests avg. TT: ', get_objective_function_val(network, initial_solution, relative=True, direction='city'))
-print('terminal requests avg. TT: ', get_objective_function_val(network, initial_solution, relative=True, direction='terminal'))
-
-print('in-advance TT:', get_objective_function_val(network, initial_solution, relative=False, direction='all', dynamic_filter=False))
-print('real-time TT:', get_objective_function_val(network, initial_solution, relative=False, direction='all', dynamic_filter=True))
-
-# disturb_2(network, initial_solution, disturbance=disturbance_ratio)
-
+print('objective func: ', get_objective_function_val(network, initial_solution, relative=False))
+# print(requests_per_node(initial_solution))
+# print('assigned ind. requests', count_total_assigned_requests(initial_solution))
+# print('assigned request groups', count_assigned_request_groups(initial_solution))
+#
+# waiting_time = generate_waiting_time_dict(initial_solution)
+# in_veh_time = generate_in_vehicle_time_dict(network, initial_solution)
+#
+# print('avg. waiting time: ', sum_total_travel_time(waiting_time))
+# print('avg. in-vehicle time: ', sum_total_travel_time(in_veh_time))
+#
+# print('city requests avg. TT: ', get_objective_function_val(network, initial_solution, relative=True, direction='city'))
+# print('terminal requests avg. TT: ', get_objective_function_val(network, initial_solution, relative=True, direction='terminal'))
+#
+# print('in-advance TT:', get_objective_function_val(network, initial_solution, relative=False, direction='all', dynamic_filter=False))
+# print('real-time TT:', get_objective_function_val(network, initial_solution, relative=False, direction='all', dynamic_filter=True))
+#
+# # disturb_2(network, initial_solution, disturbance=disturbance_ratio)
+#
 ## OPTIMIZED STATIC SOLUTION
 
 optimized_solution, best_iteration = static_optimization(network, initial_solution,
@@ -112,13 +116,13 @@ in_veh_time = generate_in_vehicle_time_dict(network, optimized_solution)
 
 print('avg. waiting time: ', sum_total_travel_time(waiting_time))
 print('avg. in-vehicle time: ', sum_total_travel_time(in_veh_time))
-
-print('city requests avg. TT: ', get_objective_function_val(network, optimized_solution, relative=True, direction='city'))
-print('terminal requests avg. TT: ', get_objective_function_val(network, optimized_solution, relative=True, direction='terminal'))
-
-print('in-advance TT:', get_objective_function_val(network, optimized_solution, relative=False, direction='all', dynamic_filter=False))
-print('real-time TT:', get_objective_function_val(network, optimized_solution, relative=False, direction='all', dynamic_filter=True))
-
+#
+# print('city requests avg. TT: ', get_objective_function_val(network, optimized_solution, relative=True, direction='city'))
+# print('terminal requests avg. TT: ', get_objective_function_val(network, optimized_solution, relative=True, direction='terminal'))
+#
+# print('in-advance TT:', get_objective_function_val(network, optimized_solution, relative=False, direction='all', dynamic_filter=False))
+# print('real-time TT:', get_objective_function_val(network, optimized_solution, relative=False, direction='all', dynamic_filter=True))
+#
 
 
 ## DYNAMIC SOLUTION

@@ -259,7 +259,8 @@ def select_most_costly_request_groups(network, vehicles_schedule, required_amoun
                     for request_group in vehicles_schedule[vehicle][node][1:]:
                         schedule_copy = deepcopy(vehicles_schedule)
                         remove_request_group(network, schedule_copy, request_group)
-                        opportunity_cost = original_obj_func_val - get_objective_function_val(schedule_copy, relative)
+                        opportunity_cost = original_obj_func_val - get_objective_function_val(network,
+                                                                                              schedule_copy, relative)
                         if (not most_costly_so_far or opportunity_cost > most_costly_so_far[1]) \
                                 and request_group not in request_groups:
                             most_costly_so_far = request_group, opportunity_cost

@@ -17,8 +17,8 @@ depot = 'terminal'
 
 # NETWORK CHARACTERISTICS
 
-network_size = 'medium'
-network_variant = 'half' # this refers to the 1 in S1
+network_size = 'real'
+network_variant = 'half' # this refers to the 1/2 in S1/2
 
 if network_size == 'small':
     peak_duration = 20  # min.
@@ -31,7 +31,7 @@ elif network_size == 'large':
     req_max_cluster_time = 7.5
 else:
     peak_duration = 120
-    req_max_cluster_time = 15
+    req_max_cluster_time = 30
 
 network = import_network(network_size, network_variant)
 cost_matrix = generate_cost_matrix(network, v_mean)

@@ -167,10 +167,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
     default_multiplier = len(request_group)
     # default_multiplier = 1
 
-    if capacity > 20: # additional correction factor when capacity increases.
-        kappa = 1
-    else:
-        kappa = 1
+    kappa = 1
 
     feasible_portion = request_group
 
@@ -193,7 +190,7 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, x, last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, x)
         detour_cost = (cost_matrix[(o, d)] + cost_matrix[(d, cv(x))] -
-                       cost_matrix[(o, cv(x))])*(default_multiplier + inveh_passenger_mult + waiting_passengers_mult)*kappa
+                       cost_matrix[(o, cv(x))])*(default_multiplier + inveh_passenger_mult + waiting_passengers_mult)
         dep_time_offset = abs(request_group_rep_pt -
                               get_departure_time_at_node(vehicles_schedule, vehicle, insertion_constraint[1])) \
                            *(default_multiplier + inveh_passenger_mult + waiting_passengers_mult)*kappa
@@ -218,7 +215,8 @@ def find_pos_cost_given_ins_cons(vehicles_schedule, vehicle, request_group, inse
 
     elif insertion_constraint[0] == 'on arc with o: ' and \
             room_for_insertion_at_node(vehicles_schedule, vehicle, insertion_constraint[1],
-                                       get_next_occ_of_node(vehicles_schedule, vehicle, insertion_constraint[1], d), capacity=capacity) > 0:
+                                       get_next_occ_of_node(vehicles_schedule, vehicle, insertion_constraint[1], d),
+                                       capacity=capacity) > 0:
         waiting_passengers_mult = count_boarding_pax_until_dest(vehicles_schedule, vehicle, insertion_constraint[1],
                                                                 last_node)
         inveh_passenger_mult = count_inveh_pax_over_node(vehicles_schedule, vehicle, insertion_constraint[1])

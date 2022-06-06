@@ -29,10 +29,15 @@ def get_insertion_possibilities(vehicles_schedule, vehicle, request_group):
         #                          [tup[1] for tup in positions_on_existing_arc]]
         positions_before_dest = [('insert o after', node) for node in vehicles_schedule[vehicle] if
                                  get_next_occ_of_node(vehicles_schedule, vehicle, node, d) and
-                                 cv(get_next_occ_of_node(vehicles_schedule, vehicle, node, d)) == d and
-                                 cv(get_next_node(vehicles_schedule, vehicle, node)) != o and
-                                 get_prev_node(vehicles_schedule, vehicle, node) and
-                                 cv(get_prev_node(vehicles_schedule, vehicle, node)) != o]
+                                 cv(get_next_occ_of_node(vehicles_schedule, vehicle, node, d)) == d and node not in
+                                 [tup[1] for tup in positions_on_existing_arc]]
+
+        # positions_before_dest = [('insert o after', node) for node in vehicles_schedule[vehicle] if
+        #                          get_next_occ_of_node(vehicles_schedule, vehicle, node, d) and
+        #                          cv(get_next_occ_of_node(vehicles_schedule, vehicle, node, d)) == d and
+        #                          cv(get_next_node(vehicles_schedule, vehicle, node)) != o and
+        #                          get_prev_node(vehicles_schedule, vehicle, node) and
+        #                          cv(get_prev_node(vehicles_schedule, vehicle, node)) != o]
 
         default_positions = []
         if len(positions_at_origin_as_last_stop) == 0:
@@ -371,3 +376,16 @@ def get_occ(node):
     return int(node[sep+1:])
 
 
+def requests_per_node(vehicle_schedule):
+    """
+    Returns a dictionairy which indicate the departure time and the number of requests per stop.
+    """
+    result = dict()
+    for vehicle in vehicle_schedule:
+        result[vehicle] = dict()
+        for node in vehicle_schedule[vehicle]:
+            result[vehicle][node] = [get_departure_time_at_node(vehicle_schedule, vehicle, node)]
+            if boarding_pass_at_node(vehicle_schedule, vehicle, node):
+                for group in vehicle_schedule[vehicle][node][1:]:
+                    result[vehicle][node].append(len(group))
+    return result

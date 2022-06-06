@@ -64,9 +64,13 @@ def generate_initial_solution(network, requests_dict, vehicles_schedule=None,
     else:
         request_group = pop_request_group(requests_dict)
 
+    # if request_group == [((1, 15), 114.9419764, -1), ((1, 15), 115.8109606, -1)]:
+    #     print(True)
+
     candidate_position = find_best_position_for_request_group(network, vehicles_schedule,
                                                               request_group, capacity=capacity, depot=depot,
                                                               return_feasible_portion=False)
+    # print(request_group, candidate_position)
     candidate_vehicle, candidate_node, score = candidate_position
     insert_request_group(network, vehicles_schedule, requests_dict,
                          request_group, candidate_vehicle, candidate_node, capacity=capacity, depot=depot)
@@ -139,7 +143,7 @@ def static_optimization(network, vehicles_schedule, required_requests_per_it=1, 
             if difference < 0.0:
                 print('new improvement found: ', get_objective_function_val(network, temp_schedule))
                 vehicles_schedule = deepcopy(temp_schedule)
-                print('tot. assigned req. groups after SD: ', count_assigned_request_groups_2(vehicles_schedule))
+                # print('tot. assigned req. groups after SD: ', count_assigned_request_groups_2(vehicles_schedule))
             j += 1
 
         assert count_total_assigned_requests(vehicles_schedule) == count_total_assigned_requests(temp_schedule)
@@ -157,7 +161,7 @@ def static_optimization(network, vehicles_schedule, required_requests_per_it=1, 
                   'disturb with rate: ', disturbance_rate)
             vehicles_schedule = disturb_2(network, vehicles_schedule, disturbance=disturbance_rate, capacity=capacity,
                                         depot=depot)
-            print('tot. assigned req. groups after disturb: ', count_assigned_request_groups_2(vehicles_schedule))
+            # print('tot. assigned req. groups after disturb: ', count_assigned_request_groups_2(vehicles_schedule))
             dis += 1
 
         if it % reinitiation_threshold == 0 and it != 0 and it % shuffle_threshold != 0:
@@ -259,13 +263,12 @@ def disturb_2(network, vehicles_schedule, temp_request_dict=None,
         temp_request_dict = dict()
 
     nb_request_groups_to_select = max(int(round(disturbance * count_assigned_request_groups(vehicles_schedule))), 1)
-    # random_request_groups = select_most_costly_request_groups(network, vehicles_schedule, request_groups_to_select)
     random_request_groups = select_random_request_groups(vehicles_schedule, nb_request_groups_to_select)
-    print(random_request_groups)
+    # print(random_request_groups)
 
     for request_group in random_request_groups:
         original_score = round(calc_request_group_opportunity_cost(network, vehicles_schedule, request_group), 2)
-        print(original_score)
+        # print(original_score)
         temp_schedule = copy.deepcopy(vehicles_schedule)
         remove_request_group(network, temp_schedule, request_group)
 
@@ -288,7 +291,7 @@ def disturb_2(network, vehicles_schedule, temp_request_dict=None,
                 count += 1
 
         if all([candidate[2] != 'current pos' for candidate in positions]):
-            print('found first best improvement')
+            # print('found first best improvement')
             vehicles_schedule = temp_schedule
 
     return vehicles_schedule
