@@ -22,7 +22,7 @@ depot_allocation = ['middle', 'center']
 
 network_size = 'real'
 network_variant = 'half'
-nb_of_samples = 2
+nb_of_samples = 4
 
 network = import_network(network_size, network_variant)
 cost_matrix = generate_cost_matrix(network, v_mean)

@@ -31,7 +31,7 @@ elif network_size == 'large':
     req_max_cluster_time = 7.5
 else:
     peak_duration = 120
-    req_max_cluster_time = 30
+    req_max_cluster_time = 60
 
 network = import_network(network_size, network_variant)
 cost_matrix = generate_cost_matrix(network, v_mean)
@@ -46,8 +46,8 @@ oneway_duration = calc_oneway_duration(network, v_mean)
 # VEHICLE CHARACTERISTICS
 
 max_vehicle_ride_time = peak_duration + cost_matrix[(network_dim[0], network_dim[2])]  #min.
-cap_per_veh = 20
-nb_of_available_vehicles = 16
+cap_per_veh = 80
+nb_of_available_vehicles = 4
 
 # REQUEST CHARACTERISTICS
 
@@ -73,7 +73,7 @@ size_groups = size_request_groups_per_od(grouped_requests)
 # OPTIMIZATION
 
 M = 10000  # a very large number
-opt_time_lim = 30 # minutes
+opt_time_lim = 60 # minutes
 reinitiation_threshold = 5
 disturbance_threshold = 1 #iterations
 disturbance_ratio = 0.01

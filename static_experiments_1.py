@@ -14,7 +14,7 @@ from solution_construct import generate_initial_solution, static_optimization
 # PARAMETERS
 network_sizes = ['small', 'medium', 'large']
 network_variants = ['half', 'more']
-nb_of_samples = 3
+nb_of_samples = 4
 
 for size in network_sizes:
     for variant in network_variants:

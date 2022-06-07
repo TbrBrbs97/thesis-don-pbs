@@ -16,7 +16,7 @@ from solution_construct import generate_initial_solution, static_optimization
 
 network_size = 'real'
 network_variant = 'half'
-nb_of_samples = 2
+nb_of_samples = 4
 
 opt_time_lim = 480
 peak_duration = 120
