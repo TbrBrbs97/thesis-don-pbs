@@ -48,7 +48,7 @@ def update_dep_times(vehicles_schedule, vehicle, od):
     dep_time_diff = candidate_dep_time - vg.get_stop_dep_time(vehicles_schedule, vehicle, curr_stop)
     vehicles_schedule[vehicle][curr_stop][0] = candidate_dep_time
 
-    # adapt forward departure times (i.e. at the next stops)
+    # adapt forward departure times (veh.e. at the next stops)
     next_stops = range(curr_stop + 1, vg.get_last_stop(vehicles_schedule, vehicle) + 1)
 
     for stop in next_stops:
@@ -182,7 +182,7 @@ def find_best_insertion(solution, request_group, excluded_insertion=None, start=
 
     return closest_match_so_far
 
-    # Check feasibility of insertion! > i.e. some threshold on the max difference in pickup time?
+    # Check feasibility of insertion! > veh.e. some threshold on the max difference in pickup time?
     # Check occupancy!
 
 

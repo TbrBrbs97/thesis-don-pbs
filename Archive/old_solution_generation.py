@@ -259,7 +259,7 @@ def services_to_vehicles(solution, max_services_per_veh):
                 if next_possible_key not in added_services:
                     if vg.get_vehicle_availability(new_solution, (z, ser), network_dim, od_matrix) \
                             < vg.get_vehicle_first_departure(solution, next_possible_key, network_dim):
-                                #and (ser in round_trip_veh) == (i+1 in round_trip_veh):
+                                #and (ser in round_trip_veh) == (veh+1 in round_trip_veh):
                         new_solution[(z, ser+1)] = solution[next_possible_key]
                         # empty the original schedule so we know it has been added already
                         added_services.add(next_possible_key)

@@ -83,7 +83,7 @@ len(Requests)
 # In[38]:
 
 
-# create clusters per dep_t threshold, i.e. group requests from the first departure time until x minutes further.
+# create clusters per dep_t threshold, veh.e. group requests from the first departure time until x minutes further.
 
 
         
@@ -110,7 +110,7 @@ for k in Requests_grouped:
 od_matrix
 
 
-# Insertion strategy: momentarily focussed on the capacity constraint (i.e. trying to fill vehicles), not so much on the time constraint
+# Insertion strategy: momentarily focussed on the capacity constraint (veh.e. trying to fill vehicles), not so much on the time constraint
 # 
 # 1. Divide requests into chunks: 
 #  * (a) of at most equal size (e.g. 10) 

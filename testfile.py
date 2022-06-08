@@ -33,9 +33,8 @@ from settings import network, lambdapeak, mupeak, demand_scenario, peak_duration
     count_groups, network_size, shuffle_threshold, depot, max_vehicle_ride_time, oneway_distance, oneway_duration, delta, \
     disturbance_ratio
 
-total_requests = count_requests(grouped_requests)
-print(total_requests)
-
+# total_requests = count_requests(grouped_requests)
+# print(total_requests)
 
 # print(all_dynamic_requests)
 # print(len(all_static_requests))
@@ -58,7 +57,7 @@ print(total_requests)
 # print(count_requests_per_od(grouped_requests))
 # print(max_vehicle_ride_time)
 
-# print(np.mean([len(i) for od in grouped_requests for i in grouped_requests[od]]))
+# print(np.mean([len(veh) for od in grouped_requests for veh in grouped_requests[od]]))
 # print(mean_demand)
 # print(count_groups)
 # print(requests_per_od)
@@ -74,8 +73,8 @@ initial_solution = generate_initial_solution(network, grouped_requests,
                                              capacity=cap_per_veh, depot=depot)
 print(count_total_assigned_requests(initial_solution))
 
-for i in initial_solution:
-    print('veh ', i, ': ', initial_solution[i])
+# for veh in initial_solution:
+#     print('veh ', veh, ': ', initial_solution[veh])
 #
 print('objective func: ', get_objective_function_val(network, initial_solution, relative=False))
 # print(requests_per_node(initial_solution))
@@ -98,24 +97,24 @@ print('objective func: ', get_objective_function_val(network, initial_solution, 
 #
 ## OPTIMIZED STATIC SOLUTION
 
-optimized_solution, best_iteration = static_optimization(network, initial_solution,
-                                                         required_requests_per_it=steep_descent_intensity,
-                                                         time_limit=opt_time_lim, capacity=cap_per_veh, depot=depot)
-for i in optimized_solution:
-    print('veh ', i, ': ', optimized_solution[i])
-print('overall objective function: ', get_objective_function_val(network, optimized_solution, relative=False),
-      'at iteration: ', best_iteration)
-print('avg. travel time per passenger: ', get_objective_function_val(network, optimized_solution, relative=True))
-
-print('objective func: ', get_objective_function_val(network, optimized_solution, relative=False))
-print('assigned ind. requests', count_total_assigned_requests(optimized_solution))
-print('assigned request groups', count_assigned_request_groups(optimized_solution))
+# optimized_solution, best_iteration = static_optimization(network, initial_solution,
+#                                                          required_requests_per_it=steep_descent_intensity,
+#                                                          time_limit=opt_time_lim, capacity=cap_per_veh, depot=depot)
+# for veh in optimized_solution:
+#     print('veh ', veh, ': ', optimized_solution[veh])
+# print('overall objective function: ', get_objective_function_val(network, optimized_solution, relative=False),
+#       'at iteration: ', best_iteration)
+# print('avg. travel time per passenger: ', get_objective_function_val(network, optimized_solution, relative=True))
 #
-waiting_time = generate_waiting_time_dict(optimized_solution)
-in_veh_time = generate_in_vehicle_time_dict(network, optimized_solution)
-
-print('avg. waiting time: ', sum_total_travel_time(waiting_time))
-print('avg. in-vehicle time: ', sum_total_travel_time(in_veh_time))
+# print('objective func: ', get_objective_function_val(network, optimized_solution, relative=False))
+# print('assigned ind. requests', count_total_assigned_requests(optimized_solution))
+# print('assigned request groups', count_assigned_request_groups(optimized_solution))
+# #
+# waiting_time = generate_waiting_time_dict(optimized_solution)
+# in_veh_time = generate_in_vehicle_time_dict(network, optimized_solution)
+#
+# print('avg. waiting time: ', sum_total_travel_time(waiting_time))
+# print('avg. in-vehicle time: ', sum_total_travel_time(in_veh_time))
 #
 # print('city requests avg. TT: ', get_objective_function_val(network, optimized_solution, relative=True, direction='city'))
 # print('terminal requests avg. TT: ', get_objective_function_val(network, optimized_solution, relative=True, direction='terminal'))
@@ -131,8 +130,8 @@ print('avg. in-vehicle time: ', sum_total_travel_time(in_veh_time))
 #     dynamic_initial_solution = generate_dynamic_solution(network, optimized_solution, all_dynamic_requests,
 #                                                          lead_time=lead_time, peak_hour_duration=peak_duration,
 #                                                          capacity=cap_per_veh, depot=depot, delta=delta)
-#     for i in dynamic_initial_solution:
-#         print('veh ', i, ': ', dynamic_initial_solution[i])
+#     for veh in dynamic_initial_solution:
+#         print('veh ', veh, ': ', dynamic_initial_solution[veh])
 #     print('objective func: ', get_objective_function_val(network, dynamic_initial_solution, relative=False))
 #     print('avg. travel time per passenger: ', get_objective_function_val(network, dynamic_initial_solution, relative=True))
 #

@@ -1,5 +1,5 @@
 from vehicle import locate_request_group_in_schedule, get_departure_time_at_node, get_next_occ_of_node, \
-    boarding_pass_at_node, is_empty_vehicle_schedule, count_total_assigned_requests, get_prev_node
+    boarding_pass_at_node, is_empty_vehicle_schedule, count_total_assigned_requests, get_prev_node, get_next_node
 from requests import get_od_from_request_group, get_issue_time
 from static_operators import remove_request_group
 from network_generation import cv, generate_distance_matrix, generate_cost_matrix
@@ -28,7 +28,8 @@ def calc_request_group_waiting_time(vehicles_schedule, request_group, relative=F
     return waiting_time
 
 
-def calc_request_group_invehicle_time(network, vehicles_schedule, request_group, relative=False, dynamic=False, v_mean=50):
+def calc_request_group_invehicle_time(network, vehicles_schedule, request_group, relative=False, dynamic=False,
+                                      v_mean=50):
     cost_matrix = generate_cost_matrix(network, v_mean)
 
     if relative:
@@ -324,4 +325,18 @@ def calc_total_vehicle_duration(network, vehicles_schedule, v_mean=50, list_per_
                 duration_dict[vehicle] += cost_matrix[(cv(stops[n]), cv(stops[n+1]))]
                 n += 1
         return duration_dict
+
+
+def calc_total_stopping_time(network, vehicle_schedule):
+    """
+    Calculates the total idle time of vehicles
+    """
+    total_driving_time = 0
+    for vehicle in vehicle_schedule:
+        first_stop = get_prev_node(vehicle_schedule, vehicle)
+        last_stop = get_next_node(vehicle_schedule, vehicle)
+        total_driving_time += get_departure_time_at_node(vehicle_schedule, vehicle, last_stop) -\
+                              get_departure_time_at_node(vehicle_schedule, vehicle, first_stop)
+
+    return total_driving_time - calc_total_vehicle_duration(network, vehicle_schedule)
 

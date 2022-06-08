@@ -31,7 +31,7 @@ elif network_size == 'large':
     req_max_cluster_time = 7.5
 else:
     peak_duration = 120
-    req_max_cluster_time = 60
+    req_max_cluster_time = 15
 
 network = import_network(network_size, network_variant)
 cost_matrix = generate_cost_matrix(network, v_mean)
